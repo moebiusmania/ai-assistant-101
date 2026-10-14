@@ -25,6 +25,10 @@ const alternates: Record<Lang, string> = {
 };
 const fullTitle = title ? `${title} · ${tr('site.name')}` : `${tr('site.name')} — ${tr('site.tagline')}`;
 const path = Astro.url.pathname;
+// Social previews need absolute URLs.
+const pageUrl = new URL(path, Astro.site).href;
+const ogImage = new URL(url('/og-image.png'), Astro.site).href;
+const ogLocale: Record<Lang, string> = { it: 'it_IT', en: 'en_US' };
 ---
 <!doctype html>
 <html lang={lang}>
@@ -37,6 +41,24 @@ const path = Astro.url.pathname;
     <link rel="manifest" href={url(lang === 'it' ? '/manifest.webmanifest' : '/en/manifest.webmanifest')} />
     <link rel="apple-touch-icon" href={url('/icons/apple-touch-icon.png')} />
     {Object.entries(alternates).map(([l, href]) => <link rel="alternate" hreflang={l} href={href} />)}
+    <link rel="canonical" href={pageUrl} />
+    <meta property="og:type" content={readingProgress ? 'article' : 'website'} />
+    <meta property="og:site_name" content={tr('site.name')} />
+    <meta property="og:title" content={title ?? fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={pageUrl} />
+    <meta property="og:locale" content={ogLocale[lang]} />
+    {(Object.keys(ogLocale) as Lang[]).filter((l) => l !== lang).map((l) => <meta property="og:locale:alternate" content={ogLocale[l]} />)}
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={tr('site.ogAlt')} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title ?? fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content={tr('site.ogAlt')} />
     <meta name="theme-color" content="#faf8f4" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#16141d" media="(prefers-color-scheme: dark)" />
     <script is:inline>
@@ -106,9 +128,27 @@ const path = Astro.url.pathname;
 
     <footer class="site-footer">
       <div class="container">
-        <p>{tr('home.agnostic')}</p>
-        <p set:html={tr('footer.credit')} />
-        <p>{tr('footer.local')}</p>
+        <div class="footer-grid">
+          <section aria-labelledby="footer-about">
+            <h2 id="footer-about">{tr('footer.about')}</h2>
+            <p>{tr('home.agnostic')}</p>
+            <p>{tr('footer.local')}</p>
+          </section>
+          <section aria-labelledby="footer-made">
+            <h2 id="footer-made">{tr('footer.made')}</h2>
+            <p>{tr('footer.ai')}</p>
+          </section>
+          <section aria-labelledby="footer-licenses">
+            <h2 id="footer-licenses">{tr('footer.licenses')}</h2>
+            <p set:html={tr('footer.license.content')} />
+            <p set:html={tr('footer.credit')} />
+            <p set:html={tr('footer.license.code')} />
+          </section>
+        </div>
+        <div class="footer-bottom">
+          <p>© 2026 Salvatore Laisa</p>
+          <p><a href="https://github.com/moebiusmania/ai-assistant-101">{tr('footer.source')}</a></p>
+        </div>
       </div>
     </footer>
 

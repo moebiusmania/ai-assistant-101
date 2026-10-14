@@ -316,11 +316,38 @@
     }
     & .tools { display: flex; align-items: center; gap: var(--space-1); }
   }
-  /* On narrow screens (and at high zoom) the nav moves to its own row instead of disappearing. */
+  /* On narrow screens (and at high zoom) the header becomes two rows instead of hiding anything:
+     brand + icon buttons on top, then the nav and the language switch as a pair of segmented controls. */
   @media (width < 40rem) {
-    .site-header .bar { flex-wrap: wrap; row-gap: 0; padding-block: var(--space-2); }
-    .site-header nav { order: 3; flex-basis: 100%; margin-inline-start: -0.8em; }
-    /* Visually hidden, not display:none: it's the link's accessible name. */
+    .site-header .bar {
+      flex-wrap: wrap;
+      gap: var(--space-2) var(--space-1);
+      min-height: 0;
+      padding-block: var(--space-2);
+      /* Forces the line break between the two rows. */
+      &::before { content: ''; order: 2; flex-basis: 100%; }
+    }
+    .site-header .tools { display: contents; }
+    .site-header .icon-btn { order: 1; }
+    /* Optically align the last icon with the language switch below it. */
+    .site-header .theme-toggle { margin-inline-end: calc(var(--space-2) * -1); }
+    .site-header .brand {
+      font-size: 1rem;
+      white-space: nowrap;
+      & svg { width: 1.75rem; height: 1.75rem; }
+    }
+    .site-header nav {
+      order: 3;
+      gap: 0;
+      padding: 2px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-pill);
+      & a { padding: 0.3em 0.9em; }
+    }
+    .site-header .lang-switch { order: 4; margin-inline-start: auto; }
+  }
+  /* Very narrow (small phones, 400% zoom): keep only the logo; the name stays as the link's accessible name. */
+  @media (width < 22.5rem) {
     .site-header .brand span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   }
   /* Short viewports (e.g. 400% zoom): don't let a sticky header eat the screen. */
@@ -380,7 +407,28 @@
     padding-block: var(--space-6);
     color: var(--text-muted);
     font-size: var(--step--1);
-    & .container { display: grid; gap: var(--space-2); }
+    & .container { display: grid; gap: var(--space-6); }
+    & .footer-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+      gap: var(--space-6);
+    }
+    & section { display: grid; gap: var(--space-2); align-content: start; }
+    & h2 {
+      font-size: var(--step--1);
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text);
+    }
+    & .footer-bottom {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: var(--space-2) var(--space-5);
+      padding-block-start: var(--space-4);
+      border-block-start: 1px solid var(--border);
+    }
   }
 
   /* Prose (lesson content) */

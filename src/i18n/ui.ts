@@ -6,6 +6,7 @@ export const ui = {
   it: {
     'site.name': 'Parlare con l’AI',
     'site.tagline': 'Un corso semplice per usare bene gli assistenti AI',
+    'site.ogAlt': 'Anteprima di Parlare con l’AI: «Usa gli assistenti AI con la testa, non a caso.» Corso gratuito di circa 1 ora, con un esempio di chat con un assistente.',
     'nav.home': 'Inizio',
     'nav.lessons': 'Lezioni',
     'nav.glossary': 'Glossario',
@@ -94,10 +95,20 @@ export const ui = {
     'footer.credit':
       'Alcuni concetti sono tratti dall’<a href="https://academy.claude.com/courses/ai-fluency-framework-foundations/introduction-to-ai-fluency">AI Fluency Framework</a> di Rick Dakan e Joseph Feller (licenza CC BY-NC-SA 4.0).',
     'footer.local': 'Il progresso è salvato solo nel tuo browser.',
+    'footer.about': 'Il corso',
+    'footer.made': 'Come è fatto',
+    'footer.ai':
+      'Questo sito è stato realizzato con l’aiuto di strumenti di intelligenza artificiale, sotto la supervisione di uno sviluppatore umano che ha rivisto e verificato codice e contenuti.',
+    'footer.licenses': 'Licenze',
+    'footer.license.content':
+      'I contenuti del corso sono distribuiti con licenza <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.it" rel="license">Creative Commons BY-NC-SA 4.0</a>: puoi condividerli e adattarli per scopi non commerciali, citando la fonte e usando la stessa licenza.',
+    'footer.license.code': 'Il codice sorgente è distribuito con <a href="https://github.com/moebiusmania/ai-assistant-101/blob/main/LICENSE">licenza MIT</a>.',
+    'footer.source': 'Codice sorgente su GitHub',
   },
   en: {
     'site.name': 'Talking to AI',
     'site.tagline': 'A simple course on using AI assistants well',
+    'site.ogAlt': 'Preview of Parlare con l’AI (Talking to AI), in Italian: “Use AI assistants with your head, not by chance.” A free course of about 1 hour, with an example chat with an assistant.',
     'nav.home': 'Home',
     'nav.lessons': 'Lessons',
     'nav.glossary': 'Glossary',
@@ -186,6 +197,15 @@ export const ui = {
     'footer.credit':
       'Some concepts come from the <a href="https://academy.claude.com/courses/ai-fluency-framework-foundations/introduction-to-ai-fluency">AI Fluency Framework</a> by Rick Dakan and Joseph Feller (CC BY-NC-SA 4.0 license).',
     'footer.local': 'Your progress is saved only in your browser.',
+    'footer.about': 'The course',
+    'footer.made': 'How it’s made',
+    'footer.ai':
+      'This site was built with the help of AI tools, under the supervision of a human developer who reviewed and checked the code and content.',
+    'footer.licenses': 'Licenses',
+    'footer.license.content':
+      'The course content is licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" rel="license">Creative Commons BY-NC-SA 4.0</a>: you can share and adapt it for non-commercial purposes, as long as you give credit and use the same license.',
+    'footer.license.code': 'The source code is released under the <a href="https://github.com/moebiusmania/ai-assistant-101/blob/main/LICENSE">MIT license</a>.',
+    'footer.source': 'Source code on GitHub',
   },
 } as const;
 
