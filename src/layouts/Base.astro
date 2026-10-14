@@ -1,0 +1,208 @@
+---
+import '@fontsource-variable/inter';
+import '@fontsource-variable/bricolage-grotesque';
+import '../styles/global.css';
+import Icon from '../components/Icon.astro';
+import { getLang, languages, routes, t, url, type Lang } from '../i18n/ui';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** URL of this same page in each language, for the language switch. */
+  alternates?: Partial<Record<Lang, string>>;
+  readingProgress?: boolean;
+  /** Keep the header hidden until the page sets `data-shown` on it (used by the home hero). */
+  autoHeader?: boolean;
+}
+
+const lang = getLang(Astro.currentLocale);
+const tr = t(lang);
+const { title, description = tr('site.tagline'), readingProgress = false, autoHeader = false } = Astro.props;
+const alternates: Record<Lang, string> = {
+  it: routes.home('it'),
+  en: routes.home('en'),
+  ...Astro.props.alternates,
+};
+const fullTitle = title ? `${title} · ${tr('site.name')}` : `${tr('site.name')} — ${tr('site.tagline')}`;
+const path = Astro.url.pathname;
+---
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href={url('/favicon.svg')} />
+    <link rel="manifest" href={url(lang === 'it' ? '/manifest.webmanifest' : '/en/manifest.webmanifest')} />
+    <link rel="apple-touch-icon" href={url('/icons/apple-touch-icon.png')} />
+    {Object.entries(alternates).map(([l, href]) => <link rel="alternate" hreflang={l} href={href} />)}
+    <meta name="theme-color" content="#faf8f4" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#16141d" media="(prefers-color-scheme: dark)" />
+    <script is:inline>
+      // Apply the saved theme before first paint to avoid a flash.
+      (() => {
+        let saved = null;
+        try { saved = JSON.parse(localStorage.getItem('aic:theme')); } catch {}
+        const dark = saved ? saved === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+        const root = document.documentElement;
+        if (saved) root.dataset.theme = saved;
+        root.dataset.resolvedTheme = dark ? 'dark' : 'light';
+      })();
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">{tr('nav.skip')}</a>
+    <header class="site-header" data-autohide={autoHeader || undefined}>
+      <div class="container bar">
+        <a class="brand" href={routes.home(lang)}>
+          <svg viewBox="0 0 32 32" aria-hidden="true">
+            <rect width="32" height="32" rx="9" fill="var(--accent)" />
+            <path d="M9 12.5a3.5 3.5 0 0 1 3.5-3.5h7a3.5 3.5 0 0 1 3.5 3.5v4a3.5 3.5 0 0 1-3.5 3.5H15l-4 3v-3.2A3.5 3.5 0 0 1 9 16.5z" fill="var(--on-accent)" />
+            <circle class="blink" cx="13.5" cy="14.5" r="1.3" fill="var(--accent)" />
+            <circle class="blink" cx="18.5" cy="14.5" r="1.3" fill="var(--accent)" />
+          </svg>
+          <span>{tr('site.name')}</span>
+        </a>
+        <nav aria-label={tr('nav.main')}>
+          <a href={routes.home(lang)} aria-current={path === routes.home(lang) ? 'page' : undefined}>{tr('nav.lessons')}</a>
+          <a href={routes.glossary(lang)} aria-current={path === routes.glossary(lang) ? 'page' : undefined}>{tr('nav.glossary')}</a>
+        </nav>
+        <div class="tools">
+          <div class="lang-switch" role="group" aria-label={tr('lang.switch')}>
+            {(Object.keys(languages) as Lang[]).map((l) => (
+              <a href={alternates[l]} hreflang={l} lang={l} aria-current={l === lang ? 'true' : undefined} title={languages[l]}>
+                {l.toUpperCase()}
+              </a>
+            ))}
+          </div>
+          <button class="icon-btn install-btn" type="button" hidden aria-label={tr('pwa.install')} title={tr('pwa.install')}>
+            <Icon name="download" />
+          </button>
+          <button class="icon-btn sound-toggle" type="button" aria-pressed="true" aria-label={tr('sound.toggle')} title={tr('sound.toggle')}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M4 9h4l5-4v14l-5-4H4z" />
+              <path class="waves" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12" />
+              <path class="mute" d="m17 9 5 6M22 9l-5 6" />
+            </svg>
+          </button>
+          <button class="icon-btn theme-toggle" type="button" aria-pressed="false" aria-label={tr('theme.dark')} title={tr('theme.toggle')}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+              <g class="sun">
+                <circle cx="12" cy="12" r="4" />
+                <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+              </g>
+              <path class="moon" d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      {readingProgress && <div class="read-progress" aria-hidden="true" />}
+    </header>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <p>{tr('home.agnostic')}</p>
+        <p set:html={tr('footer.credit')} />
+        <p>{tr('footer.local')}</p>
+      </div>
+    </footer>
+
+    <script>
+      import { read, write } from '../scripts/storage';
+      import { play, setSoundEnabled, soundEnabled } from '../scripts/sound';
+
+      const root = document.documentElement;
+      const themeBtn = document.querySelector<HTMLButtonElement>('.theme-toggle')!;
+      const syncTheme = () => themeBtn.setAttribute('aria-pressed', String(root.dataset.resolvedTheme === 'dark'));
+      syncTheme();
+      themeBtn.addEventListener('click', () => {
+        const next = root.dataset.resolvedTheme === 'dark' ? 'light' : 'dark';
+        const apply = () => {
+          root.dataset.theme = next;
+          root.dataset.resolvedTheme = next;
+          write('aic:theme', next);
+          syncTheme();
+        };
+        play('whoosh');
+        // Circular reveal from the button using the View Transitions API.
+        const vt = (document as any).startViewTransition;
+        if (!vt || matchMedia('(prefers-reduced-motion: reduce)').matches) return apply();
+        const r = themeBtn.getBoundingClientRect();
+        root.style.setProperty('--vt-x', `${r.left + r.width / 2}px`);
+        root.style.setProperty('--vt-y', `${r.top + r.height / 2}px`);
+        root.classList.add('theme-transition');
+        const transition = vt.call(document, apply);
+        transition.finished.finally(() => root.classList.remove('theme-transition'));
+      });
+
+      // Follow the OS while the user hasn't chosen.
+      matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        if (!read<string | null>('aic:theme', null)) root.dataset.resolvedTheme = e.matches ? 'dark' : 'light';
+        syncTheme();
+      });
+
+      // PWA: offline support, plus an install button where the browser offers installation (Chromium).
+      if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+        void navigator.serviceWorker.register(`${import.meta.env.BASE_URL.replace(/\/$/, '')}/sw.js`);
+      }
+      const installBtn = document.querySelector<HTMLButtonElement>('.install-btn')!;
+      let installPrompt: (Event & { prompt(): Promise<void> }) | null = null;
+      const hideInstall = () => {
+        installPrompt = null;
+        // Don't strand keyboard focus on a button that's disappearing.
+        if (document.activeElement === installBtn) soundBtn.focus();
+        installBtn.hidden = true;
+      };
+      addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        installPrompt = e as typeof installPrompt;
+        installBtn.hidden = false;
+      });
+      addEventListener('appinstalled', hideInstall);
+      installBtn.addEventListener('click', async () => {
+        if (!installPrompt) return;
+        await installPrompt.prompt();
+        hideInstall(); // the prompt can only be shown once
+      });
+
+      const soundBtn = document.querySelector<HTMLButtonElement>('.sound-toggle')!;
+      const syncSound = () => soundBtn.setAttribute('aria-pressed', String(soundEnabled()));
+      syncSound();
+      soundBtn.addEventListener('click', () => {
+        setSoundEnabled(!soundEnabled());
+        syncSound();
+        play('tap');
+      });
+    </script>
+
+    <style is:global>
+      .theme-transition::view-transition-old(root),
+      .theme-transition::view-transition-new(root) {
+        animation: none;
+        mix-blend-mode: normal;
+      }
+      .theme-transition::view-transition-new(root) {
+        animation: theme-reveal 650ms var(--ease-out);
+      }
+      @keyframes theme-reveal {
+        from { clip-path: circle(0 at var(--vt-x) var(--vt-y)); }
+        to { clip-path: circle(150vmax at var(--vt-x) var(--vt-y)); }
+      }
+      .brand .blink {
+        transform-box: fill-box;
+        transform-origin: center;
+        /* A single blink: anything looping past 5s would need a pause control (WCAG 2.2.2). */
+        animation: blink 5s 1;
+      }
+      @keyframes blink {
+        0%, 92%, 100% { transform: scaleY(1); }
+        95% { transform: scaleY(0.1); }
+      }
+    </style>
+  </body>
+</html>

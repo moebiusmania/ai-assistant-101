@@ -1,0 +1,232 @@
+---
+/**
+ * Sort cards into buckets. Click a card, then a bucket (works with keyboard and touch),
+ * or drag & drop with a mouse. Each card has a correct bucket and an explanation.
+ */
+import Widget from './Widget.astro';
+import Icon from '../Icon.astro';
+import { getLang, t } from '../../i18n/ui';
+
+type Bucket = { id: string; label: string; color?: string; desc?: string };
+type Item = { text: string; bucket: string; why: string };
+interface Props { buckets: Bucket[]; items: Item[]; title?: string; hint?: string; label?: string }
+
+const lang = getLang(Astro.currentLocale);
+const tr = t(lang);
+const { buckets, items, title, hint, label = lang === 'it' ? 'Gioco: smista le carte' : 'Game: sort the cards' } = Astro.props;
+const i18n = {
+  pick: lang === 'it' ? 'Scegli dove mettere:' : 'Choose where to put:',
+  all: lang === 'it' ? 'Hai smistato tutte le carte!' : 'You sorted all the cards!',
+  correct: tr('w.correct'),
+  wrong: tr('w.wrong'),
+  answer: lang === 'it' ? 'La risposta migliore è' : 'The best answer is',
+  placedOk: lang === 'it' ? 'giusto' : 'correct',
+  placedBad: lang === 'it' ? 'spostata qui, era altrove' : 'moved here, it belonged elsewhere',
+};
+const colors = ['var(--accent)', 'var(--teal-ink)', 'var(--amber-ink)', 'var(--coral-ink)'];
+---
+<sort-game data-i18n={JSON.stringify(i18n)}>
+  <Widget label={label} icon="layers" title={title} hint={hint}>
+    <div class="deck">
+      {items.map((it, i) => (
+        <button class="item" type="button" aria-pressed="false" draggable="true" data-bucket={it.bucket} data-why={it.why} style={`--d:${i * 40}ms`}>
+          {it.text}
+        </button>
+      ))}
+    </div>
+    <p class="prompt" aria-live="polite"></p>
+    <div class="buckets" style={`--n:${buckets.length}`}>
+      {buckets.map((b, i) => (
+        <button class="bucket" type="button" data-id={b.id} style={`--c:${b.color ?? colors[i % colors.length]}`}>
+          <span class="b-label">{b.label}</span>
+          {b.desc && <span class="b-desc">{b.desc}</span>}
+          <span class="b-items"></span>
+        </button>
+      ))}
+    </div>
+    <p class="feedback" aria-live="polite"></p>
+    <div class="widget-actions">
+      <span class="score muted"></span>
+      <button class="btn btn-sm btn-ghost reset" type="button"><Icon name="refresh" />{tr('w.reset')}</button>
+    </div>
+  </Widget>
+</sort-game>
+
+<script>
+  import { play } from '../../scripts/sound';
+  import { strings } from '../../scripts/ui';
+
+  class SortGame extends HTMLElement {
+    i18n = strings(this);
+    selected: HTMLButtonElement | null = null;
+    right = 0;
+    total = 0;
+
+    connectedCallback() {
+      const deck = this.querySelector<HTMLElement>('.deck')!;
+      this.total = deck.children.length;
+      this.querySelectorAll<HTMLButtonElement>('.item').forEach((item) => {
+        item.addEventListener('click', () => this.select(item));
+        item.addEventListener('dragstart', (e) => {
+          this.select(item);
+          e.dataTransfer?.setData('text/plain', 'card');
+        });
+      });
+      this.querySelectorAll<HTMLButtonElement>('.bucket').forEach((b) => {
+        b.addEventListener('click', () => this.place(b));
+        b.addEventListener('dragover', (e) => { e.preventDefault(); b.classList.add('over'); });
+        b.addEventListener('dragleave', () => b.classList.remove('over'));
+        b.addEventListener('drop', (e) => { e.preventDefault(); b.classList.remove('over'); this.place(b); });
+      });
+      this.querySelector('.reset')!.addEventListener('click', () => this.reset());
+      this.updateScore();
+    }
+
+    select(item: HTMLButtonElement) {
+      if (item.disabled) return;
+      this.querySelectorAll('.item.sel').forEach((el) => { el.classList.remove('sel'); el.setAttribute('aria-pressed', 'false'); });
+      this.selected = item;
+      item.classList.add('sel');
+      item.setAttribute('aria-pressed', 'true');
+      this.classList.add('choosing');
+      this.querySelector('.prompt')!.textContent = `${this.i18n.pick} “${item.textContent?.trim()}”`;
+      play('tap');
+    }
+
+    place(bucket: HTMLButtonElement) {
+      const item = this.selected;
+      if (!item) return;
+      const ok = item.dataset.bucket === bucket.dataset.id;
+      const fb = this.querySelector<HTMLElement>('.feedback')!;
+      const correct = this.querySelector<HTMLButtonElement>(`.bucket[data-id="${item.dataset.bucket}"]`)!;
+      const target = ok ? bucket : correct;
+      if (ok) this.right++;
+      fb.dataset.kind = ok ? 'ok' : 'bad';
+      fb.innerHTML = ok
+        ? `<strong>${this.i18n.correct}</strong> ${item.dataset.why}`
+        : `<strong>${this.i18n.wrong}</strong> ${this.i18n.answer} “${correct.querySelector('.b-label')!.textContent}”. ${item.dataset.why}`;
+      fb.style.animation = 'none';
+      void fb.offsetWidth;
+      fb.style.animation = '';
+      play(ok ? 'ok' : 'bad');
+      if (!ok) bucket.animate([{ transform: 'translateX(-5px)' }, { transform: 'translateX(5px)' }, { transform: 'none' }], { duration: 250, iterations: 2 });
+
+      // Animate the card flying into its bucket (FLIP).
+      const chip = document.createElement('span');
+      chip.className = `chip-done ${ok ? 'ok' : 'bad'}`;
+      chip.textContent = item.textContent!.trim();
+      const status = document.createElement('span');
+      status.className = 'visually-hidden';
+      status.textContent = ` (${ok ? this.i18n.placedOk : this.i18n.placedBad})`;
+      chip.append(status);
+      const from = item.getBoundingClientRect();
+      target.querySelector('.b-items')!.append(chip);
+      const to = chip.getBoundingClientRect();
+      chip.animate(
+        [{ transform: `translate(${from.left - to.left}px, ${from.top - to.top}px) scale(1.1)`, opacity: 0.6 }, { transform: 'none', opacity: 1 }],
+        { duration: 450, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
+      );
+      item.disabled = true;
+      item.classList.remove('sel');
+      item.setAttribute('aria-pressed', 'false');
+      item.classList.add('used');
+      this.selected = null;
+      this.classList.remove('choosing');
+      this.querySelector('.prompt')!.textContent = '';
+      this.updateScore();
+      if (!this.querySelector('.item:not(:disabled)')) {
+        this.querySelector('.prompt')!.textContent = this.i18n.all;
+        if (this.right === this.total) setTimeout(() => play('done'), 400);
+      }
+    }
+
+    updateScore() {
+      const done = this.querySelectorAll('.item:disabled').length;
+      this.querySelector('.score')!.textContent = `✓ ${this.right} · ${done}/${this.total}`;
+    }
+
+    reset() {
+      this.right = 0;
+      this.querySelectorAll<HTMLButtonElement>('.item').forEach((i) => { i.disabled = false; i.classList.remove('used', 'sel'); i.setAttribute('aria-pressed', 'false'); });
+      this.selected = null;
+      this.classList.remove('choosing');
+      this.querySelectorAll('.b-items').forEach((b) => (b.innerHTML = ''));
+      const fb = this.querySelector<HTMLElement>('.feedback')!;
+      fb.innerHTML = '';
+      this.querySelector('.prompt')!.textContent = '';
+      this.updateScore();
+      play('tap');
+    }
+  }
+  customElements.define('sort-game', SortGame);
+</script>
+
+<style>
+  sort-game { display: block; }
+  .deck {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-block-end: var(--space-3);
+  }
+  .item {
+    padding: 0.6em 1em;
+    border-radius: var(--radius);
+    border: 1px solid var(--border-strong);
+    background: var(--bg-elev);
+    font-size: var(--step--1);
+    font-weight: 500;
+    text-align: start;
+    box-shadow: var(--shadow-sm);
+    animation: fade-up 400ms var(--ease-out) both;
+    animation-delay: var(--d);
+    transition: transform 200ms var(--ease-spring), border-color 150ms, background-color 150ms, opacity 200ms;
+    &:hover:not(:disabled) { transform: translateY(-2px) rotate(-0.5deg); border-color: var(--accent); }
+    &.sel { border-color: var(--accent); background: var(--accent-soft); transform: translateY(-3px) scale(1.03); box-shadow: 0 0 0 3px color-mix(in oklch, var(--accent) 30%, transparent); }
+    &.used { display: none; }
+    &:active { cursor: grabbing; }
+  }
+  .prompt { font-size: var(--step--1); font-weight: 600; color: var(--accent); min-height: 1.5em; margin-block-end: var(--space-2); }
+  .buckets {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+    gap: var(--space-3);
+    margin-block-end: var(--space-4);
+  }
+  .bucket {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-2);
+    text-align: start;
+    min-height: 8rem;
+    padding: var(--space-4);
+    border-radius: var(--radius);
+    border: 2px dashed color-mix(in oklch, var(--c) 45%, transparent);
+    background: color-mix(in oklch, var(--c) 7%, var(--bg-elev));
+    transition: transform 200ms var(--ease-spring), background-color 200ms, border-color 200ms;
+    cursor: default;
+    &.over { transform: scale(1.02); border-style: solid; background: color-mix(in oklch, var(--c) 16%, var(--bg-elev)); }
+  }
+  sort-game.choosing .bucket {
+    cursor: pointer;
+    border-color: var(--c);
+    &:hover { transform: translateY(-2px); background: color-mix(in oklch, var(--c) 14%, var(--bg-elev)); }
+  }
+  .b-label { font-weight: 700; color: var(--c); font-family: var(--font-display); font-size: var(--step-0); }
+  .b-desc { font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; }
+  .b-items { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+  .b-items :global(.chip-done) {
+    font-size: 0.78rem;
+    padding: 0.25em 0.6em;
+    border-radius: 0.5rem;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    line-height: 1.3;
+  }
+  .b-items :global(.chip-done.ok) { border-color: color-mix(in oklch, var(--ok) 50%, transparent); }
+  .b-items :global(.chip-done.ok)::before { content: '✓ '; content: '✓ ' / ''; color: var(--ok); }
+  .b-items :global(.chip-done.bad) { border-color: color-mix(in oklch, var(--bad) 50%, transparent); }
+  .b-items :global(.chip-done.bad)::before { content: '↻ '; content: '↻ ' / ''; color: var(--bad); }
+  .score { font-size: var(--step--1); margin-inline-end: auto; font-variant-numeric: tabular-nums; }
+</style>

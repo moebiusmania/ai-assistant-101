@@ -1,0 +1,100 @@
+---
+title: "Diligence: privacy, honesty and responsibility"
+description: What never to type into an AI assistant, when to say you used it, and why the last word is always yours.
+order: 6
+minutes: 9
+icon: shield
+tag: 4th D · Diligence
+---
+
+The last D may be the most important: **you are responsible** for how you use AI and for what comes out of it. The framework splits it into three moments.
+
+## 1. When you choose (what to use and what to share)
+
+### Protect your data
+
+When you type in a chat, the text is sent to the servers of the company offering the service. Depending on the settings, conversations may be **stored**, **read by reviewers** or **used to improve the model**.
+
+<Callout type="warn" title="Never type into a chat">
+  <p>Passwords and access codes · full credit card numbers and bank account details · PINs and one-time codes · ID documents · your or other people’s health data without thinking · confidential work information.</p>
+</Callout>
+
+The good news: you can almost always **get the same help without personal data**. Just replace it with placeholders like [NAME] or [ADDRESS].
+
+<Redact
+  title="Make the text anonymous"
+  hint="You want the AI to help you answer this email. Click the personal information to hide it, then press “Check”."
+  text={'Dear [[Dr Reynolds|NAME]],\nI’m writing on behalf of my mother, [[Mary Thompson|NAME]], born on [[12/03/1951|DATE]], patient ID [[NHS 485 777 3456|ID]].\nAfter her visit on ((Tuesday)) she was prescribed a new treatment for [[high blood pressure|HEALTH]], but she has had ((headaches)) and we’d like to know whether to continue.\nCould you call us back on [[07700 900123|PHONE]]? We live at [[14 Rose Street, Leeds|ADDRESS]].\nThanks, ((Luke))'}
+/>
+
+<Callout type="tip" title="Check your settings">
+  <p>Almost every assistant has an option to <strong>not use your chats for training</strong> and a temporary-chat mode. Look under “Settings” → “Privacy” or “Data”. If you use AI for work, ask which tools your company has approved.</p>
+</Callout>
+
+<SortGame
+  title="Would you type it in a chat?"
+  hint="For each item decide: fine, better anonymised, or never."
+  buckets={[
+    { id: 'ok', label: '✅ Fine', desc: 'No risk' },
+    { id: 'anon', label: '✏️ Anonymise', desc: 'Useful, but remove names and data' },
+    { id: 'never', label: '⛔ Never', desc: 'Not needed and can do harm' },
+  ]}
+  items={[
+    { text: 'Your email password', bucket: 'never', why: 'No assistant needs it. Ever.' },
+    { text: 'A family recipe to adapt', bucket: 'ok', why: 'No personal data: go ahead.' },
+    { text: 'Your father’s blood test results, with his full name', bucket: 'anon', why: 'You can ask what the values mean, but remove names and identifying data. Then talk to the doctor.' },
+    { text: 'The one-time code you got by text', bucket: 'never', why: 'One-time codes are for you only: whoever asks for them is almost always a scammer.' },
+    { text: 'An argument with a colleague, to ask for advice', bucket: 'anon', why: 'Asking for advice is fine, but without names and recognisable details.' },
+    { text: 'Your full credit card number', bucket: 'never', why: 'Never, for any reason.' },
+    { text: 'The text of an ad to sell your bike', bucket: 'ok', why: 'It’s meant to be public: no problem.' },
+  ]}
+/>
+
+## 2. When you share (transparency)
+
+If you used AI in a significant way for a piece of work, **say so** when it matters: at school, university, in an article, in a work document. Nothing to be ashamed of: it’s a tool, like a calculator or spell-checker.
+
+- At school and work, **check the rules**: some allow AI, some don’t, some only in certain ways.
+- A simple formula: *“I used an AI assistant for the first draft and proofreading; the content and fact-checking are mine.”*
+- **Don’t pass off as your own** a creative text written entirely by AI, if the person receiving it expects you wrote it.
+
+## 3. When you publish or hand in (responsibility)
+
+Before sending, signing or publishing something made with AI:
+
+- **Read all of it.** Not just the beginning.
+- **Check** facts, numbers and names (Discernment lesson).
+- Ask yourself: *“Would I be comfortable defending every sentence of this text?”*
+
+<Callout type="key" title="The golden rule">
+  <p>AI is a collaborator, not a scapegoat. <strong>If you sign it, it’s yours</strong>: mistakes included.</p>
+</Callout>
+
+## Other risks to know about
+
+- **AI scams**: cloned voices, fake photos, flawless emails. If a “relative” calls asking for urgent money, hang up and call back on the number you know.
+- **Fake images and videos** (deepfakes): before sharing something shocking, look for confirmation from reliable sources.
+- **Your relationship with AI**: it’s a great tool for venting or reflecting, but it doesn’t replace friends, family or a mental health professional.
+
+<Quiz
+  questions={[
+    {
+      q: 'You want help writing a complaint to your bank. What do you paste into the chat?',
+      options: ['Everything, account number included', 'The situation, with [NAME] and [ACCOUNT] instead of the real data', 'Your PIN, so the AI can check the issue'],
+      answer: 1,
+      why: 'The AI doesn’t need real data to write a good complaint: you add it at the end.',
+    },
+    {
+      q: 'You used AI to draft a work report. What do you do before handing it in?',
+      options: ['Hand it in as is: AI doesn’t make mistakes', 'Read it all, check the data and, if required, say you used AI', 'Change a couple of words so it looks like mine'],
+      answer: 1,
+      why: 'Rereading, checking and being transparent: the three sides of Diligence.',
+    },
+    {
+      q: 'You get a voice message from your son asking for money urgently, from an unknown number. What do you do?',
+      options: ['Send the money right away', 'Call my son back on his usual number to check', 'Reply asking for the bank details'],
+      answer: 1,
+      why: 'Voices can be cloned with AI. Always verify through a channel you know.',
+    },
+  ]}
+/>

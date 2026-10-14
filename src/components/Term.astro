@@ -1,0 +1,65 @@
+---
+/** Inline glossary term with a popover definition (Popover API + anchor positioning). */
+import { glossary } from '../i18n/glossary';
+import { getLang } from '../i18n/ui';
+
+interface Props { id: string }
+const { id } = Astro.props;
+const lang = getLang(Astro.currentLocale);
+const entry = glossary[id]?.[lang];
+const pid = `term-${id}-${Math.random().toString(36).slice(2, 7)}`;
+---
+{entry ? (
+  <>
+    <button type="button" class="term" popovertarget={pid} style={`anchor-name: --${pid}`}><slot /></button>
+    <span id={pid} popover class="term-pop" role="tooltip" style={`position-anchor: --${pid}`}>
+      <strong>{entry.term}</strong>
+      {entry.def}
+    </span>
+  </>
+) : <slot />}
+
+<style>
+  .term {
+    all: unset;
+    cursor: help;
+    color: inherit;
+    font-weight: 600;
+    text-decoration: underline dotted var(--accent) 2px;
+    text-underline-offset: 0.25em;
+    &:hover { color: var(--accent); }
+    &:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+  }
+  .term-pop {
+    margin: 0;
+    inset: auto;
+    position-area: top;
+    position-try-fallbacks: flip-block;
+    margin-block: 0.5rem;
+    width: min(22rem, calc(100vw - 2rem));
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--bg-elev);
+    color: var(--text);
+    box-shadow: var(--shadow-lg);
+    font-size: var(--step--1);
+    line-height: 1.5;
+    font-weight: 400;
+    font-style: normal;
+    text-align: start;
+    opacity: 0;
+    transform: translateY(6px) scale(0.97);
+    transition: opacity 200ms, transform 300ms var(--ease-out), overlay 200ms allow-discrete, display 200ms allow-discrete;
+    & strong { display: block; color: var(--accent); margin-block-end: 0.2em; }
+    &:popover-open {
+      opacity: 1;
+      transform: none;
+      @starting-style { opacity: 0; transform: translateY(6px) scale(0.97); }
+    }
+  }
+  /* Without anchor positioning, show the popover centred near the bottom. */
+  @supports not (position-area: top) {
+    .term-pop { inset: auto 1rem 1rem; margin-inline: auto; }
+  }
+</style>

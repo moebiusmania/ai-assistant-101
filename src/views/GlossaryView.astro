@@ -1,0 +1,77 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import { glossaryFor } from '../i18n/glossary';
+import { getLang, routes, t } from '../i18n/ui';
+
+const lang = getLang(Astro.currentLocale);
+const tr = t(lang);
+const terms = glossaryFor(lang);
+---
+<Base title={tr('glossary.title')} description={tr('glossary.lead')} alternates={{ it: routes.glossary('it'), en: routes.glossary('en') }}>
+  <div class="narrow page">
+    <h1>{tr('glossary.title')}</h1>
+    <p class="lead">{tr('glossary.lead')}</p>
+    <label class="search">
+      <Icon name="search" />
+      <span class="visually-hidden">{tr('glossary.search')}</span>
+      <input type="search" placeholder={tr('glossary.search')} />
+    </label>
+    <dl class="terms">
+      {terms.map((x, i) => (
+        <div class="term card" id={x.id} style={`--d:${i * 40}ms`}>
+          <dt>{x.term}</dt>
+          <dd>{x.def}</dd>
+        </div>
+      ))}
+    </dl>
+    <p class="none muted" role="status" data-text={tr('glossary.none')}></p>
+  </div>
+</Base>
+
+<script>
+  const input = document.querySelector<HTMLInputElement>('.search input')!;
+  const items = [...document.querySelectorAll<HTMLElement>('.term')];
+  // A live status region: it stays in the DOM and only its text changes, so the message is announced.
+  const none = document.querySelector<HTMLElement>('.none')!;
+  const norm = (s: string) => s.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '');
+  input.addEventListener('input', () => {
+    const q = norm(input.value.trim());
+    let shown = 0;
+    items.forEach((el) => {
+      const hit = !q || norm(el.textContent ?? '').includes(q);
+      el.hidden = !hit;
+      if (hit) shown++;
+    });
+    none.textContent = shown > 0 ? '' : none.dataset.text!;
+  });
+</script>
+
+<style>
+  .page { padding-block: var(--space-7); display: grid; gap: var(--space-4); }
+  .lead { font-size: var(--step-1); color: var(--text-muted); }
+  .search {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding-inline: var(--space-4);
+    border: 1px solid var(--border-control);
+    border-radius: var(--radius-pill);
+    background: var(--bg-elev);
+    position: sticky;
+    top: 4.75rem;
+    z-index: 2;
+    &:focus-within { border-color: var(--accent); outline: 3px solid var(--accent); outline-offset: 2px; }
+    & :global(svg) { width: 1.2rem; color: var(--text-muted); flex: none; }
+    & input { flex: 1; border: 0; background: none; min-height: 3rem; outline: none; }
+  }
+  .terms { display: grid; gap: var(--space-3); margin-block-start: var(--space-3); }
+  .term {
+    padding: var(--space-4) var(--space-5);
+    animation: fade-up 400ms var(--ease-out) both;
+    animation-delay: var(--d);
+    &:target { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+    & dt { font-family: var(--font-display); font-weight: 700; font-size: var(--step-1); color: var(--accent); }
+    & dd { margin-block-start: var(--space-1); color: var(--text); }
+  }
+</style>

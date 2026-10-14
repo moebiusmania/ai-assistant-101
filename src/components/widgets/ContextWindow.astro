@@ -1,0 +1,123 @@
+---
+/** Visualizes the context window: as the chat grows, the oldest messages fall out of memory. */
+import Widget from './Widget.astro';
+import Icon from '../Icon.astro';
+import { getLang, t } from '../../i18n/ui';
+
+interface Props { messages: string[]; capacity?: number; title?: string; hint?: string }
+const lang = getLang(Astro.currentLocale);
+const tr = t(lang);
+const { messages, capacity = 6, title, hint } = Astro.props;
+---
+<context-window data-messages={JSON.stringify(messages)} data-capacity={capacity}>
+  <Widget label={lang === 'it' ? 'Simulazione' : 'Simulation'} icon="layers" title={title} hint={hint}>
+    <div class="stage">
+      <div class="forgotten" role="group" aria-label={tr('w.forgotten')}>
+        <span class="cap" aria-hidden="true">{tr('w.forgotten')}</span>
+        <div class="f-list" aria-live="polite" aria-relevant="additions"></div>
+      </div>
+      <div class="memory" role="group" aria-label={tr('w.memory')}>
+        <span class="cap" aria-live="polite">{tr('w.memory')} <b class="fill-n">0/{capacity}</b></span>
+        <div class="m-list" style={`--cap:${capacity}`}></div>
+        <div class="gauge" aria-hidden="true"><span></span></div>
+      </div>
+    </div>
+    <div class="widget-actions">
+      <button class="btn btn-primary add" type="button"><Icon name="chat" />{tr('w.addmsg')}</button>
+      <button class="btn btn-ghost reset" type="button"><Icon name="refresh" />{tr('w.reset')}</button>
+    </div>
+  </Widget>
+</context-window>
+
+<script>
+  import { play } from '../../scripts/sound';
+
+  class ContextWindow extends HTMLElement {
+    n = 0;
+    connectedCallback() {
+      const msgs = JSON.parse(this.dataset.messages ?? '[]') as string[];
+      const cap = Number(this.dataset.capacity);
+      const mem = this.querySelector<HTMLElement>('.m-list')!;
+      const forgot = this.querySelector<HTMLElement>('.f-list')!;
+      const update = () => {
+        const used = mem.querySelectorAll('.m:not(.leaving)').length;
+        this.querySelector('.fill-n')!.textContent = `${used}/${cap}`;
+        this.style.setProperty('--used', String(used / cap));
+      };
+      this.querySelector('.add')!.addEventListener('click', () => {
+        const el = document.createElement('div');
+        el.className = `m ${this.n % 2 ? 'ai' : 'user'}`;
+        el.textContent = msgs[this.n % msgs.length];
+        this.n++;
+        mem.append(el);
+        play('pop');
+        if (mem.querySelectorAll('.m:not(.leaving)').length > cap) {
+          const old = mem.querySelector<HTMLElement>('.m:not(.leaving)')!;
+          old.classList.add('leaving');
+          play('whoosh');
+          old.addEventListener('animationend', () => {
+            old.classList.remove('leaving');
+            forgot.prepend(old);
+            while (forgot.children.length > 3) forgot.lastElementChild!.remove();
+            update();
+          }, { once: true });
+        }
+        update();
+      });
+      this.querySelector('.reset')!.addEventListener('click', () => {
+        mem.innerHTML = '';
+        forgot.innerHTML = '';
+        this.n = 0;
+        update();
+        play('tap');
+      });
+      update();
+    }
+  }
+  customElements.define('context-window', ContextWindow);
+</script>
+
+<style>
+  context-window { display: block; --used: 0; }
+  .stage { display: grid; gap: var(--space-4); }
+  @container (width > 34rem) {
+    .stage { grid-template-columns: 1fr 2fr; }
+  }
+  .cap { display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; color: var(--text-muted); margin-block-end: var(--space-2); & b { color: var(--accent); } }
+  .memory, .forgotten {
+    padding: var(--space-3);
+    border-radius: var(--radius);
+  }
+  .memory { background: var(--bg-sunk); border: 2px solid color-mix(in oklch, var(--accent) calc(20% + var(--used) * 60%), transparent); transition: border-color 300ms; }
+  .forgotten { border: 2px dashed var(--border); }
+  .m-list, .f-list { display: grid; gap: 6px; align-content: start; min-height: 3rem; }
+  .gauge {
+    margin-block-start: var(--space-3);
+    height: 6px;
+    border-radius: 99px;
+    background: var(--border);
+    overflow: hidden;
+    & span {
+      display: block;
+      height: 100%;
+      width: calc(var(--used) * 100%);
+      background: linear-gradient(90deg, var(--teal), var(--amber), var(--coral));
+      transition: width 400ms var(--ease-spring);
+    }
+  }
+  .m-list :global(.m), .f-list :global(.m) {
+    padding: 0.4em 0.75em;
+    border-radius: 0.7rem;
+    font-size: 0.82rem;
+    line-height: 1.35;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    animation: pop-in 350ms var(--ease-spring);
+  }
+  .m-list :global(.m.user) { background: var(--accent); color: var(--on-accent); border-color: transparent; margin-inline-start: 15%; }
+  .m-list :global(.m.leaving) { animation: leave 450ms var(--ease-out) forwards; }
+  .f-list :global(.m) { text-decoration: line-through; background: transparent; color: var(--text-muted); margin: 0; }
+  @keyframes leave {
+    to { opacity: 0; transform: translateX(-30%) scale(0.9); filter: blur(4px); }
+  }
+</style>

@@ -1,0 +1,161 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import LessonComplete from '../components/widgets/LessonComplete.astro';
+import { lessonComponents } from '../components/widgets';
+import { getLang, routes, splitId, t } from '../i18n/ui';
+
+interface Props { entry: CollectionEntry<'lessons'> }
+const { entry } = Astro.props;
+const lang = getLang(Astro.currentLocale);
+const tr = t(lang);
+const { slug } = splitId(entry.id);
+const { Content, headings } = await render(entry);
+
+const all = (await getCollection('lessons', (e) => splitId(e.id).lang === lang)).sort((a, b) => a.data.order - b.data.order);
+const idx = all.findIndex((e) => e.id === entry.id);
+const prev = all[idx - 1];
+const next = all[idx + 1];
+const toc = headings.filter((h) => h.depth === 2);
+---
+<Base
+  title={entry.data.title}
+  description={entry.data.description}
+  alternates={{ it: routes.lesson('it', slug), en: routes.lesson('en', slug) }}
+  readingProgress
+>
+  <article class="lesson">
+    <header class="lesson-hero">
+      <div class="narrow">
+        <a class="back" href={`${routes.home(lang)}#lessons`}><Icon name="arrowLeft" size={16} />{tr('lesson.back')}</a>
+        <p class="meta">
+          <span class="chip"><Icon name={entry.data.icon} size={16} />{tr('lesson.label')} {idx + 1}/{all.length}</span>
+          {entry.data.tag && <span class="chip tag">{entry.data.tag}</span>}
+          <span class="muted"><Icon name="clock" size={14} /> {entry.data.minutes} {tr('lesson.minutes')}</span>
+        </p>
+        <h1>{entry.data.title}</h1>
+        <p class="lead">{entry.data.description}</p>
+      </div>
+    </header>
+
+    <div class="lesson-body">
+      {toc.length > 2 && (
+        <nav class="toc" aria-label={lang === 'it' ? 'In questa lezione' : 'In this lesson'}>
+          <p>{lang === 'it' ? 'In questa lezione' : 'In this lesson'}</p>
+          <ol>{toc.map((h) => <li><a href={`#${h.slug}`}>{h.text}</a></li>)}</ol>
+        </nav>
+      )}
+      <div class="narrow prose">
+        <Content components={lessonComponents} />
+      </div>
+    </div>
+
+    <footer class="narrow lesson-end">
+      <LessonComplete slug={slug} />
+      <nav class="pager" aria-label={tr('nav.pager')}>
+        {prev ? (
+          <a class="card" href={routes.lesson(lang, splitId(prev.id).slug)} rel="prev">
+            <span class="dir"><Icon name="arrowLeft" size={16} />{tr('lesson.prev')}</span>
+            <span class="ttl">{prev.data.title}</span>
+          </a>
+        ) : <span />}
+        {next && (
+          <a class="card next" href={routes.lesson(lang, splitId(next.id).slug)} rel="next">
+            <span class="dir">{tr('lesson.next')}<Icon name="arrowRight" size={16} /></span>
+            <span class="ttl">{next.data.title}</span>
+          </a>
+        )}
+      </nav>
+    </footer>
+  </article>
+</Base>
+
+<script>
+  // Highlight the current section in the table of contents.
+  const links = new Map([...document.querySelectorAll<HTMLAnchorElement>('.toc a')].map((a) => [a.hash.slice(1), a]));
+  if (links.size) {
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) {
+          links.forEach((a) => a.removeAttribute('aria-current'));
+          links.get(e.target.id)?.setAttribute('aria-current', 'true');
+        }
+      }
+    }, { rootMargin: '-20% 0px -70% 0px' });
+    links.forEach((_, id) => { const h = document.getElementById(id); if (h) io.observe(h); });
+  }
+</script>
+
+<style>
+  .lesson-hero {
+    padding-block: var(--space-7) var(--space-5);
+    background: radial-gradient(ellipse 80% 100% at 50% 0%, var(--accent-soft), transparent 70%);
+    & .narrow { display: grid; gap: var(--space-4); animation: fade-up 600ms var(--ease-out) both; }
+    & h1 { font-size: var(--step-4); view-transition-name: lesson-title; }
+  }
+  .back {
+    display: inline-flex; align-items: center; gap: 0.35em;
+    font-size: var(--step--1); font-weight: 600; text-decoration: none;
+    width: fit-content;
+    & :global(svg) { transition: translate 200ms var(--ease-out); }
+    &:hover :global(svg) { translate: -4px 0; }
+  }
+  .meta { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; font-size: var(--step--1); }
+  .meta .muted { display: inline-flex; gap: 0.3em; align-items: center; }
+  .tag { background: var(--bg-elev); border: 1px solid var(--border); color: var(--text); }
+  .lead { font-size: var(--step-1); color: var(--text-muted); }
+
+  .lesson-body { position: relative; }
+  .toc {
+    display: none;
+    font-size: var(--step--1);
+    & p { font-weight: 700; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-block-end: var(--space-2); }
+    & ol { list-style: none; padding: 0; display: grid; gap: 2px; border-inline-start: 2px solid var(--border); }
+    & a {
+      display: block;
+      padding: 0.3em 0.9em;
+      margin-inline-start: -2px;
+      border-inline-start: 2px solid transparent;
+      color: var(--text-muted);
+      text-decoration: none;
+      line-height: 1.35;
+      transition: color 200ms, border-color 200ms;
+      &:hover { color: var(--text); }
+      &[aria-current] { color: var(--accent); border-color: var(--accent); font-weight: 600; }
+    }
+  }
+  @media (width > 82rem) {
+    .toc {
+      display: block;
+      position: absolute;
+      inset-block: 0;
+      inset-inline-start: max(1rem, calc(50% - var(--content-w) / 2 - 17rem));
+      width: 14rem;
+      & ol { position: sticky; top: 6rem; }
+      & p { position: sticky; top: 4.75rem; }
+    }
+  }
+
+  .lesson-end { margin-block-start: var(--space-8); display: grid; gap: var(--space-6); }
+  .pager {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
+    & a {
+      display: grid;
+      gap: var(--space-1);
+      padding: var(--space-4) var(--space-5);
+      text-decoration: none;
+      color: var(--text);
+      transition: border-color 200ms, transform 300ms var(--ease-out);
+      &:hover { border-color: var(--accent); transform: translateY(-2px); }
+    }
+    & .next { text-align: end; grid-column: 2; & .dir { justify-content: end; } }
+    & .dir { display: flex; align-items: center; gap: 0.35em; font-size: 0.8rem; color: var(--accent); font-weight: 650; }
+    & .ttl { font-family: var(--font-display); font-weight: 650; }
+  }
+  @media (width < 36rem) {
+    .pager { grid-template-columns: 1fr; & .next { grid-column: 1; } }
+  }
+</style>

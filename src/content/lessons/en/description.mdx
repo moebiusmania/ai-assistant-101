@@ -1,0 +1,125 @@
+---
+title: "Description: getting your point across"
+description: The best answers come from the clearest requests. Here are the “ingredients” of a good prompt.
+order: 4
+minutes: 10
+icon: pen
+tag: 2nd D · Description
+---
+
+What you write to the assistant is called a <Term id="prompt">prompt</Term>. You don’t need a magic formula: you need to **explain yourself as you would to a capable person who doesn’t know you**.
+
+## You’ll see the difference right away
+
+<PromptCompare
+  title="Same request, two ways of asking"
+  hint="Switch between the two versions with the toggle."
+  before={{
+    prompt: 'Write an email to my boss.',
+    answer: 'Subject: Update\n\nDear [Name],\n\nI am writing to update you on ongoing projects. Please let me know if you have any questions.\n\nKind regards',
+    verdict: 'Generic answer: the AI doesn’t know why you’re writing, to whom, or in what tone. It had to guess.',
+  }}
+  after={{
+    prompt: 'Write a short email to my boss, Mark, asking to work from home on Friday because a technician is coming to fix the boiler. We’re on informal, first-name terms. 5 lines max.',
+    answer: 'Subject: Working from home Friday?\n\nHi Mark,\na technician is coming to fix my boiler on Friday: would it be OK if I worked from home? I’ll be reachable on chat and phone as usual.\n\nThanks a lot,\nJulia',
+    verdict: 'Ready-to-use answer: the AI knew who, what, why, what tone and how long.',
+  }}
+/>
+
+## The ingredients of a good request
+
+You don’t need all of them every time. But the more important the task, the more ingredients are worth adding.
+
+<PromptBuilder
+  title="Build your request"
+  hint="Turn the ingredients on one at a time and watch the answer change."
+  base="Give me ideas for a dinner."
+  ingredients={[
+    { label: 'Context', tip: 'Who you are, the situation', text: 'I have 6 friends over on Saturday, two are vegetarian.' },
+    { label: 'Goal', tip: 'What you really want', text: 'I want a full menu I can prepare in advance, so I can enjoy the evening.' },
+    { label: 'Constraints', tip: 'Time, budget, rules', text: 'Budget is 60 € max, no oven because it’s broken.' },
+    { label: 'Format', tip: 'How you want the answer', text: 'Give me the menu as a list, then a shopping list grouped by aisle.' },
+    { label: 'Role/tone', tip: 'How it should “behave”', text: 'Answer like a practical, friendly cook.' },
+    { label: 'Questions', tip: 'Invite it to ask', text: 'If you’re missing any information, ask me before answering.' },
+  ]}
+  answers={[
+    'Here are some ideas:\n- Lasagna\n- Roast chicken\n- Mushroom risotto\n- Tiramisu',
+    'Here’s a vegetarian menu for 6 you can make ahead:\n- Starter: mixed bruschetta\n- First course: cold pasta with grilled vegetables\n- Main: aubergine parmigiana (oven at 180°)\n- Dessert: tiramisu',
+    'What a lovely evening! One question first: any allergies? Meanwhile, here’s a proposal **with no oven and under 60 €**:\n1. Starter: hummus with raw veggies and breadsticks\n2. First course: cold pasta with cherry tomatoes, olives and basil\n3. Main: courgette frittata (made in a pan, great cold too)\n4. Dessert: tiramisu (make it the night before!)\n\n**Shopping list** — Produce: courgettes, cherry tomatoes, basil… Fridge: eggs, mascarpone… Pantry: pasta, chickpeas, ladyfingers…',
+  ]}
+/>
+
+<Callout type="key" title="The three things to describe">
+  <p>The 4D framework splits Description into three parts:</p>
+  <p><strong>Product</strong> — what you want: format, length, tone, audience.<br />
+  <strong>Process</strong> — how it should work on it: “ask me questions first”, “think step by step”, “give me 3 alternatives”.<br />
+  <strong>Performance</strong> — what kind of partner you want: “be critical and direct”, “explain it as to a beginner”.</p>
+</Callout>
+
+## 5 habits that make the difference
+
+### 1. Give examples
+
+If you have an example of what you like, show it. *“Write a caption for this photo in the same style as these two I’ve already posted: [example 1], [example 2].”*
+
+### 2. Ask it to ask you questions
+
+One of the most useful requests of all: **“Before answering, ask me the questions you need.”** The AI will help you clarify things you hadn’t thought of.
+
+### 3. Break big tasks down
+
+Instead of “organise my house move”, go in stages: first the to-do list, then the schedule, then the messages to send.
+
+### 4. Don’t settle for the first answer
+
+A chat is a conversation: you can always say *“shorter”*, *“less formal”*, *“point 3 doesn’t convince me, suggest something else”*. No need to start over.
+
+<ChatSim
+  label="Improving step by step"
+  messages={[
+    { from: 'user', text: 'Write a birthday message for my sister Anna.' },
+    { from: 'ai', text: 'Happy birthday Anna! May this new year bring you joy, peace and many dreams come true. Happy birthday! 🎂' },
+    { from: 'user', text: 'Nice but too formal. We tease each other a lot, and she’s turning 40 but always says she’s 29.' },
+    { from: 'ai', text: 'Happy 29th birthday Anna (for the eleventh year running)! 🎉 The secret of your eternal youth is safe with me… at least as long as you’re buying the cake. Love you!' },
+  ]}
+/>
+
+### 5. Write the way you talk
+
+You don’t need “computer language”. Normal, complete sentences work great. Voice works too: many assistants let you dictate.
+
+## A formula to remember
+
+If you want a simple reminder, think of these four questions:
+
+> **Who I am · What I want · How I want it · What to avoid**
+
+<CopyPrompt
+  title="All-purpose template"
+  icon="pen"
+  when="Copy it and replace the parts in square brackets."
+  prompt={'I am [who you are / your situation].\nI’d like [what you need] because [goal].\nThe answer should be [format, length, tone].\nAvoid [what you don’t want].\nIf you’re missing any information, ask me questions before answering.'}
+/>
+
+<Quiz
+  questions={[
+    {
+      q: 'Which request will probably give the best result?',
+      options: ['“Recipe.”', '“A quick recipe for 2 people with courgettes and eggs, no oven.”', '“Give me the best recipe in the world!!!”'],
+      answer: 1,
+      why: 'It includes context (2 people), ingredients and constraints (quick, no oven).',
+    },
+    {
+      q: 'You don’t like the first answer. What should you do?',
+      options: ['Close the chat: AI doesn’t work', 'Say what’s wrong and ask it to improve', 'Retype exactly the same question'],
+      answer: 1,
+      why: 'That’s what the conversation is for: give precise feedback and the AI adjusts.',
+    },
+    {
+      q: 'What’s the point of saying “before answering, ask me questions”?',
+      options: ['To waste time', 'To surface information you hadn’t given', 'Nothing, AI can’t ask questions'],
+      answer: 1,
+      why: 'The AI helps you clarify context and goals, and the final answer will fit you much better.',
+    },
+  ]}
+/>

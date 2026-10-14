@@ -1,0 +1,115 @@
+---
+title: "Discernimento: fidarsi, ma con giudizio"
+description: Impara a riconoscere quando una risposta è buona, quando va verificata e quando è da buttare.
+order: 5
+minutes: 10
+icon: eye
+tag: 3ª D · Discernimento
+---
+
+L’AI scrive bene. **Troppo bene**: anche quando sbaglia, il testo è ordinato, sicuro, convincente. Il discernimento è la capacità di non farsi incantare dalla forma e di guardare la sostanza.
+
+## Tre cose da valutare
+
+Il framework 4D suggerisce di guardare la risposta da tre punti di vista:
+
+1. **Il risultato** — è corretto? Completo? Adatto al mio scopo e al mio pubblico?
+2. **Il ragionamento** — i passaggi hanno senso? Ci sono salti logici o conclusioni affrettate?
+3. **Il comportamento** — ha seguito le mie istruzioni? Mi sta solo dando ragione?
+
+<Callout type="warn" title="Attenzione all’AI “che ti dà ragione”">
+  <p>Gli assistenti tendono a essere accomodanti. Se chiedi “la mia idea è geniale, vero?”, è facile che rispondano di sì. Per un parere sincero, chiedi esplicitamente: <em>“Dimmi i 3 punti deboli di questa idea.”</em></p>
+</Callout>
+
+## I campanelli d’allarme
+
+Ecco i segnali che devono farti alzare le antenne:
+
+- **Numeri, date e percentuali molto precisi** senza una fonte.
+- **Citazioni** tra virgolette attribuite a persone famose.
+- **Titoli di libri, studi, leggi** o sentenze specifiche.
+- **Link** e indirizzi web (spesso inventati o non funzionanti).
+- **Promesse assolute**: “sempre”, “mai”, “garantito”, “senza rischi”.
+- Notizie **recenti**, se l’assistente non ha cercato sul web.
+
+<SpotError
+  title="Trova i punti da verificare"
+  hint="Leggi la risposta dell’AI e clicca le frasi che controlleresti prima di fidarti. Poi premi “Controlla”."
+  question="Mi dai qualche consiglio per dormire meglio?"
+  sentences={[
+    { text: 'Ecco alcuni consigli utili per migliorare il sonno.' },
+    { text: 'Cerca di andare a letto e svegliarti più o meno alla stessa ora, anche nel weekend.' },
+    { text: 'Uno studio dell’Università di Harvard del 2019 ha dimostrato che il 94% delle persone dorme meglio bevendo latte caldo.', bad: true, why: 'Studio, anno e percentuale precisissimi senza fonte: tipico segnale di allucinazione. Va verificato (e probabilmente è inventato).' },
+    { text: 'Evita schermi luminosi nell’ora prima di dormire.' },
+    { text: 'La melatonina è un integratore naturale e quindi non ha alcun effetto collaterale: puoi prenderne quanta ne vuoi.', bad: true, why: '“Naturale” non vuol dire “senza rischi”, e “quanta ne vuoi” è un consiglio pericoloso. Su salute e dosi, chiedi al medico o al farmacista.' },
+    { text: 'Tieni la camera fresca, buia e silenziosa.' },
+    { text: 'Per approfondire, leggi la guida ufficiale su www.dormibene-ministero.it/guida.', bad: true, why: 'I link possono essere inventati. Cerca tu il sito ufficiale invece di fidarti dell’indirizzo.' },
+  ]}
+/>
+
+## Il ciclo Descrizione ↔ Discernimento
+
+Descrivere e valutare non sono due momenti separati: sono un **ciclo**. Chiedi → valuti → aggiusti la richiesta → valuti di nuovo. È così che si arriva a un buon risultato.
+
+<Loop
+  title="Un esempio passo per passo"
+  hint="Premi “Avanti” per seguire il ciclo."
+  a="Descrivo"
+  b="Valuto"
+  steps={[
+    { side: 'a', text: 'Chiedo: “Spiegami cos’è il TAN di un prestito.”' },
+    { side: 'b', text: 'Leggo la risposta: è corretta, ma piena di termini tecnici. Non ci capisco molto.' },
+    { side: 'a', text: 'Aggiusto: “Spiegamelo in modo semplice, con un esempio con numeri piccoli.”' },
+    { side: 'b', text: 'Ora è chiaro! Però noto che non parla del TAEG, che ho visto nel contratto.' },
+    { side: 'a', text: 'Chiedo: “Qual è la differenza tra TAN e TAEG? Quale devo guardare per confrontare due offerte?”' },
+    { side: 'b', text: 'Risposta utile. Verifico il punto chiave su un sito ufficiale (es. Banca d’Italia): confermato. ✓' },
+  ]}
+/>
+
+## Come verificare (senza diventare matti)
+
+Non devi controllare tutto. Usa il buon senso e il **livello di rischio** visto nella lezione sulla Delega. Quando serve, ecco come fare:
+
+<Checklist
+  id="discernment"
+  title="Prima di usare una risposta importante"
+  items={[
+    'Ho controllato numeri, date e nomi su una fonte affidabile?',
+    'Ho aperto i link per vedere se esistono davvero?',
+    'Ho chiesto all’AI: “Quanto sei sicuro? Cosa potrebbe essere sbagliato?”',
+    'Ho chiesto le fonti, e le ho verificate io?',
+    'La risposta ha senso con quello che so già?',
+    'Per salute, soldi o legge: ne ho parlato con un professionista?',
+  ]}
+/>
+
+<Callout type="tip" title="Il trucco della seconda opinione">
+  <p>Apri una nuova chat (o un altro assistente) e chiedi di <strong>controllare</strong> la risposta: “Trova eventuali errori in questo testo”. Non è una garanzia, ma spesso fa emergere i punti deboli.</p>
+</Callout>
+
+## Occhio anche ai pregiudizi
+
+L’AI ha imparato da testi scritti da persone, e ne ha ereditato anche i <Term id="bias">pregiudizi</Term>. Per esempio potrebbe dare per scontato che “l’infermiere” sia una donna e “l’ingegnere” un uomo, o proporre sempre esempi di una sola cultura. Se te ne accorgi, fallo notare e chiedi una versione più equilibrata.
+
+<Quiz
+  questions={[
+    {
+      q: 'Quale di queste frasi dell’AI controlleresti per prima?',
+      options: ['“Bere acqua è importante per la salute.”', '“Secondo l’ISTAT, nel 2021 il 37,4% degli italiani ha cambiato lavoro.”', '“Ci sono molti modi per organizzare una festa.”'],
+      answer: 1,
+      why: 'Fonte precisa + percentuale precisa + anno: va verificata alla fonte originale.',
+    },
+    {
+      q: 'Vuoi un parere sincero sul tuo business plan. Cosa chiedi?',
+      options: ['“È un’ottima idea, vero?”', '“Quali sono i 3 rischi principali e i punti deboli di questo piano?”', '“Fammi i complimenti.”'],
+      answer: 1,
+      why: 'Chiedere esplicitamente critiche riduce la tendenza dell’AI a darti ragione.',
+    },
+    {
+      q: 'Cos’è il ciclo Descrizione–Discernimento?',
+      options: ['Chiedere una volta e accettare la risposta', 'Chiedere, valutare, aggiustare la richiesta e rivalutare', 'Usare due assistenti contemporaneamente'],
+      answer: 1,
+      why: 'Si migliora per tappe: ogni valutazione ti aiuta a descrivere meglio cosa vuoi.',
+    },
+  ]}
+/>

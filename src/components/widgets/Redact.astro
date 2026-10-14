@@ -1,0 +1,158 @@
+---
+/**
+ * Privacy exercise: hide personal data before sending a text to an assistant.
+ * Markup inside `text`: [[Mario Rossi|NAME]] = sensitive, ((Milan)) = clickable but fine to keep.
+ */
+import Widget from './Widget.astro';
+import Icon from '../Icon.astro';
+import { getLang, t } from '../../i18n/ui';
+
+interface Props { text: string; title?: string; hint?: string }
+const lang = getLang(Astro.currentLocale);
+const tr = t(lang);
+const { text, title, hint } = Astro.props;
+
+const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+let total = 0;
+const html = esc(text)
+  .replace(/\[\[(.+?)\|(.+?)\]\]/g, (_, s, kind) => {
+    total++;
+    return `<button type="button" class="tok" data-kind="${kind}" aria-pressed="false"><span class="orig">${s}</span><span class="mask">[${kind}]</span></button>`;
+  })
+  .replace(/\(\((.+?)\)\)/g, (_, s) => `<button type="button" class="tok" aria-pressed="false"><span class="orig">${s}</span><span class="mask">[…]</span></button>`)
+  .replace(/\n/g, '<br>');
+const i18n = {
+  masked: tr('w.masked'),
+  all: lang === 'it' ? 'Ottimo! Ora il testo si può condividere senza esporre nessuno.' : 'Great! Now the text can be shared without exposing anyone.',
+  missing: lang === 'it' ? 'Ci sono ancora dati personali visibili (evidenziati).' : 'There is still personal data visible (highlighted).',
+  over: lang === 'it' ? 'Hai nascosto anche cose non necessarie: l’AI potrebbe aver bisogno di quel contesto.' : 'You also hid things that weren’t necessary: the AI might need that context.',
+  flag: lang === 'it' ? 'dato personale ancora visibile' : 'personal data still visible',
+};
+---
+<redact-game data-i18n={JSON.stringify(i18n)} data-total={total}>
+  <Widget label={lang === 'it' ? 'Esercizio privacy' : 'Privacy exercise'} icon="lock" title={title} hint={hint}>
+    <div class="doc" set:html={html} />
+    <div class="widget-actions">
+      <button class="btn btn-primary check" type="button"><Icon name="shield" />{tr('w.check')}</button>
+      <button class="btn btn-ghost reset" type="button"><Icon name="refresh" />{tr('w.reset')}</button>
+      <span class="count muted" aria-live="polite"></span>
+    </div>
+    <p class="feedback" aria-live="polite"></p>
+  </Widget>
+</redact-game>
+
+<script>
+  import { play } from '../../scripts/sound';
+  import { strings } from '../../scripts/ui';
+
+  class RedactGame extends HTMLElement {
+    i18n = strings(this);
+    toks = [...this.querySelectorAll<HTMLButtonElement>('.tok')];
+    total = Number(this.dataset.total);
+
+    connectedCallback() {
+      this.toks.forEach((t) =>
+        t.addEventListener('click', () => {
+          const on = t.getAttribute('aria-pressed') !== 'true';
+          t.setAttribute('aria-pressed', String(on));
+          this.unflag();
+          play(on ? 'whoosh' : 'tap');
+          this.count();
+        }),
+      );
+      this.querySelector('.check')!.addEventListener('click', () => this.check());
+      this.querySelector('.reset')!.addEventListener('click', () => {
+        this.toks.forEach((t) => t.setAttribute('aria-pressed', 'false'));
+        this.unflag();
+        this.querySelector('.feedback')!.textContent = '';
+        this.count();
+        play('tap');
+      });
+      this.count();
+    }
+
+    count() {
+      const n = this.toks.filter((t) => t.dataset.kind && t.getAttribute('aria-pressed') === 'true').length;
+      this.querySelector('.count')!.textContent = `${this.i18n.masked}: ${n}/${this.total}`;
+      return n;
+    }
+
+    unflag() {
+      this.classList.remove('checked');
+      this.querySelectorAll('.flag').forEach((f) => f.remove());
+    }
+
+    check() {
+      const n = this.count();
+      const over = this.toks.some((t) => !t.dataset.kind && t.getAttribute('aria-pressed') === 'true');
+      this.unflag();
+      this.classList.add('checked');
+      // Missed items get a text flag too, not only the red highlight.
+      this.toks.filter((t) => t.dataset.kind && t.getAttribute('aria-pressed') !== 'true').forEach((t) => {
+        const f = document.createElement('span');
+        f.className = 'flag visually-hidden';
+        f.textContent = ` (${this.i18n.flag})`;
+        t.append(f);
+      });
+      const fb = this.querySelector<HTMLElement>('.feedback')!;
+      const ok = n === this.total;
+      fb.dataset.kind = ok && !over ? 'ok' : ok ? 'info' : 'bad';
+      fb.textContent = [ok ? this.i18n.all : this.i18n.missing, over ? this.i18n.over : ''].filter(Boolean).join(' ');
+      play(ok ? 'ok' : 'bad');
+    }
+  }
+  customElements.define('redact-game', RedactGame);
+</script>
+
+<style>
+  redact-game { display: block; }
+  .doc {
+    padding: var(--space-5);
+    border-radius: var(--radius);
+    background: var(--bg-sunk);
+    font-size: var(--step--1);
+    line-height: 2;
+    font-family: var(--font-mono);
+    white-space: normal;
+  }
+  .doc :global(.tok) {
+    all: unset;
+    position: relative;
+    display: inline-grid;
+    cursor: pointer;
+    border-radius: 0.25em;
+    padding-inline: 0.15em;
+    box-shadow: inset 0 -2px 0 color-mix(in oklch, var(--accent) 35%, transparent);
+    transition: background-color 150ms;
+    &:hover { background: var(--accent-soft); }
+    &:focus-visible { outline: 2px solid var(--accent); }
+    & > :global(span) { grid-area: 1 / 1; transition: opacity 250ms, transform 350ms var(--ease-spring); }
+    & :global(.mask) {
+      opacity: 0;
+      transform: scaleX(0.3);
+      background: var(--text);
+      color: var(--bg);
+      border-radius: 0.2em;
+      padding-inline: 0.3em;
+      font-size: 0.8em;
+      font-weight: 700;
+      text-align: center;
+      align-self: center;
+      line-height: 1.6;
+      transform-origin: left;
+    }
+    &[aria-pressed='true'] {
+      box-shadow: none;
+      & :global(.orig) { opacity: 0; transform: translateY(-4px); }
+      & :global(.mask) { opacity: 1; transform: none; }
+    }
+  }
+  redact-game.checked .doc :global(.tok[data-kind][aria-pressed='false']) {
+    background: var(--bad-soft);
+    box-shadow: none;
+    text-decoration: underline wavy var(--bad) 2px;
+    text-underline-offset: 0.25em;
+    animation: shake 400ms;
+  }
+  .count { margin-inline-start: auto; font-size: var(--step--1); font-variant-numeric: tabular-nums; }
+</style>

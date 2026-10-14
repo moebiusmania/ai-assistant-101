@@ -1,0 +1,195 @@
+---
+/**
+ * Build a request by switching on "ingredients" (context, goal, format…).
+ * The prompt is composed live, a meter shows its quality and a preview answer improves.
+ */
+import Widget from './Widget.astro';
+import { format } from '../../lib/format';
+import { getLang, t } from '../../i18n/ui';
+
+type Ingredient = { label: string; text: string; tip: string };
+interface Props {
+  base: string;
+  ingredients: Ingredient[];
+  /** Preview answers for low / medium / high quality. */
+  answers: [string, string, string];
+  title?: string;
+  hint?: string;
+}
+
+const lang = getLang(Astro.currentLocale);
+const tr = t(lang);
+const { base, ingredients, answers, title, hint } = Astro.props;
+// [highlight colour, text-safe colour for the checkbox (≥ 3:1)]
+const colors = [
+  ['var(--accent)', 'var(--accent)'],
+  ['var(--teal)', 'var(--teal-ink)'],
+  ['var(--amber)', 'var(--amber-ink)'],
+  ['var(--coral)', 'var(--coral-ink)'],
+  ['oklch(60% 0.15 330)', 'light-dark(oklch(50% 0.16 330), oklch(76% 0.12 330))'],
+  ['oklch(60% 0.12 240)', 'light-dark(oklch(50% 0.13 240), oklch(76% 0.1 240))'],
+];
+const color = (i: number) => `--c:${colors[i % colors.length][0]};--c-ink:${colors[i % colors.length][1]}`;
+const levels = lang === 'it' ? ['Generica', 'Discreta', 'Su misura'] : ['Generic', 'Decent', 'Tailored'];
+---
+<prompt-builder data-levels={JSON.stringify(levels)}>
+  <Widget label={lang === 'it' ? 'Laboratorio' : 'Workshop'} icon="wand" title={title} hint={hint}>
+    <div class="grid">
+      <div class="left">
+        <div class="toggles">
+          {ingredients.map((ing, i) => (
+            <label class="tog" style={color(i)}>
+              <input type="checkbox" data-i={i} />
+              <span class="tog-box" aria-hidden="true"></span>
+              <span class="tog-text">
+                <strong>{ing.label}</strong>
+                <small>{ing.tip}</small>
+              </span>
+            </label>
+          ))}
+        </div>
+      </div>
+      <div class="right">
+        <p class="cap">{tr('w.yourprompt')}</p>
+        <div class="prompt" aria-live="polite">
+          <span class="base">{base}</span>
+          {ingredients.map((ing, i) => (
+            <span class="part" data-i={i} style={color(i)}> {ing.text}</span>
+          ))}
+        </div>
+        <div class="meter">
+          <span class="cap" aria-live="polite">{tr('w.quality')}: <b class="level">{levels[0]}</b></span>
+          <span class="track" aria-hidden="true"><span class="fill"></span></span>
+        </div>
+        <p class="cap">{lang === 'it' ? 'Possibile risposta' : 'Possible answer'}</p>
+        <div class="answers">
+          {answers.map((a, i) => <div class="answer" data-level={i} hidden={i > 0} set:html={format(a)} />)}
+        </div>
+      </div>
+    </div>
+  </Widget>
+</prompt-builder>
+
+<script>
+  import { play } from '../../scripts/sound';
+
+  class PromptBuilder extends HTMLElement {
+    connectedCallback() {
+      const boxes = [...this.querySelectorAll<HTMLInputElement>('input[type=checkbox]')];
+      const levels = JSON.parse(this.dataset.levels ?? '[]') as string[];
+      let last = 0;
+      const update = () => {
+        const on = boxes.filter((b) => b.checked).length;
+        boxes.forEach((b) => this.querySelector(`.part[data-i="${b.dataset.i}"]`)!.classList.toggle('on', b.checked));
+        const ratio = on / boxes.length;
+        this.style.setProperty('--q', String(ratio));
+        const level = ratio >= 0.75 ? 2 : ratio >= 0.34 ? 1 : 0;
+        this.querySelector('.level')!.textContent = levels[level];
+        this.querySelectorAll<HTMLElement>('.answer').forEach((a) => (a.hidden = Number(a.dataset.level) !== level));
+        if (level > last) play('ok');
+        last = level;
+      };
+      boxes.forEach((b) => b.addEventListener('change', () => { play(b.checked ? 'pop' : 'tap'); update(); }));
+      update();
+    }
+  }
+  customElements.define('prompt-builder', PromptBuilder);
+</script>
+
+<style>
+  prompt-builder { display: block; --q: 0; }
+  .grid {
+    display: grid;
+    gap: var(--space-5);
+  }
+  @container (width > 40rem) {
+    .grid { grid-template-columns: 1fr 1.2fr; }
+  }
+  .toggles { display: grid; gap: var(--space-2); }
+  .tog {
+    display: flex;
+    gap: var(--space-3);
+    align-items: flex-start;
+    padding: var(--space-3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: border-color 150ms, background-color 150ms;
+    &:hover { border-color: var(--c-ink); }
+    &:has(input:checked) { border-color: var(--c-ink); background: color-mix(in oklch, var(--c) 9%, var(--bg-elev)); }
+    &:has(input:focus-visible) { outline: 3px solid var(--accent); outline-offset: 2px; }
+    & input { position: absolute; opacity: 0; pointer-events: none; }
+    & small { display: block; color: var(--text-muted); font-size: 0.8rem; line-height: 1.4; }
+    & strong { font-size: var(--step--1); }
+  }
+  .tog-box {
+    flex: none;
+    width: 1.35rem;
+    height: 1.35rem;
+    margin-block-start: 0.1rem;
+    border-radius: 0.4rem;
+    border: 2px solid var(--c-ink);
+    display: grid;
+    place-items: center;
+    transition: background-color 150ms;
+    &::after {
+      content: '';
+      width: 0.4rem;
+      height: 0.7rem;
+      border: solid var(--bg-elev);
+      border-width: 0 2.5px 2.5px 0;
+      transform: rotate(45deg) scale(0);
+      margin-block-start: -0.15rem;
+      transition: transform 250ms var(--ease-spring);
+    }
+  }
+  .tog:has(input:checked) .tog-box { background: var(--c-ink); &::after { transform: rotate(45deg) scale(1); } }
+
+  .cap { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; color: var(--text-muted); margin-block: var(--space-3) var(--space-2); }
+  .right > .cap:first-child { margin-block-start: 0; }
+  .prompt {
+    padding: var(--space-4);
+    border-radius: var(--radius);
+    background: var(--bg-sunk);
+    font-size: var(--step--1);
+    line-height: 1.7;
+    min-height: 5rem;
+    & .base { font-weight: 600; }
+    & .part {
+      display: none;
+      background: color-mix(in oklch, var(--c) 18%, transparent);
+      box-shadow: inset 0 -2px 0 var(--c);
+      border-radius: 0.25rem;
+      &.on { display: inline; animation: highlight 600ms var(--ease-out); }
+    }
+  }
+  @keyframes highlight {
+    from { background: color-mix(in oklch, var(--c) 60%, transparent); }
+  }
+  .meter {
+    display: grid;
+    gap: var(--space-1);
+    & .cap { margin: var(--space-3) 0 0; }
+    & .level { color: var(--accent); }
+    & .track { height: 0.6rem; border-radius: 99px; background: var(--bg-sunk); overflow: hidden; }
+    & .fill {
+      display: block;
+      height: 100%;
+      width: calc(8% + var(--q) * 92%);
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--coral), var(--amber), var(--ok));
+      background-size: 300% 100%;
+      background-position: calc(100% - var(--q) * 100%) 0;
+      transition: width 500ms var(--ease-spring), background-position 500ms;
+    }
+  }
+  .answer {
+    padding: var(--space-4);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    font-size: var(--step--1);
+    animation: pop-in 400ms var(--ease-out);
+    & :global(* + *) { margin-block-start: 0.5em; }
+    & :global(ul), & :global(ol) { padding-inline-start: 1.2em; }
+  }
+</style>

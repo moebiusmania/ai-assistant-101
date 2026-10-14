@@ -1,0 +1,183 @@
+---
+/** An AI answer split into sentences: click the ones you'd double-check, then reveal. */
+import Widget from './Widget.astro';
+import Icon from '../Icon.astro';
+import { getLang, t } from '../../i18n/ui';
+
+type Sentence = { text: string; bad?: boolean; why?: string };
+interface Props { question: string; sentences: Sentence[]; title?: string; hint?: string }
+
+const lang = getLang(Astro.currentLocale);
+const tr = t(lang);
+const { question, sentences, title, hint } = Astro.props;
+const bads = sentences.filter((s) => s.bad).length;
+const i18n = {
+  found: tr('w.found'),
+  perfect: lang === 'it' ? 'Perfetto: hai trovato tutti i punti dubbi senza falsi allarmi.' : 'Perfect: you found every doubtful point with no false alarms.',
+  missed: lang === 'it' ? 'Ti è sfuggito qualcosa: guarda le frasi in rosso.' : 'You missed something: look at the sentences in red.',
+  extra: lang === 'it' ? 'Alcune frasi che hai segnato erano corrette (va bene essere prudenti!).' : 'Some sentences you flagged were correct (being careful is fine!).',
+  hit: lang === 'it' ? 'trovata' : 'found',
+  miss: lang === 'it' ? 'sfuggita' : 'missed',
+  extraMark: lang === 'it' ? 'segnata, ma era corretta' : 'flagged, but it was correct',
+};
+---
+<spot-error data-i18n={JSON.stringify(i18n)} data-total={bads}>
+  <Widget label={lang === 'it' ? 'Occhio critico' : 'Critical eye'} icon="search" title={title} hint={hint}>
+    <div class="q"><Icon name="chat" />{question}</div>
+    <div class="answer">
+      {sentences.map((s) => (
+        <><button type="button" class="s" aria-pressed="false" data-bad={s.bad ? '1' : undefined}>
+          {s.text}
+          {s.why && <span class="why" hidden>{s.why}</span>}
+        </button>{' '}</>
+      ))}
+    </div>
+    <div class="widget-actions">
+      <button class="btn btn-primary check" type="button"><Icon name="check" />{tr('w.check')}</button>
+      <button class="btn btn-ghost reset" type="button"><Icon name="refresh" />{tr('w.reset')}</button>
+      <span class="count muted" aria-live="polite"></span>
+    </div>
+    <p class="feedback" aria-live="polite"></p>
+    <ul class="explain"></ul>
+  </Widget>
+</spot-error>
+
+<script>
+  import { play } from '../../scripts/sound';
+  import { strings } from '../../scripts/ui';
+
+  class SpotError extends HTMLElement {
+    i18n = strings(this);
+    connectedCallback() {
+      const ss = [...this.querySelectorAll<HTMLButtonElement>('.s')];
+      ss.forEach((s) =>
+        s.addEventListener('click', () => {
+          if (this.dataset.checked) return;
+          const on = s.getAttribute('aria-pressed') !== 'true';
+          s.setAttribute('aria-pressed', String(on));
+          play(on ? 'pop' : 'tap');
+        }),
+      );
+      this.querySelector('.check')!.addEventListener('click', () => this.check(ss));
+      this.querySelector('.reset')!.addEventListener('click', () => {
+        delete this.dataset.checked;
+        ss.forEach((s) => { s.setAttribute('aria-pressed', 'false'); s.removeAttribute('data-result'); s.querySelector('.res')?.remove(); });
+        this.querySelector('.feedback')!.innerHTML = '';
+        this.querySelector('.explain')!.innerHTML = '';
+        this.querySelector('.count')!.textContent = '';
+        play('tap');
+      });
+    }
+
+    check(ss: HTMLButtonElement[]) {
+      this.dataset.checked = '1';
+      let hit = 0, miss = 0, extra = 0;
+      const explain = this.querySelector('.explain')!;
+      explain.innerHTML = '';
+      ss.forEach((s, i) => {
+        const flagged = s.getAttribute('aria-pressed') === 'true';
+        const bad = !!s.dataset.bad;
+        const result = bad ? (flagged ? 'hit' : 'miss') : flagged ? 'extra' : '';
+        if (result === 'hit') hit++;
+        if (result === 'miss') miss++;
+        if (result === 'extra') extra++;
+        const label = { hit: this.i18n.hit, miss: this.i18n.miss, extra: this.i18n.extraMark }[result] ?? '';
+        if (result) {
+          s.dataset.result = result;
+          // Say the outcome in text too, not only with the highlight colour.
+          const res = document.createElement('span');
+          res.className = 'res visually-hidden';
+          res.textContent = ` (${label})`;
+          s.append(res);
+        }
+        if (bad) {
+          const li = document.createElement('li');
+          li.dataset.result = result;
+          li.style.setProperty('--d', `${i * 80}ms`);
+          li.textContent = `${label ? `${label[0].toUpperCase()}${label.slice(1)}: ` : ''}${s.querySelector('.why')?.textContent ?? ''}`;
+          explain.append(li);
+        }
+      });
+      const total = Number(this.dataset.total);
+      this.querySelector('.count')!.textContent = `${this.i18n.found}: ${hit}/${total}`;
+      const fb = this.querySelector<HTMLElement>('.feedback')!;
+      const ok = miss === 0;
+      fb.dataset.kind = ok ? 'ok' : 'bad';
+      fb.textContent = [ok && !extra ? this.i18n.perfect : '', miss ? this.i18n.missed : '', extra ? this.i18n.extra : ''].filter(Boolean).join(' ');
+      play(ok ? 'ok' : 'bad');
+    }
+  }
+  customElements.define('spot-error', SpotError);
+</script>
+
+<style>
+  spot-error { display: block; }
+  .q {
+    display: flex;
+    gap: var(--space-2);
+    align-items: center;
+    font-weight: 600;
+    font-size: var(--step--1);
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius);
+    background: var(--accent);
+    color: var(--on-accent);
+    width: fit-content;
+    max-width: 100%;
+    margin-inline-start: auto;
+    margin-block-end: var(--space-3);
+    & :global(svg) { width: 1.1rem; flex: none; }
+  }
+  .answer {
+    padding: var(--space-4);
+    border-radius: var(--radius);
+    background: var(--bg-sunk);
+    line-height: 1.9;
+    font-size: var(--step--1);
+  }
+  .s {
+    all: unset;
+    cursor: pointer;
+    padding: 0.1em 0.15em;
+    border-radius: 0.3em;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+    transition: background-color 150ms, box-shadow 150ms;
+    &:hover { background: color-mix(in oklch, var(--amber) 18%, transparent); }
+    &:focus-visible { outline: 2px solid var(--accent); }
+    &[aria-pressed='true'] { background: color-mix(in oklch, var(--amber) 35%, transparent); box-shadow: inset 0 -3px 0 var(--amber-ink); }
+    &[data-result='hit'] { background: var(--ok-soft); box-shadow: inset 0 -3px 0 var(--ok); }
+    &[data-result='miss'] { background: var(--bad-soft); box-shadow: inset 0 -3px 0 var(--bad); }
+    &[data-result='hit']::after { content: ' ✓'; content: ' ✓' / ''; font-weight: 800; color: var(--ok); }
+    &[data-result='miss']::after { content: ' ✗'; content: ' ✗' / ''; font-weight: 800; color: var(--bad); }
+    &[data-result='extra'] { background: transparent; box-shadow: inset 0 -2px 0 var(--border-strong); text-decoration: line-through dotted var(--text-muted); }
+  }
+  spot-error[data-checked] .s { cursor: default; }
+  .explain {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--space-2);
+    margin-block-start: var(--space-3);
+    & :global(li) {
+      font-size: var(--step--1);
+      padding: var(--space-2) var(--space-3) var(--space-2) var(--space-6);
+      border-radius: var(--radius-sm);
+      background: var(--bg-sunk);
+      position: relative;
+      animation: fade-up 400ms var(--ease-out) both;
+      animation-delay: var(--d);
+    }
+    & :global(li)::before {
+      content: '!';
+      content: '!' / '';
+      position: absolute;
+      inset-inline-start: var(--space-3);
+      font-weight: 800;
+      color: var(--amber-ink);
+    }
+    & :global(li[data-result='hit'])::before { content: '✓'; content: '✓' / ''; color: var(--ok); }
+    & :global(li[data-result='miss'])::before { content: '✗'; content: '✗' / ''; color: var(--bad); }
+  }
+  .count { margin-inline-start: auto; font-size: var(--step--1); }
+</style>

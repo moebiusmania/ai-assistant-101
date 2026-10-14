@@ -1,0 +1,240 @@
+---
+/** Multiple-choice quiz, one question at a time, with explanations and a final score. */
+import Widget from './Widget.astro';
+import Icon from '../Icon.astro';
+import { getLang, t } from '../../i18n/ui';
+
+type Q = { q: string; options: string[]; answer: number; why: string };
+interface Props { questions: Q[]; title?: string; hint?: string }
+
+const lang = getLang(Astro.currentLocale);
+const tr = t(lang);
+const { questions, title, hint } = Astro.props;
+const i18n = {
+  correct: tr('w.correct'),
+  wrong: tr('w.wrong'),
+  result: lang === 'it' ? 'Hai risposto bene a' : 'You got',
+  of: lang === 'it' ? 'domande su' : 'questions right out of',
+  great: lang === 'it' ? 'Ottimo lavoro! 🎉' : 'Great job! 🎉',
+  ok: lang === 'it' ? 'Bene! Rileggi le spiegazioni delle risposte sbagliate.' : 'Good! Read the explanations for the ones you missed.',
+  low: lang === 'it' ? 'Nessun problema: ripassa la lezione e riprova.' : 'No problem: review the lesson and try again.',
+  finish: lang === 'it' ? 'Vedi il risultato' : 'See result',
+  rightMark: lang === 'it' ? 'risposta giusta' : 'correct answer',
+  pickMark: lang === 'it' ? 'la tua risposta' : 'your answer',
+};
+---
+<quiz-box data-i18n={JSON.stringify(i18n)}>
+  <Widget label="Quiz" icon="trophy" title={title} hint={hint}>
+    <div class="dots" aria-hidden="true">{questions.map(() => <span></span>)}</div>
+    {questions.map((q, qi) => (
+      <fieldset class="q" data-answer={q.answer} hidden={qi > 0}>
+        <legend><span class="num">{qi + 1}/{questions.length}</span> {q.q}</legend>
+        <div class="opts">
+          {q.options.map((o, oi) => (
+            <button type="button" class="opt" data-i={oi}><span class="letter">{String.fromCharCode(65 + oi)}</span><span>{o}</span></button>
+          ))}
+        </div>
+        <p class="feedback" aria-live="polite"></p>
+        <p class="why" hidden>{q.why}</p>
+      </fieldset>
+    ))}
+    <div class="result" hidden>
+      <svg class="ring" viewBox="0 0 120 120" aria-hidden="true">
+        <circle cx="60" cy="60" r="52" class="bg" />
+        <circle cx="60" cy="60" r="52" class="fg" pathLength="100" />
+        <text x="60" y="68" text-anchor="middle" class="pct"></text>
+      </svg>
+      <p class="msg" aria-live="polite"></p>
+    </div>
+    <div class="widget-actions">
+      <button class="btn btn-primary next" type="button" hidden>{tr('w.next')}<Icon name="arrowRight" /></button>
+      <button class="btn btn-ghost retry" type="button" hidden><Icon name="refresh" />{tr('w.retry')}</button>
+    </div>
+  </Widget>
+</quiz-box>
+
+<script>
+  import { play } from '../../scripts/sound';
+  import { confetti } from '../../scripts/confetti';
+  import { strings } from '../../scripts/ui';
+
+  class QuizBox extends HTMLElement {
+    i18n = strings(this);
+    qs = [...this.querySelectorAll<HTMLFieldSetElement>('.q')];
+    dots = [...this.querySelectorAll<HTMLElement>('.dots span')];
+    idx = 0;
+    score = 0;
+    nextBtn = this.querySelector<HTMLButtonElement>('.next')!;
+
+    connectedCallback() {
+      this.qs.forEach((fs) => {
+        fs.querySelectorAll<HTMLButtonElement>('.opt').forEach((b) => b.addEventListener('click', () => this.answer(fs, b)));
+      });
+      this.nextBtn.addEventListener('click', () => this.next());
+      this.querySelector('.retry')!.addEventListener('click', () => this.reset());
+      this.dots[0]?.classList.add('cur');
+    }
+
+    answer(fs: HTMLFieldSetElement, b: HTMLButtonElement) {
+      if (fs.dataset.done) return;
+      fs.dataset.done = '1';
+      const correct = Number(fs.dataset.answer);
+      const ok = Number(b.dataset.i) === correct;
+      if (ok) this.score++;
+      fs.querySelectorAll<HTMLButtonElement>('.opt').forEach((o) => {
+        o.disabled = true;
+        if (Number(o.dataset.i) === correct) { o.classList.add('right'); this.mark(o, '✓', this.i18n.rightMark); }
+      });
+      if (!ok) { b.classList.add('wrongpick'); this.mark(b, '✗', this.i18n.pickMark); }
+      const fb = fs.querySelector<HTMLElement>('.feedback')!;
+      fb.dataset.kind = ok ? 'ok' : 'bad';
+      fb.innerHTML = `<strong>${ok ? this.i18n.correct : this.i18n.wrong}</strong> ${fs.querySelector('.why')!.textContent}`;
+      this.dots[this.idx].classList.add(ok ? 'ok' : 'bad');
+      play(ok ? 'ok' : 'bad');
+      this.nextBtn.hidden = false;
+      if (this.idx === this.qs.length - 1) this.nextBtn.firstChild!.textContent = this.i18n.finish;
+      this.nextBtn.focus({ preventScroll: true });
+    }
+
+    /** A visible symbol plus hidden text, so the result isn't conveyed by colour alone. */
+    mark(o: HTMLButtonElement, symbol: string, label: string) {
+      const m = document.createElement('span');
+      m.className = 'mark';
+      m.innerHTML = `<span aria-hidden="true">${symbol}</span><span class="visually-hidden">(${label})</span>`;
+      o.append(m);
+    }
+
+    next() {
+      this.nextBtn.hidden = true;
+      this.qs[this.idx].hidden = true;
+      this.dots[this.idx].classList.remove('cur');
+      this.idx++;
+      if (this.idx < this.qs.length) {
+        this.qs[this.idx].hidden = false;
+        this.dots[this.idx].classList.add('cur');
+        this.qs[this.idx].querySelector<HTMLButtonElement>('.opt')?.focus({ preventScroll: true });
+        play('tap');
+        return;
+      }
+      this.showResult();
+    }
+
+    showResult() {
+      const res = this.querySelector<HTMLElement>('.result')!;
+      res.hidden = false;
+      const pct = Math.round((this.score / this.qs.length) * 100);
+      res.style.setProperty('--ring', '0');
+      requestAnimationFrame(() => requestAnimationFrame(() => res.style.setProperty('--ring', String(pct))));
+      res.querySelector('.pct')!.textContent = `${this.score}/${this.qs.length}`;
+      const tone = pct >= 80 ? this.i18n.great : pct >= 50 ? this.i18n.ok : this.i18n.low;
+      res.querySelector('.msg')!.textContent = `${this.i18n.result} ${this.score} ${this.i18n.of} ${this.qs.length}. ${tone}`;
+      const retry = this.querySelector<HTMLButtonElement>('.retry')!;
+      retry.hidden = false;
+      // The focused "next" button just got hidden: move focus somewhere sensible.
+      retry.focus({ preventScroll: true });
+      if (pct >= 80) { play('done'); confetti(res); } else play('pop');
+      this.dispatchEvent(new CustomEvent('quiz:done', { bubbles: true, detail: { score: this.score, total: this.qs.length } }));
+    }
+
+    reset() {
+      this.idx = 0;
+      this.score = 0;
+      this.qs.forEach((fs, i) => {
+        fs.hidden = i > 0;
+        delete fs.dataset.done;
+        fs.querySelectorAll<HTMLButtonElement>('.opt').forEach((o) => { o.disabled = false; o.classList.remove('right', 'wrongpick'); o.querySelector('.mark')?.remove(); });
+        fs.querySelector<HTMLElement>('.feedback')!.innerHTML = '';
+      });
+      this.dots.forEach((d, i) => { d.className = i === 0 ? 'cur' : ''; });
+      this.querySelector<HTMLElement>('.result')!.hidden = true;
+      this.querySelector<HTMLButtonElement>('.retry')!.hidden = true;
+      this.nextBtn.hidden = true;
+      this.qs[0].querySelector<HTMLButtonElement>('.opt')?.focus({ preventScroll: true });
+      play('tap');
+    }
+  }
+  customElements.define('quiz-box', QuizBox);
+</script>
+
+<style>
+  quiz-box { display: block; }
+  .dots {
+    display: flex;
+    gap: 6px;
+    margin-block-end: var(--space-4);
+    & span {
+      flex: 1;
+      height: 6px;
+      border-radius: 99px;
+      background: var(--border);
+      transition: background-color 300ms, transform 300ms var(--ease-spring);
+      &.cur { background: var(--accent); transform: scaleY(1.4); }
+      &.ok { background: var(--ok); }
+      &.bad { background: var(--bad); }
+    }
+  }
+  .q {
+    border: 0;
+    padding: 0;
+    min-width: 0;
+    animation: fade-up 350ms var(--ease-out);
+    & legend { font-family: var(--font-display); font-size: var(--step-1); font-weight: 650; line-height: 1.3; margin-block-end: var(--space-4); text-wrap: balance; }
+    & .num { color: var(--accent); font-size: 0.8em; margin-inline-end: 0.3em; }
+  }
+  .opts { display: grid; gap: var(--space-2); margin-block-end: var(--space-3); }
+  .opt {
+    display: flex;
+    gap: var(--space-3);
+    align-items: center;
+    text-align: start;
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius);
+    border: 1px solid var(--border-strong);
+    background: var(--bg-elev);
+    font-size: var(--step--1);
+    transition: border-color 150ms, background-color 150ms, transform 200ms var(--ease-spring);
+    &:hover:not(:disabled) { border-color: var(--accent); transform: translateX(4px); }
+    &:disabled { cursor: default; opacity: 0.65; }
+    &.right { opacity: 1; border-color: var(--ok); background: var(--ok-soft); }
+    &.wrongpick { opacity: 1; border-color: var(--bad); background: var(--bad-soft); animation: shake 400ms; }
+  }
+  .letter {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 1.8rem;
+    height: 1.8rem;
+    border-radius: 0.5rem;
+    background: var(--bg-sunk);
+    font-weight: 700;
+    font-size: 0.8rem;
+  }
+  .opt.right .letter { background: var(--ok); color: var(--on-status); }
+  .opt.wrongpick .letter { background: var(--bad); color: var(--on-status); }
+  .opt :global(.mark) { margin-inline-start: auto; font-weight: 800; }
+  .opt.right :global(.mark) { color: var(--ok); }
+  .opt.wrongpick :global(.mark) { color: var(--bad); }
+
+  .result {
+    display: flex;
+    gap: var(--space-5);
+    align-items: center;
+    flex-wrap: wrap;
+    transition: --ring 1.2s var(--ease-out);
+    animation: pop-in 500ms var(--ease-spring);
+    & .msg { flex: 1 1 14rem; font-size: var(--step-0); font-weight: 550; }
+  }
+  .ring {
+    width: 7.5rem;
+    & circle { fill: none; stroke-width: 10; }
+    & .bg { stroke: var(--bg-sunk); }
+    & .fg {
+      stroke: var(--accent);
+      stroke-linecap: round;
+      stroke-dasharray: calc(var(--ring) * 1) 100;
+      transform: rotate(-90deg);
+      transform-origin: center;
+    }
+    & .pct { font: 700 1.6rem var(--font-display); fill: var(--text); }
+  }
+</style>

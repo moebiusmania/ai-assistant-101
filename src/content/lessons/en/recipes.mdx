@@ -1,0 +1,132 @@
+---
+title: Everyday recipes
+description: Ready-made templates to copy for the most common situations. Replace the parts in brackets and go!
+order: 7
+minutes: 10
+icon: book
+tag: In practice
+---
+
+Now that you know the 4Ds, here’s a collection of **ready-made requests** for everyday life. They work with any assistant. The parts <mark class="ph">[in square brackets]</mark> are for you to replace with your own information.
+
+<Callout type="tip">
+  <p>These templates are a starting point, not a magic formula. After the first answer, <strong>keep the conversation going</strong>: “shorter”, “simpler”, “give me an alternative”.</p>
+</Callout>
+
+## Writing and communicating
+
+<div class="recipes">
+  <CopyPrompt
+    title="Tricky email"
+    icon="pen"
+    when="Cancellations, complaints, delicate requests"
+    prompt={'I need to write an email to [recipient] about [reason].\nHere’s the situation: [explain in 2-3 sentences].\nI’d like a [polite but firm / friendly / formal] tone.\n[Number] lines max. Use [NAME] instead of personal details.'}
+  />
+  <CopyPrompt
+    title="Fix my text"
+    icon="wand"
+    when="Correcting without rewriting"
+    prompt={'Fix grammar and punctuation mistakes in this text, without changing its style.\nThen list the main changes you made.\n\nText: [paste here]'}
+  />
+  <CopyPrompt
+    title="Change the tone"
+    icon="chat"
+    when="When a message sounds too harsh (or too soft)"
+    prompt={'Rewrite this message to be [kinder / firmer / shorter], keeping the same meaning. Give me 2 versions.\n\nMessage: [paste here]'}
+  />
+</div>
+
+## Understanding and learning
+
+<div class="recipes">
+  <CopyPrompt
+    title="Explain it simply"
+    icon="lightbulb"
+    when="Hard concepts, articles, technical terms"
+    prompt={'Explain [topic] as if I were 12.\nUse an everyday example.\nAt the end, ask me 2 questions to check I understood.'}
+  />
+  <CopyPrompt
+    title="Personal tutor"
+    icon="brain"
+    when="Studying a subject or a language"
+    prompt={'I want to learn [topic]. My level is [beginner / intermediate].\nBe a patient teacher: explain one concept at a time, then give me an exercise and correct me.\nDon’t give me the solution straight away: give me a hint if I get it wrong.'}
+  />
+  <CopyPrompt
+    title="Decode a document"
+    icon="search"
+    when="Bills, contracts, official letters (without personal data!)"
+    prompt={'I’m pasting a [bill / contract / letter]. I’ve removed the personal data.\nExplain in plain words:\n1. What it’s about\n2. What I need to do and by when\n3. Anything to watch out for\n\nDocument: [paste here]'}
+  />
+</div>
+
+<Callout type="warn">
+  <p>For important legal, medical or financial documents, use AI to <strong>understand and prepare your questions</strong>, then check with a professional.</p>
+</Callout>
+
+## Organising and deciding
+
+<div class="recipes">
+  <CopyPrompt
+    title="Useful summary"
+    icon="layers"
+    when="Articles, minutes, long documents"
+    prompt={'Summarise this text in [5] key points.\nThen write in one sentence the most important thing to remember.\nIf there are deadlines or actions, list them separately.\n\nText: [paste here]'}
+  />
+  <CopyPrompt
+    title="Plan a trip"
+    icon="globe"
+    when="Day trips, holidays, weekends"
+    prompt={'Plan [number] days in [place] in [month].\nWe are [who: a couple, a family with kids aged X…], we like [interests], we don’t like [things to avoid].\nRough budget: [amount].\nGive me a day-by-day plan. Tell me what’s worth booking in advance.'}
+  />
+  <CopyPrompt
+    title="Pros and cons"
+    icon="compass"
+    when="Choices and comparisons"
+    prompt={'I need to choose between [option A] and [option B].\nWhat matters to me: [criteria].\nMake a table of pros and cons for each, then tell me which questions I should ask myself to decide.\nDon’t decide for me.'}
+  />
+  <CopyPrompt
+    title="Weekly menu"
+    icon="sparkle"
+    when="Shopping and cooking"
+    prompt={'Plan [5] dinners for [number] people.\nConstraints: [vegetarian / gluten-free / budget / little time].\nThen make a shopping list grouped by aisle.'}
+  />
+</div>
+
+## Practising and preparing
+
+<div class="recipes">
+  <CopyPrompt
+    title="Mock interview"
+    icon="chat"
+    when="Job interviews, oral exams"
+    prompt={'Run a mock interview for the role of [role].\nAsk me one question at a time and wait for my answer.\nAfter each answer give me honest feedback: what works and what to improve.'}
+  />
+  <CopyPrompt
+    title="Honest critic"
+    icon="eye"
+    when="When you want a real opinion, not compliments"
+    prompt={'Here is [my idea / my text / my project]: [paste here].\nPlay devil’s advocate: list the 3 weakest points and what could go wrong.\nBe direct, no need to be nice.'}
+  />
+</div>
+
+## Let’s see one in action
+
+<ChatSim
+  messages={[
+    { from: 'user', text: 'Explain what inflation is as if I were 12. Use an everyday example. At the end, ask me 2 questions to check I understood.' },
+    { from: 'ai', text: 'Imagine an ice cream costs **2 €** today. Next year, the exact same ice cream costs **2.20 €**. The ice cream hasn’t changed: it’s your money that’s “worth” a bit less. That’s **inflation**: prices in general go up, and with the same pocket money you buy fewer things.\n\nYour turn:\n1. If your pocket money stays the same but there’s inflation, can you buy more or fewer ice creams?\n2. Why do you think prices might go up?' },
+  ]}
+/>
+
+<Checklist
+  id="recipes"
+  title="This week’s challenge"
+  hint="Try at least three of these recipes with your favourite assistant."
+  items={[
+    'I rewrote a message changing its tone',
+    'I had a difficult topic explained to me',
+    'I summarised a long article',
+    'I did a simulation (interview, exam, language conversation)',
+    'I asked the AI to criticise one of my ideas',
+  ]}
+/>

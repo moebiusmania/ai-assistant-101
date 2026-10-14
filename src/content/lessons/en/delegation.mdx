@@ -1,0 +1,110 @@
+---
+title: "Delegation: what to ask AI (and what not to)"
+description: Not everything should go to AI. Learn when it saves you time and when you’re better off doing it yourself.
+order: 3
+minutes: 7
+icon: hand
+tag: 1st D · Delegation
+---
+
+The first question isn’t *“how do I ask?”*, but **“does it make sense to ask AI?”**. Delegating well means three things.
+
+## 1. Know what you want (before opening the chat)
+
+It sounds obvious, but it’s the most common mistake: people open the assistant “to see what happens”. Stop for 20 seconds and ask yourself:
+
+- **What’s the goal?** Not “write an email”, but “get a refund from the shop”.
+- **What matters to me?** Speed? Accuracy? A personal touch?
+- **How will I know the result is good?**
+
+<Callout type="tip" title="The 20-second trick">
+  <p>Try saying out loud what you want to achieve, in one sentence. If you can’t, the AI won’t be able to guess it for you.</p>
+</Callout>
+
+## 2. Know your tool
+
+Every assistant has strengths and limits. Before handing something over, ask yourself:
+
+- Can it **search the web**, or does it only work with what it learned?
+- Can it **read files**, photos, PDFs?
+- Where does the data I give it end up? (More on this in the Diligence lesson.)
+
+If you don’t know, ask the assistant itself. But remember: what it says about itself can be wrong too. For important things, check the settings or the service’s help page.
+
+## 3. Split the work
+
+The choice is rarely “all to AI” or “all to me”. Often the best solution is to **share**:
+
+| Usually fine for AI | Usually better done by you |
+|---|---|
+| First draft of a text | Important decisions (health, money, law) |
+| Summarising, reordering, rephrasing | Anything that needs your memories and feelings |
+| Finding ideas and alternatives | Checking facts and figures |
+| Explaining concepts simply | Very personal messages (condolences, real apologies) |
+| Being a “gym”: simulations, quizzes | Judging people (hiring, assessments) |
+
+<SortGame
+  title="Delegate or not?"
+  hint="For each situation choose: hand it to AI, do it together, or do it yourself?"
+  buckets={[
+    { id: 'ai', label: 'To AI', desc: 'Fine to delegate, with a final check' },
+    { id: 'both', label: 'Together', desc: 'AI helps, but the key part is yours' },
+    { id: 'me', label: 'Me', desc: 'Better not to delegate' },
+  ]}
+  items={[
+    { text: 'Rewrite meeting notes more clearly', bucket: 'ai', why: 'A text-tidying task, perfect for AI. Then take a look.' },
+    { text: 'Decide whether to stop a medical treatment', bucket: 'me', why: 'A health decision: AI can help you prepare questions, but you decide with your doctor.' },
+    { text: 'Write the speech for your mum’s birthday', bucket: 'both', why: 'AI can help with structure and phrasing, but memories and feelings come from you.' },
+    { text: 'Find 10 dinner ideas with few ingredients', bucket: 'ai', why: 'Low-risk brainstorming: ideal.' },
+    { text: 'Choose which candidate to hire', bucket: 'me', why: 'Judging people needs human responsibility and risks bias.' },
+    { text: 'Prepare a complaint letter to your phone company', bucket: 'both', why: 'AI makes a great draft; you add the real details and check the tone.' },
+    { text: 'Understand a difficult word in an article', bucket: 'ai', why: 'Explaining concepts is one of its strengths.' },
+  ]}
+/>
+
+## How much does a mistake “cost”?
+
+A simple rule for deciding: **the higher the cost of a mistake, the more you must check** (or do it yourself).
+
+<div class="risk">
+
+- 🟢 **Low** — gift ideas, a recipe, a playlist name. If it’s wrong, no big deal.
+- 🟡 **Medium** — a work email, a summary for studying. Reread carefully.
+- 🔴 **High** — health, money, legal documents, safety. Use AI only to understand and prepare, then check with a professional.
+
+</div>
+
+<Checklist
+  id="delegation"
+  title="Before delegating, ask yourself:"
+  items={[
+    'Can I explain in one sentence what I want to achieve?',
+    'Is AI suited to this kind of task?',
+    'How bad would a mistake be?',
+    'Which part should stay mine?',
+    'Will I have time to check the result?',
+  ]}
+/>
+
+<Quiz
+  questions={[
+    {
+      q: 'What’s the first step to delegating well?',
+      options: ['Writing a very long prompt', 'Being clear about what you want to achieve', 'Choosing the most famous assistant'],
+      answer: 1,
+      why: 'If the goal isn’t clear to you, it can’t be clear to the AI either.',
+    },
+    {
+      q: 'You need to understand a medicine’s side effects. What do you do?',
+      options: ['Ask the AI and follow what it says', 'Use AI to understand the terms and prepare questions, then ask a doctor or pharmacist', 'Talk to nobody about it'],
+      answer: 1,
+      why: 'With health, AI helps you understand and prepare, but decisions are made with a professional.',
+    },
+    {
+      q: 'The higher the cost of a mistake…',
+      options: ['…the more you can trust the AI', '…the more you must check or do it yourself', '…nothing changes'],
+      answer: 1,
+      why: 'How much you check should grow with the risk.',
+    },
+  ]}
+/>

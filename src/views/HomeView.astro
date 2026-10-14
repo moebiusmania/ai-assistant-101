@@ -1,0 +1,412 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import HeroCanvas from '../components/HeroCanvas.astro';
+import IntroVideo from '../components/IntroVideo.astro';
+import { getLang, routes, splitId, t } from '../i18n/ui';
+
+const lang = getLang(Astro.currentLocale);
+const tr = t(lang);
+const lessons = (await getCollection('lessons', (e) => splitId(e.id).lang === lang))
+  .sort((a, b) => a.data.order - b.data.order)
+  .map((e) => ({ ...e.data, slug: splitId(e.id).slug }));
+const first = lessons[0];
+const why = [1, 2, 3, 4].map((n) => ({
+  t: tr(`home.why.${n}.t` as any),
+  d: tr(`home.why.${n}.d` as any),
+  icon: ['brain', 'pen', 'eye', 'shield'][n - 1],
+}));
+const dNames = lang === 'it'
+  ? ['Delega', 'Descrizione', 'Discernimento', 'Diligenza']
+  : ['Delegation', 'Description', 'Discernment', 'Diligence'];
+const demo = lang === 'it'
+  ? { q: 'Mi aiuti a scrivere un messaggio gentile per disdire la palestra?', a: 'Certo! Ecco una proposta breve e cortese. Vuoi che sia più formale o più amichevole?' }
+  : { q: 'Can you help me write a polite message to cancel my gym membership?', a: 'Of course! Here’s a short, polite draft. Would you like it more formal or more friendly?' };
+---
+<Base alternates={{ it: routes.home('it'), en: routes.home('en') }} autoHeader>
+  <section class="hero">
+    <HeroCanvas />
+    <span class="hero-third" aria-hidden="true"></span>
+    <div class="container hero-head">
+      <p class="chip">{tr('home.kicker')}</p>
+      <h1 set:html={tr('home.title')} />
+    </div>
+    <div class="container hero-grid">
+      <div class="hero-copy">
+        <p class="lead">{tr('home.lead')}</p>
+        <div class="cta">
+          <a class="btn btn-primary big start" href={routes.lesson(lang, first.slug)} data-continue={tr('home.continue')}>
+            <Icon name="play" /><span>{tr('home.start')}</span>
+          </a>
+          <a class="btn big" href="#lessons">{tr('home.lessons')}</a>
+        </div>
+      </div>
+      <div class="hero-demo" aria-hidden="true">
+        <div class="bubble u">{demo.q}</div>
+        <div class="bubble a"><span class="typing"><i></i><i></i><i></i></span><span class="txt">{demo.a}</span></div>
+        <div class="orbit">
+          {dNames.map((d, i) => <span style={`--i:${i}`}>{d}</span>)}
+        </div>
+      </div>
+    </div>
+    <button class="icon-btn motion-toggle" type="button" aria-label={tr('motion.pause')} title={tr('motion.pause')} data-pause={tr('motion.pause')} data-play={tr('motion.play')}>
+      <Icon name="pause" class="i-pause" /><Icon name="play" class="i-play" />
+    </button>
+  </section>
+
+  <section class="container intro">
+    <h2>{tr('home.intro.title')}</h2>
+    <IntroVideo icons={lessons.map((l) => l.icon)} />
+  </section>
+
+  <section class="container why">
+    <h2>{tr('home.why.title')}</h2>
+    <div class="why-grid">
+      {why.map((w, i) => (
+        <article class="card why-card reveal" style={`--d:${i}`}>
+          <span class="why-ic"><Icon name={w.icon} /></span>
+          <h3>{w.t}</h3>
+          <p>{w.d}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="container lessons" id="lessons">
+    <div class="lessons-head">
+      <h2>{tr('home.lessons')}</h2>
+      <div class="overall">
+        <svg viewBox="0 0 40 40" class="mini-ring" aria-hidden="true">
+          <circle cx="20" cy="20" r="16" class="bg" />
+          <circle cx="20" cy="20" r="16" class="fg" pathLength="100" />
+        </svg>
+        <span><b class="done-n">0</b> {tr('home.of')} {lessons.length} {tr('home.done')}</span>
+        <button class="btn btn-sm btn-ghost reset" type="button" data-confirm={tr('home.reset.confirm')} hidden>{tr('home.reset')}</button>
+      </div>
+    </div>
+    <ol class="lesson-list">
+      {lessons.map((l, i) => (
+        <li class="reveal">
+          <a class="lesson-card card" href={routes.lesson(lang, l.slug)} data-slug={l.slug}>
+            <span class="num">{String(i + 1).padStart(2, '0')}</span>
+            <span class="l-ic"><Icon name={l.icon} /></span>
+            <span class="l-body">
+              {l.tag && <span class="l-tag">{l.tag}</span>}
+              <span class="l-title">{l.title}</span>
+              <span class="l-desc">{l.description}</span>
+            </span>
+            <span class="l-meta">
+              <span class="l-min"><Icon name="clock" size={14} /> {l.minutes} {tr('lesson.minutes')}</span>
+              <span class="l-status"><Icon name="check" size={14} /><span class="visually-hidden">{tr('lesson.status.done')}</span></span>
+            </span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  </section>
+</Base>
+
+<script>
+  import { completed, resetProgress } from '../scripts/progress';
+  import { read, write } from '../scripts/storage';
+
+  const sync = () => {
+    const done = new Set(completed());
+    const cards = [...document.querySelectorAll<HTMLAnchorElement>('.lesson-card')];
+    cards.forEach((c) => c.toggleAttribute('data-complete', done.has(c.dataset.slug!)));
+    const n = cards.filter((c) => done.has(c.dataset.slug!)).length;
+    document.querySelector('.done-n')!.textContent = String(n);
+    document.querySelector<HTMLElement>('.overall')!.style.setProperty('--ring', String((n / cards.length) * 100));
+    document.querySelector<HTMLButtonElement>('.overall .reset')!.hidden = n === 0;
+    const start = document.querySelector<HTMLAnchorElement>('.start')!;
+    const nextCard = cards.find((c) => !done.has(c.dataset.slug!));
+    if (n > 0 && nextCard) {
+      start.href = nextCard.href;
+      start.querySelector('span')!.textContent = start.dataset.continue!;
+    }
+  };
+  sync();
+
+  // Reveal the header once a third of the hero has scrolled out of view.
+  const header = document.querySelector<HTMLElement>('.site-header')!;
+  new IntersectionObserver(([e]) => {
+    header.toggleAttribute('data-shown', !e.isIntersecting && e.boundingClientRect.top < 0);
+  }).observe(document.querySelector('.hero-third')!);
+
+  // Everything that loops in the hero can be paused (WCAG 2.2.2); the choice is remembered.
+  const hero = document.querySelector<HTMLElement>('.hero')!;
+  const motionBtn = hero.querySelector<HTMLButtonElement>('.motion-toggle')!;
+  const setPaused = (paused: boolean) => {
+    hero.toggleAttribute('data-paused', paused);
+    hero.querySelector('hero-canvas')!.toggleAttribute('paused', paused);
+    const label = paused ? motionBtn.dataset.play! : motionBtn.dataset.pause!;
+    motionBtn.setAttribute('aria-label', label);
+    motionBtn.title = label;
+  };
+  setPaused(read<boolean>('aic:motion-paused', false));
+  motionBtn.addEventListener('click', () => {
+    const paused = !hero.hasAttribute('data-paused');
+    write('aic:motion-paused', paused);
+    setPaused(paused);
+  });
+
+  document.querySelector<HTMLButtonElement>('.overall .reset')!.addEventListener('click', (e) => {
+    const btn = e.currentTarget as HTMLButtonElement;
+    if (confirm(btn.dataset.confirm)) { resetProgress(); location.reload(); }
+  });
+</script>
+
+<style>
+  .hero {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    min-height: 100svh;
+    display: grid;
+    align-content: center;
+    gap: var(--space-7);
+    padding-block: var(--space-7);
+  }
+  .hero-third {
+    position: absolute;
+    inset-block-start: calc(100svh / 3);
+    inset-inline-start: 0;
+    width: 1px;
+    height: 1px;
+  }
+  .hero-head {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-5);
+    text-align: center;
+    animation: fade-up 700ms var(--ease-out) both;
+    & h1 {
+      font-size: clamp(2.5rem, 1.5rem + 4.5vw, 5.5rem);
+      max-width: 18ch;
+      line-height: 1.05;
+    }
+    & h1 :global(em) {
+      font-style: normal;
+      background: linear-gradient(100deg, var(--accent), var(--teal));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: -20% -10% auto auto;
+    width: 60vmax;
+    aspect-ratio: 1;
+    z-index: -2;
+    background: conic-gradient(from var(--hue-shift), color-mix(in oklch, var(--accent) 22%, transparent), color-mix(in oklch, var(--teal) 18%, transparent), color-mix(in oklch, var(--amber) 14%, transparent), color-mix(in oklch, var(--accent) 22%, transparent));
+    filter: blur(80px);
+    border-radius: 50%;
+    animation: hue-spin 18s linear infinite;
+  }
+  @keyframes hue-spin { to { --hue-shift: 360deg; } }
+  .hero[data-paused]::before { animation-play-state: paused; }
+  .hero[data-paused] .orbit span { animation: bubble 600ms calc(3.2s + var(--i) * 120ms) var(--ease-spring) both; }
+  .motion-toggle {
+    position: absolute;
+    inset-block-end: var(--space-4);
+    inset-inline-end: var(--space-4);
+    background: var(--bg-elev);
+    border-color: var(--border);
+    & :global(.i-play) { display: none; }
+  }
+  .hero[data-paused] .motion-toggle {
+    & :global(.i-play) { display: block; }
+    & :global(.i-pause) { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .motion-toggle { display: none; }
+  }
+  .hero-grid {
+    display: grid;
+    gap: var(--space-7);
+    align-items: center;
+  }
+  @media (width > 60rem) {
+    .hero-grid { grid-template-columns: 1.15fr 1fr; }
+  }
+  .hero-copy {
+    display: grid;
+    gap: var(--space-5);
+    justify-items: start;
+    animation: fade-up 700ms 150ms var(--ease-out) both;
+  }
+  .lead { font-size: var(--step-1); color: var(--text-muted); max-width: 38rem; line-height: 1.55; }
+  .cta { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+  .big { font-size: var(--step-0); padding: 0.85em 1.6em; }
+
+  .hero-demo {
+    position: relative;
+    display: grid;
+    gap: var(--space-3);
+    padding: var(--space-6);
+    min-height: 22rem;
+    align-content: center;
+  }
+  .bubble {
+    max-width: 85%;
+    padding: var(--space-4) var(--space-5);
+    border-radius: 1.4rem;
+    box-shadow: var(--shadow-lg);
+    font-size: var(--step-0);
+    line-height: 1.5;
+  }
+  .bubble.u {
+    justify-self: end;
+    background: var(--accent);
+    color: var(--on-accent);
+    border-end-end-radius: 0.4rem;
+    animation: bubble 700ms 300ms var(--ease-spring) both;
+  }
+  .bubble.a {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-end-start-radius: 0.4rem;
+    display: grid;
+    animation: bubble 700ms 1100ms var(--ease-spring) both;
+    & > * { grid-area: 1 / 1; }
+    & .typing { display: inline-flex; gap: 5px; align-items: center; animation: vanish 0s 2.6s forwards; }
+    & .typing i { width: 8px; height: 8px; border-radius: 50%; background: var(--text-muted); animation: bob 1s 3; }
+    & .typing i:nth-child(2) { animation-delay: 0.15s; }
+    & .typing i:nth-child(3) { animation-delay: 0.3s; }
+    & .txt { opacity: 0; animation: appear 600ms 2.6s forwards; }
+  }
+  @keyframes bubble { from { opacity: 0; transform: translateY(20px) scale(0.9); } }
+  @keyframes bob { 30% { transform: translateY(-5px); } }
+  @keyframes vanish { to { visibility: hidden; } }
+  @keyframes appear { to { opacity: 1; } }
+  .orbit {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-block-start: var(--space-4);
+    & span {
+      padding: 0.35em 0.9em;
+      border-radius: var(--radius-pill);
+      font-size: var(--step--1);
+      font-weight: 650;
+      background: var(--bg-elev);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      animation: bubble 600ms calc(3.2s + var(--i) * 120ms) var(--ease-spring) both, float 6s calc(var(--i) * -1.5s) ease-in-out infinite;
+    }
+    & span:nth-child(1) { color: var(--accent); }
+    & span:nth-child(2) { color: var(--teal-ink); }
+    & span:nth-child(3) { color: var(--amber-ink); }
+    & span:nth-child(4) { color: var(--coral-ink); }
+  }
+  @keyframes float { 50% { translate: 0 -6px; } }
+
+  .intro { padding-block: var(--space-7) 0; & h2 { margin-block-end: var(--space-3); } }
+  .why { padding-block: var(--space-7); & h2 { margin-block-end: var(--space-5); } }
+  .why-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+    gap: var(--space-4);
+  }
+  .why-card {
+    padding: var(--space-5);
+    display: grid;
+    gap: var(--space-2);
+    align-content: start;
+    transition: transform 300ms var(--ease-out), box-shadow 300ms;
+    &:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+    & p { color: var(--text-muted); font-size: var(--step--1); }
+  }
+  .why-ic {
+    display: grid; place-items: center;
+    width: 3rem; height: 3rem;
+    border-radius: 1rem;
+    background: var(--accent-soft);
+    color: var(--accent);
+    margin-block-end: var(--space-2);
+    & :global(svg) { width: 1.4rem; height: 1.4rem; }
+  }
+
+  .lessons { padding-block: var(--space-6); }
+  .lessons-head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-4);
+    margin-block-end: var(--space-5);
+  }
+  .overall {
+    --ring: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    color: var(--text-muted);
+    font-size: var(--step--1);
+    transition: --ring 1s var(--ease-out);
+    & b { color: var(--text); }
+  }
+  .mini-ring {
+    width: 2.5rem;
+    rotate: -90deg;
+    & circle { fill: none; stroke-width: 5; }
+    & .bg { stroke: var(--border); }
+    & .fg { stroke: var(--ok); stroke-linecap: round; stroke-dasharray: var(--ring) 100; }
+  }
+  .lesson-list {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--space-3);
+    counter-reset: l;
+  }
+  .lesson-card {
+    display: grid;
+    grid-template-columns: auto auto 1fr auto;
+    gap: var(--space-4);
+    align-items: center;
+    padding: var(--space-4) var(--space-5);
+    text-decoration: none;
+    color: var(--text);
+    transition: transform 300ms var(--ease-out), box-shadow 300ms, border-color 300ms;
+    &:hover { transform: translateX(6px); box-shadow: var(--shadow); border-color: var(--accent); color: var(--text); }
+    &:hover .l-ic { rotate: -8deg; scale: 1.08; }
+  }
+  .num { font: 800 var(--step-1) var(--font-display); color: var(--text-muted); font-variant-numeric: tabular-nums; }
+  .l-ic {
+    display: grid; place-items: center;
+    width: 3rem; height: 3rem;
+    border-radius: 1rem;
+    background: var(--accent-soft);
+    color: var(--accent);
+    transition: rotate 400ms var(--ease-spring), scale 400ms var(--ease-spring);
+    & :global(svg) { width: 1.4rem; height: 1.4rem; }
+  }
+  .l-body { display: grid; gap: 0.15rem; }
+  .l-tag { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); }
+  .l-title { font-family: var(--font-display); font-weight: 700; font-size: var(--step-1); line-height: 1.25; }
+  .l-desc { color: var(--text-muted); font-size: var(--step--1); }
+  .l-meta { display: grid; justify-items: end; gap: var(--space-2); }
+  .l-min { display: inline-flex; gap: 0.3em; align-items: center; font-size: 0.8rem; color: var(--text-muted); white-space: nowrap; }
+  .l-status {
+    display: grid; place-items: center;
+    width: 1.75rem; height: 1.75rem;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    color: transparent;
+    transition: all 300ms var(--ease-spring);
+  }
+  .lesson-card:not([data-complete]) .l-status .visually-hidden { display: none; }
+  .lesson-card[data-complete] {
+    & .l-status { background: var(--ok); border-color: var(--ok); color: var(--on-status); scale: 1.05; }
+    & .num { color: var(--ok); }
+  }
+  @media (width < 36rem) {
+    .lesson-card { grid-template-columns: auto 1fr; padding: var(--space-4); }
+    .num { display: none; }
+    .l-meta { grid-column: 2; justify-items: start; grid-auto-flow: column; align-items: center; }
+  }
+</style>

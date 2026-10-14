@@ -1,0 +1,12 @@
+---
+import { getCollection } from 'astro:content';
+import LessonView from '../../../views/LessonView.astro';
+import { splitId } from '../../../i18n/ui';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('lessons', (e) => splitId(e.id).lang === 'en');
+  return entries.map((entry) => ({ params: { slug: splitId(entry.id).slug }, props: { entry } }));
+}
+const { entry } = Astro.props;
+---
+<LessonView entry={entry} />

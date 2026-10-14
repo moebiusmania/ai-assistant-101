@@ -1,0 +1,11 @@
+---
+import Base from '../layouts/Base.astro';
+import { routes } from '../i18n/ui';
+---
+<Base title="404">
+  <div class="narrow" style="padding-block: 6rem; display: grid; gap: 1rem; text-align: center;">
+    <h1>404</h1>
+    <p>Pagina non trovata · <span lang="en">Page not found</span></p>
+    <p><a class="btn btn-primary" href={routes.home('it')}>Torna all’inizio</a> <a class="btn" href={routes.home('en')} lang="en">Back home</a></p>
+  </div>
+</Base>

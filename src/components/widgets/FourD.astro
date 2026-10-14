@@ -1,0 +1,155 @@
+---
+/** Interactive 4D wheel: click a segment to explore each competency. */
+import Widget from './Widget.astro';
+import { getLang } from '../../i18n/ui';
+
+type D = { name: string; question: string; short: string; subs: { t: string; d: string }[]; example: string };
+interface Props { items: [D, D, D, D]; title?: string; hint?: string }
+
+const lang = getLang(Astro.currentLocale);
+const { items, title, hint } = Astro.props;
+const colors = ['var(--accent)', 'var(--teal-ink)', 'var(--amber-ink)', 'var(--coral-ink)'];
+const uid = `fourd-${Math.random().toString(36).slice(2, 7)}`;
+// Keep the heading outline intact whether or not the widget has its own (h3) title.
+const PanelHeading = title ? 'h4' : 'h3';
+
+const cx = 100, cy = 100, R = 92, r = 54, gap = 3;
+const pt = (rad: number, deg: number) => {
+  const a = ((deg - 90) * Math.PI) / 180;
+  return `${(cx + rad * Math.cos(a)).toFixed(2)} ${(cy + rad * Math.sin(a)).toFixed(2)}`;
+};
+const arc = (i: number) => {
+  const a0 = i * 90 + gap, a1 = (i + 1) * 90 - gap;
+  return `M${pt(R, a0)} A${R} ${R} 0 0 1 ${pt(R, a1)} L${pt(r, a1)} A${r} ${r} 0 0 0 ${pt(r, a0)}Z`;
+};
+const labelPos = (i: number) => {
+  const a = ((i * 90 + 45 - 90) * Math.PI) / 180;
+  const m = (R + r) / 2;
+  return { x: cx + m * Math.cos(a), y: cy + m * Math.sin(a) };
+};
+const subLabel = lang === 'it' ? 'Le tre abilità' : 'The three skills';
+const exLabel = lang === 'it' ? 'Esempio' : 'Example';
+---
+<four-d>
+  <Widget label={lang === 'it' ? 'Esplora le 4D' : 'Explore the 4Ds'} icon="compass" title={title} hint={hint}>
+    <div class="layout">
+      <svg class="wheel" viewBox="0 0 200 200" role="tablist" aria-label="4D">
+        <circle cx="100" cy="100" r="48" class="hub" />
+        <text x="100" y="96" text-anchor="middle" class="hub-t">AI</text>
+        <text x="100" y="112" text-anchor="middle" class="hub-t small">Fluency</text>
+        {items.map((d, i) => {
+          const p = labelPos(i);
+          return (
+            <g class="seg" role="tab" id={`${uid}-tab-${i}`} aria-controls={`${uid}-panel-${i}`} tabindex={i === 0 ? 0 : -1} aria-selected={i === 0 ? 'true' : 'false'} data-i={i} style={`--c:${colors[i]}`} aria-label={d.name}>
+              <path d={arc(i)} />
+              <text x={p.x} y={p.y + 4} text-anchor="middle">{d.name.charAt(0)}</text>
+            </g>
+          );
+        })}
+      </svg>
+      <div class="panels">
+        {items.map((d, i) => (
+          <div class="panel" role="tabpanel" id={`${uid}-panel-${i}`} aria-labelledby={`${uid}-tab-${i}`} tabindex="0" data-i={i} hidden={i !== 0} style={`--c:${colors[i]}`}>
+            <PanelHeading class="panel-title">{d.name}</PanelHeading>
+            <p class="question">“{d.question}”</p>
+            <p>{d.short}</p>
+            <p class="cap">{subLabel}</p>
+            <ul>
+              {d.subs.map((s) => <li><strong>{s.t}</strong> — {s.d}</li>)}
+            </ul>
+            <p class="ex"><span>{exLabel}</span>{d.example}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </Widget>
+</four-d>
+
+<script>
+  import { play } from '../../scripts/sound';
+
+  class FourD extends HTMLElement {
+    connectedCallback() {
+      const segs = [...this.querySelectorAll<SVGGElement>('.seg')];
+      const select = (i: number, focus = false) => {
+        segs.forEach((s, j) => {
+          s.setAttribute('aria-selected', String(i === j));
+          s.setAttribute('tabindex', i === j ? '0' : '-1');
+        });
+        this.querySelectorAll<HTMLElement>('.panel').forEach((p) => (p.hidden = Number(p.dataset.i) !== i));
+        if (focus) segs[i].focus();
+        play('pop');
+      };
+      segs.forEach((s, i) => {
+        s.addEventListener('click', () => select(i));
+        s.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(i); }
+          if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); select((i + 1) % 4, true); }
+          if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); select((i + 3) % 4, true); }
+          if (e.key === 'Home') { e.preventDefault(); select(0, true); }
+          if (e.key === 'End') { e.preventDefault(); select(3, true); }
+        });
+      });
+    }
+  }
+  customElements.define('four-d', FourD);
+</script>
+
+<style>
+  four-d { display: block; }
+  .layout { display: grid; gap: var(--space-5); align-items: center; }
+  @container (width > 38rem) {
+    .layout { grid-template-columns: minmax(12rem, 16rem) 1fr; }
+  }
+  .wheel {
+    width: min(100%, 16rem);
+    margin-inline: auto;
+    overflow: visible;
+    animation: spin-in 1s var(--ease-out);
+  }
+  @keyframes spin-in {
+    from { rotate: -90deg; opacity: 0; scale: 0.8; }
+  }
+  .hub { fill: var(--bg-sunk); }
+  .hub-t { font: 800 22px var(--font-display); fill: var(--text); }
+  .hub-t.small { font-size: 12px; font-weight: 600; fill: var(--text-muted); }
+  .seg {
+    cursor: pointer;
+    outline: none;
+    transform-origin: 100px 100px;
+    transition: transform 400ms var(--ease-spring);
+    & path {
+      fill: color-mix(in oklch, var(--c) 28%, var(--bg-elev));
+      stroke: var(--bg-elev);
+      stroke-width: 1;
+      transition: fill 250ms;
+    }
+    & text { font: 800 26px var(--font-display); fill: var(--c); pointer-events: none; transition: fill 250ms; }
+    &:hover path { fill: color-mix(in oklch, var(--c) 50%, var(--bg-elev)); }
+    &[aria-selected='true'] {
+      transform: scale(1.07);
+      & path { fill: var(--c); }
+      & text { fill: var(--bg-elev); }
+    }
+    &:focus-visible path { stroke: var(--text); stroke-width: 2.5; }
+  }
+  .panel {
+    animation: fade-up 350ms var(--ease-out);
+    border-inline-start: 4px solid var(--c);
+    padding-inline-start: var(--space-4);
+    &:focus-visible { outline-offset: 4px; }
+    & > * + * { margin-block-start: var(--space-2); }
+    & .panel-title { font-size: var(--step-2); color: var(--c); margin: 0; }
+    & .question { font-family: var(--font-display); font-size: var(--step-1); font-weight: 600; }
+    & p, & li { font-size: var(--step--1); }
+    & ul { padding-inline-start: 1.1em; display: grid; gap: var(--space-1); }
+    & li::marker { color: var(--c); }
+    & .cap { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; color: var(--text-muted); margin-block-start: var(--space-3); }
+    & .ex {
+      padding: var(--space-3);
+      border-radius: var(--radius-sm);
+      background: color-mix(in oklch, var(--c) 10%, var(--bg-elev));
+      & span { display: block; font-weight: 700; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--c); }
+    }
+  }
+</style>

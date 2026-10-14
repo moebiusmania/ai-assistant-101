@@ -1,0 +1,45 @@
+---
+import Icon from '../Icon.astro';
+import { getLang, t } from '../../i18n/ui';
+
+interface Props { slug: string }
+const lang = getLang(Astro.currentLocale);
+const tr = t(lang);
+---
+<lesson-complete data-slug={Astro.props.slug} data-done-label={tr('lesson.completed')}>
+  <button type="button" class="btn btn-primary big"><Icon name="check" /><span aria-live="polite">{tr('lesson.complete')}</span></button>
+</lesson-complete>
+
+<script>
+  import { play } from '../../scripts/sound';
+  import { confetti } from '../../scripts/confetti';
+  import { isDone, markDone } from '../../scripts/progress';
+
+  class LessonComplete extends HTMLElement {
+    connectedCallback() {
+      const slug = this.dataset.slug!;
+      const btn = this.querySelector('button')!;
+      const set = () => {
+        btn.classList.add('is-done');
+        btn.querySelector('span')!.textContent = this.dataset.doneLabel!;
+      };
+      if (isDone(slug)) set();
+      btn.addEventListener('click', () => {
+        const first = !isDone(slug);
+        markDone(slug);
+        set();
+        play('done');
+        confetti(btn);
+        if (first) document.dispatchEvent(new CustomEvent('aic:progress'));
+      });
+    }
+  }
+  customElements.define('lesson-complete', LessonComplete);
+</script>
+
+<style>
+  lesson-complete { display: block; text-align: center; }
+  .big { font-size: var(--step-0); padding: 0.9em 1.8em; }
+  .is-done { --btn-bg: var(--ok); --btn-fg: var(--on-status); }
+  .is-done:hover { background: var(--ok); }
+</style>

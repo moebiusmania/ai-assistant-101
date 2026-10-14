@@ -1,0 +1,110 @@
+---
+title: "Delega: cosa chiedere all’AI (e cosa no)"
+description: Non tutto va affidato all’AI. Impara a capire quando ti fa risparmiare tempo e quando è meglio fare da te.
+order: 3
+minutes: 7
+icon: hand
+tag: 1ª D · Delega
+---
+
+La prima domanda non è *“come lo chiedo?”*, ma **“ha senso chiederlo all’AI?”**. Delegare bene vuol dire tre cose.
+
+## 1. Sapere cosa vuoi (prima di aprire la chat)
+
+Sembra ovvio, ma è l’errore più comune: si apre l’assistente “per vedere cosa succede”. Fermati 20 secondi e chiediti:
+
+- **Qual è l’obiettivo?** Non “scrivere una mail”, ma “ottenere un rimborso dal negozio”.
+- **Cosa conta per me?** Velocità? Precisione? Un tocco personale?
+- **Come capirò che il risultato è buono?**
+
+<Callout type="tip" title="Il trucco dei 20 secondi">
+  <p>Prova a dire ad alta voce cosa vuoi ottenere, in una frase. Se non ci riesci, l’AI non potrà indovinarlo per te.</p>
+</Callout>
+
+## 2. Conoscere lo strumento
+
+Ogni assistente ha punti forti e limiti. Prima di affidargli qualcosa chiediti:
+
+- Può **cercare sul web** o lavora solo con quello che ha studiato?
+- Può **leggere file**, foto, PDF?
+- Dove finiscono i dati che gli do? (Ne parliamo nella lezione sulla Diligenza.)
+
+Se non lo sai, chiedilo all’assistente stesso. Ma ricorda: anche le informazioni che dà su se stesso possono essere sbagliate. Per le cose importanti, controlla le impostazioni o la pagina di aiuto del servizio.
+
+## 3. Dividere il lavoro
+
+Raramente la scelta è “tutto all’AI” o “tutto a me”. Spesso la soluzione migliore è **dividere**:
+
+| Di solito va bene all’AI | Di solito è meglio farlo tu |
+|---|---|
+| Prima bozza di un testo | Decisioni importanti (salute, soldi, legge) |
+| Riassumere, riordinare, riformulare | Tutto ciò che richiede i tuoi ricordi e sentimenti |
+| Trovare idee e alternative | Verificare fatti e numeri |
+| Spiegare concetti in modo semplice | Messaggi molto personali (condoglianze, scuse vere) |
+| Fare da “palestra”: simulazioni, quiz | Giudicare persone (selezioni, valutazioni) |
+
+<SortGame
+  title="Delegare o no?"
+  hint="Per ogni situazione scegli: lo affidi all’AI, lo fate insieme, o lo fai tu?"
+  buckets={[
+    { id: 'ai', label: 'All’AI', desc: 'Va bene delegarlo, con un controllo finale' },
+    { id: 'both', label: 'Insieme', desc: 'L’AI aiuta, ma la parte chiave è tua' },
+    { id: 'me', label: 'Io', desc: 'Meglio non delegarlo' },
+  ]}
+  items={[
+    { text: 'Riscrivere in modo più chiaro gli appunti di una riunione', bucket: 'ai', why: 'Compito di riordino testuale, perfetto per l’AI. Poi dai un’occhiata.' },
+    { text: 'Decidere se interrompere una cura medica', bucket: 'me', why: 'Decisione di salute: l’AI può aiutarti a preparare le domande, ma si decide con il medico.' },
+    { text: 'Scrivere il discorso per il compleanno di tua madre', bucket: 'both', why: 'L’AI può aiutare con struttura e frasi, ma ricordi ed emozioni li porti tu.' },
+    { text: 'Trovare 10 idee per una cena con pochi ingredienti', bucket: 'ai', why: 'Brainstorming a basso rischio: ideale.' },
+    { text: 'Scegliere quale candidato assumere', bucket: 'me', why: 'Giudicare persone richiede responsabilità umana e rischia pregiudizi (bias).' },
+    { text: 'Preparare una lettera di reclamo alla compagnia telefonica', bucket: 'both', why: 'L’AI fa una bozza ottima, tu aggiungi i dati veri e controlli il tono.' },
+    { text: 'Capire una parola difficile in un articolo', bucket: 'ai', why: 'Spiegare concetti è uno dei suoi punti di forza.' },
+  ]}
+/>
+
+## Quanto “costa” un errore?
+
+Una regola semplice per decidere: **più alto è il costo di un errore, più devi controllare** (o fare da te).
+
+<div class="risk">
+
+- 🟢 **Basso** — idee per un regalo, una ricetta, il nome di una playlist. Se sbaglia, pazienza.
+- 🟡 **Medio** — un’email di lavoro, un riassunto per lo studio. Rileggi con attenzione.
+- 🔴 **Alto** — salute, soldi, documenti legali, sicurezza. Usa l’AI solo per capire e prepararti, poi verifica con un professionista.
+
+</div>
+
+<Checklist
+  id="delegation"
+  title="Prima di delegare, chiediti:"
+  items={[
+    'So spiegare in una frase cosa voglio ottenere?',
+    'L’AI è adatta a questo tipo di compito?',
+    'Quanto sarebbe grave un errore?',
+    'Quale parte è giusto che resti mia?',
+    'Avrò il tempo di controllare il risultato?',
+  ]}
+/>
+
+<Quiz
+  questions={[
+    {
+      q: 'Qual è il primo passo per delegare bene?',
+      options: ['Scrivere un prompt lunghissimo', 'Avere chiaro cosa vuoi ottenere', 'Scegliere l’assistente più famoso'],
+      answer: 1,
+      why: 'Se l’obiettivo non è chiaro a te, non può esserlo nemmeno per l’AI.',
+    },
+    {
+      q: 'Devi capire gli effetti collaterali di un farmaco. Cosa fai?',
+      options: ['Chiedo all’AI e seguo quello che dice', 'Uso l’AI per capire i termini e preparare domande, poi chiedo al medico o al farmacista', 'Non ne parlo con nessuno'],
+      answer: 1,
+      why: 'Con la salute l’AI è utile per capire e prepararti, ma la decisione va presa con un professionista.',
+    },
+    {
+      q: 'Più è alto il costo di un errore…',
+      options: ['…più puoi fidarti dell’AI', '…più devi controllare o fare da te', '…non cambia nulla'],
+      answer: 1,
+      why: 'Il livello di controllo deve crescere con il rischio.',
+    },
+  ]}
+/>

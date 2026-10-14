@@ -1,0 +1,163 @@
+---
+/** The Description–Discernment loop, stepped through with an example conversation. */
+import Widget from './Widget.astro';
+import Icon from '../Icon.astro';
+import { getLang, t } from '../../i18n/ui';
+
+type Step = { side: 'a' | 'b'; text: string };
+interface Props { a: string; b: string; steps: Step[]; title?: string; hint?: string }
+const lang = getLang(Astro.currentLocale);
+const tr = t(lang);
+const { a, b, steps, title, hint } = Astro.props;
+const loop = 'M 80 110 C 80 20, 320 20, 320 110 C 320 200, 80 200, 80 110 Z';
+---
+<loop-diagram data-steps={JSON.stringify(steps)}>
+  <Widget label={lang === 'it' ? 'Il ciclo' : 'The loop'} icon="refresh" title={title} hint={hint}>
+    <svg viewBox="0 0 400 220" class="diagram" aria-hidden="true">
+      <defs>
+        <marker id="loop-arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M0 0 L10 5 L0 10z" fill="var(--text-muted)" />
+        </marker>
+      </defs>
+      <path d="M 110 50 C 160 26, 240 26, 290 50" class="arrow" marker-end="url(#loop-arrow)" />
+      <path d="M 290 170 C 240 194, 160 194, 110 170" class="arrow" marker-end="url(#loop-arrow)" />
+      <path d={loop} class="track" />
+      <g class="node a"><circle cx="80" cy="110" r="44" /><text x="80" y="115" text-anchor="middle">{a}</text></g>
+      <g class="node b"><circle cx="320" cy="110" r="44" /><text x="320" y="115" text-anchor="middle">{b}</text></g>
+      <circle class="dot" r="8" cx="80" cy="110" />
+    </svg>
+    <ol class="steps" aria-live="polite" tabindex="0" aria-label={title ?? (lang === 'it' ? 'Passaggi' : 'Steps')}>
+      {steps.map((s, i) => (
+        <li data-side={s.side} hidden={i > 0}><span class="badge">{s.side === 'a' ? a : b}</span>{s.text}</li>
+      ))}
+    </ol>
+    <div class="widget-actions">
+      <button class="btn btn-primary next" type="button">{tr('w.next')}<Icon name="arrowRight" /></button>
+      <button class="btn btn-ghost reset" type="button"><Icon name="refresh" />{tr('w.reset')}</button>
+    </div>
+  </Widget>
+</loop-diagram>
+
+<script>
+  import { play } from '../../scripts/sound';
+  import { reducedMotion } from '../../scripts/ui';
+
+  class LoopDiagram extends HTMLElement {
+    i = 0;
+    pos = 0; // distance travelled along the loop, in "halves"
+    connectedCallback() {
+      const items = [...this.querySelectorAll<HTMLElement>('.steps li')];
+      const track = this.querySelector<SVGPathElement>('.track')!;
+      const dot = this.querySelector<SVGCircleElement>('.dot')!;
+      const nextBtn = this.querySelector<HTMLButtonElement>('.next')!;
+      const len = track.getTotalLength();
+
+      const placeDot = (halves: number) => {
+        const p = track.getPointAtLength(((halves % 2) / 2) * len);
+        dot.setAttribute('cx', String(p.x));
+        dot.setAttribute('cy', String(p.y));
+      };
+      // The dashed arrows march for a few seconds after each step, then rest (no endless motion).
+      const arrows = () => this.querySelectorAll<SVGPathElement>('.arrow').forEach((a) => a.getAnimations().forEach((an) => { an.currentTime = 0; an.play(); }));
+      const travel = (from: number, to: number) => {
+        if (reducedMotion()) return placeDot(to);
+        dot.classList.add('moving');
+        const t0 = performance.now();
+        const dur = 900;
+        const tick = (now: number) => {
+          const k = Math.min(1, (now - t0) / dur);
+          const e = 1 - Math.pow(1 - k, 3);
+          placeDot(from + (to - from) * e);
+          if (k < 1) requestAnimationFrame(tick);
+          else dot.classList.remove('moving');
+        };
+        requestAnimationFrame(tick);
+      };
+      const mark = () => {
+        const side = items[this.i].dataset.side;
+        this.dataset.side = side;
+        nextBtn.disabled = this.i >= items.length - 1;
+      };
+
+      nextBtn.addEventListener('click', () => {
+        if (this.i >= items.length - 1) return;
+        const prevSide = items[this.i].dataset.side;
+        this.i++;
+        items[this.i].hidden = false;
+        items[this.i].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        if (items[this.i].dataset.side !== prevSide) {
+          travel(this.pos, this.pos + 1);
+          this.pos++;
+        }
+        mark();
+        arrows();
+        play('pop');
+        // Focus would be lost on the now-disabled button.
+        if (nextBtn.disabled) this.querySelector<HTMLButtonElement>('.reset')!.focus();
+      });
+      this.querySelector('.reset')!.addEventListener('click', () => {
+        this.i = 0;
+        this.pos = 0;
+        items.forEach((li, j) => (li.hidden = j > 0));
+        placeDot(0);
+        mark();
+        play('tap');
+      });
+      mark();
+    }
+  }
+  customElements.define('loop-diagram', LoopDiagram);
+</script>
+
+<style>
+  loop-diagram { display: block; }
+  .diagram { width: 100%; max-width: 30rem; margin-inline: auto; }
+  .track { fill: none; stroke: none; }
+  .arrow { fill: none; stroke: var(--text-muted); stroke-width: 2; stroke-dasharray: 6 6; animation: dash 1.2s linear 4; }
+  @keyframes dash { to { stroke-dashoffset: -12; } }
+  .node {
+    transition: scale 400ms var(--ease-spring);
+    transform-box: fill-box;
+    transform-origin: center;
+    & circle { fill: var(--bg-sunk); stroke: var(--c); stroke-width: 3; transition: fill 300ms; }
+    & text { font: 700 14px var(--font-display); fill: var(--text); }
+  }
+  .node.a { --c: var(--accent); }
+  .node.b { --c: var(--teal); }
+  loop-diagram[data-side='a'] .node.a,
+  loop-diagram[data-side='b'] .node.b {
+    scale: 1.08;
+    & circle { fill: color-mix(in oklch, var(--c) 20%, var(--bg-elev)); }
+  }
+  .dot { fill: var(--amber); filter: drop-shadow(0 0 6px var(--amber)); opacity: 0; transition: opacity 250ms; }
+  .dot.moving { opacity: 1; }
+
+  .steps {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--space-2);
+    margin-block-start: var(--space-3);
+    max-height: 18rem;
+    overflow-y: auto;
+    & li {
+      padding: var(--space-3) var(--space-4);
+      border-radius: var(--radius);
+      background: var(--bg-sunk);
+      font-size: var(--step--1);
+      animation: fade-up 350ms var(--ease-out);
+      border-inline-start: 4px solid var(--c);
+    }
+    & li[data-side='a'] { --c: var(--accent); --c-ink: var(--accent); }
+    & li[data-side='b'] { --c: var(--teal); --c-ink: var(--teal-ink); }
+    & .badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--c-ink);
+      margin-inline-end: 0.6em;
+    }
+  }
+</style>

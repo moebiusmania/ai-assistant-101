@@ -1,0 +1,159 @@
+---
+/** Draws a personal completion certificate on a canvas and lets the user download it. */
+import Widget from './Widget.astro';
+import Icon from '../Icon.astro';
+import { getLang, t } from '../../i18n/ui';
+
+const lang = getLang(Astro.currentLocale);
+const tr = t(lang);
+const i18n = { title: tr('cert.title'), body: tr('cert.body'), course: tr('cert.course'), lang };
+---
+<cert-maker data-i18n={JSON.stringify(i18n)}>
+  <Widget label={lang === 'it' ? 'Il tuo attestato' : 'Your certificate'} icon="trophy" title={tr('cert.make')}>
+    <form class="row">
+      <label class="visually-hidden" for="cert-name">{tr('cert.name')}</label>
+      <input id="cert-name" name="name" type="text" maxlength="40" placeholder={tr('cert.name')} autocomplete="name" required />
+      <button class="btn btn-primary" type="submit"><Icon name="sparkle" />{tr('cert.make')}</button>
+    </form>
+    <canvas width="1600" height="1000" role="img" hidden></canvas>
+    <div class="widget-actions">
+      <a class="btn download" hidden download={lang === 'it' ? 'attestato-ai.png' : 'certificate-ai.png'}><Icon name="download" />{tr('cert.download')}</a>
+    </div>
+  </Widget>
+</cert-maker>
+
+<script>
+  import { play } from '../../scripts/sound';
+  import { confetti } from '../../scripts/confetti';
+  import { read, write } from '../../scripts/storage';
+  import { strings } from '../../scripts/ui';
+
+  class CertMaker extends HTMLElement {
+    i18n = strings(this);
+    connectedCallback() {
+      const form = this.querySelector('form')!;
+      const input = form.querySelector('input')!;
+      input.value = read<string>('aic:name', '');
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = input.value.trim();
+        if (!name) return;
+        write('aic:name', name);
+        await document.fonts.ready;
+        this.draw(name);
+        play('done');
+        confetti(this.querySelector('canvas')!);
+      });
+    }
+
+    draw(name: string) {
+      const cv = this.querySelector('canvas')!;
+      const c = cv.getContext('2d')!;
+      const W = cv.width, H = cv.height;
+      const display = '"Bricolage Grotesque Variable", system-ui, sans-serif';
+      const body = '"Inter Variable", system-ui, sans-serif';
+
+      // Background
+      const g = c.createLinearGradient(0, 0, W, H);
+      g.addColorStop(0, '#f7f4ff');
+      g.addColorStop(1, '#eefaf7');
+      c.fillStyle = g;
+      c.fillRect(0, 0, W, H);
+
+      // Soft blobs
+      const blob = (x: number, y: number, r: number, col: string) => {
+        const rg = c.createRadialGradient(x, y, 0, x, y, r);
+        rg.addColorStop(0, col);
+        rg.addColorStop(1, 'transparent');
+        c.fillStyle = rg;
+        c.fillRect(x - r, y - r, r * 2, r * 2);
+      };
+      blob(140, 120, 420, 'rgba(109,92,240,0.22)');
+      blob(W - 120, H - 100, 460, 'rgba(24,169,153,0.2)');
+      blob(W - 260, 160, 260, 'rgba(242,165,65,0.18)');
+
+      // Frame
+      c.strokeStyle = 'rgba(91,75,219,0.35)';
+      c.lineWidth = 3;
+      c.beginPath();
+      c.roundRect(50, 50, W - 100, H - 100, 36);
+      c.stroke();
+
+      // Network decoration
+      c.strokeStyle = 'rgba(91,75,219,0.18)';
+      c.fillStyle = 'rgba(91,75,219,0.35)';
+      c.lineWidth = 2;
+      const pts = Array.from({ length: 14 }, (_, i) => [1200 + Math.cos(i * 1.7) * 220 + (i % 3) * 30, 520 + Math.sin(i * 2.3) * 260]);
+      pts.forEach(([x, y], i) => pts.slice(i + 1, i + 3).forEach(([x2, y2]) => { c.beginPath(); c.moveTo(x, y); c.lineTo(x2, y2); c.stroke(); }));
+      pts.forEach(([x, y]) => { c.beginPath(); c.arc(x, y, 6, 0, Math.PI * 2); c.fill(); });
+
+      c.textAlign = 'left';
+      c.fillStyle = '#5b4bdb';
+      c.font = `700 30px ${body}`;
+      c.fillText(this.i18n.title.toUpperCase(), 130, 220);
+
+      c.fillStyle = '#1d1a2b';
+      let size = 120;
+      c.font = `800 ${size}px ${display}`;
+      while (c.measureText(name).width > 1000 && size > 50) { size -= 4; c.font = `800 ${size}px ${display}`; }
+      c.fillText(name, 130, 400);
+
+      c.fillStyle = '#4b4860';
+      c.font = `400 40px ${body}`;
+      c.fillText(this.i18n.body, 130, 490);
+      c.fillStyle = '#1d1a2b';
+      c.font = `700 50px ${display}`;
+      c.fillText(this.i18n.course, 130, 570, 1000);
+
+      // 4D badges (darker shades so the white labels reach 4.5:1)
+      const ds = [['D', '#6d5cf0'], ['D', '#0f7d71'], ['D', '#a8650d'], ['D', '#c2412f']];
+      const labels = this.i18n.lang === 'it' ? ['Delega', 'Descrizione', 'Discernimento', 'Diligenza'] : ['Delegation', 'Description', 'Discernment', 'Diligence'];
+      ds.forEach(([, col], i) => {
+        const x = 130 + i * 250, y = 700;
+        c.fillStyle = col;
+        c.beginPath(); c.roundRect(x, y, 230, 64, 32); c.fill();
+        c.fillStyle = '#fff';
+        c.font = `700 26px ${body}`;
+        c.textAlign = 'center';
+        c.fillText(labels[i], x + 115, y + 42);
+        c.textAlign = 'left';
+      });
+
+      c.fillStyle = '#6b6880';
+      c.font = `400 28px ${body}`;
+      const date = new Date().toLocaleDateString(this.i18n.lang === 'it' ? 'it-IT' : 'en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+      c.fillText(date, 130, 880);
+
+      // Text alternative for the drawn image.
+      cv.setAttribute('aria-label', `${this.i18n.title}: ${name} ${this.i18n.body} “${this.i18n.course}”, ${date}`);
+      cv.hidden = false;
+      cv.animate([{ opacity: 0, transform: 'scale(0.95) rotate(-1deg)' }, { opacity: 1, transform: 'none' }], { duration: 600, easing: 'cubic-bezier(0.22,1,0.36,1)' });
+      const a = this.querySelector<HTMLAnchorElement>('.download')!;
+      a.href = cv.toDataURL('image/png');
+      a.hidden = false;
+      a.focus({ preventScroll: true });
+    }
+  }
+  customElements.define('cert-maker', CertMaker);
+</script>
+
+<style>
+  cert-maker { display: block; }
+  .row { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  input {
+    flex: 1 1 14rem;
+    min-height: 2.75rem;
+    padding: 0.6em 1em;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--border-control);
+    background: var(--bg-sunk);
+    &:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-color: var(--accent); }
+  }
+  canvas {
+    width: 100%;
+    height: auto;
+    margin-block-start: var(--space-4);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+  }
+</style>

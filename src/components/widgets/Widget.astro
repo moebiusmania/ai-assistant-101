@@ -1,0 +1,19 @@
+---
+import Icon from '../Icon.astro';
+
+interface Props {
+  label: string;
+  icon?: string;
+  title?: string;
+  hint?: string;
+  class?: string;
+  [key: string]: unknown;
+}
+const { label, icon = 'cursor', title, hint, class: cls, ...rest } = Astro.props;
+---
+<section class:list={['widget', cls]} {...rest}>
+  <p class="widget-label"><Icon name={icon} />{label}</p>
+  {title && <h3 class="widget-title">{title}</h3>}
+  {hint && <p class="widget-hint">{hint}</p>}
+  <slot />
+</section>

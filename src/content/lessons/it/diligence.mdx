@@ -1,0 +1,100 @@
+---
+title: "Diligenza: privacy, onestà e responsabilità"
+description: Cosa non scrivere mai a un assistente AI, quando dire che l’hai usato e perché l’ultima parola è sempre tua.
+order: 6
+minutes: 9
+icon: shield
+tag: 4ª D · Diligenza
+---
+
+L’ultima D è forse la più importante: **sei tu il responsabile** di come usi l’AI e di quello che ne esce. Il framework la divide in tre momenti.
+
+## 1. Quando scegli (cosa usare e cosa condividere)
+
+### Proteggi i tuoi dati
+
+Quando scrivi in una chat, il testo viene inviato ai server dell’azienda che offre il servizio. A seconda delle impostazioni, le conversazioni possono essere **conservate**, **lette da revisori** o **usate per migliorare il modello**.
+
+<Callout type="warn" title="Non scrivere mai in una chat">
+  <p>Password e codici di accesso · numeri di carte di credito e IBAN completi · PIN e codici OTP · documenti d’identità · dati sanitari tuoi o di altri senza pensarci · informazioni riservate del tuo lavoro.</p>
+</Callout>
+
+La buona notizia: quasi sempre **puoi ottenere lo stesso aiuto senza dati personali**. Basta sostituirli con segnaposto come [NOME] o [INDIRIZZO].
+
+<Redact
+  title="Rendi il testo anonimo"
+  hint="Vuoi che l’AI ti aiuti a rispondere a questa email. Clicca le informazioni personali per nasconderle, poi premi “Controlla”."
+  text={'Gentile [[Dott.ssa Rinaldi|NOME]],\nle scrivo per conto di mia madre, [[Maria Esposito|NOME]], nata il [[12/03/1951|DATA]], codice fiscale [[SPSMRA51C52F839X|CF]].\nDopo la visita di ((martedì)) le è stata prescritta una nuova terapia per la [[pressione alta|SALUTE]], ma ha avuto ((mal di testa)) e vorremmo capire se continuare.\nPotete richiamarci al [[333 123 4567|TELEFONO]]? Abitiamo in [[via Roma 14, Napoli|INDIRIZZO]].\nGrazie, ((Luca))'}
+/>
+
+<Callout type="tip" title="Controlla le impostazioni">
+  <p>Quasi tutti gli assistenti hanno un’opzione per <strong>non usare le tue chat per l’addestramento</strong> e una modalità di chat temporanea. Cercale in “Impostazioni” → “Privacy” o “Dati”. Se usi l’AI per lavoro, chiedi quali strumenti sono approvati dalla tua azienda.</p>
+</Callout>
+
+<SortGame
+  title="Lo scriveresti in chat?"
+  hint="Per ogni informazione decidi: va bene, meglio anonimizzarla, oppure mai."
+  buckets={[
+    { id: 'ok', label: '✅ Va bene', desc: 'Nessun rischio' },
+    { id: 'anon', label: '✏️ Anonimizza', desc: 'Utile, ma togli nomi e dati' },
+    { id: 'never', label: '⛔ Mai', desc: 'Non serve e può fare danni' },
+  ]}
+  items={[
+    { text: 'La password della tua email', bucket: 'never', why: 'Nessun assistente ne ha bisogno. Mai.' },
+    { text: 'Una ricetta di famiglia da adattare', bucket: 'ok', why: 'Nessun dato personale: via libera.' },
+    { text: 'Le analisi del sangue di tuo padre, con nome e cognome', bucket: 'anon', why: 'Puoi chiedere spiegazioni sui valori, ma togli nome e dati identificativi. E poi parlane col medico.' },
+    { text: 'Il codice OTP arrivato via SMS', bucket: 'never', why: 'I codici OTP servono solo a te: chi li chiede è quasi sempre un truffatore.' },
+    { text: 'Una lite con un collega, per chiedere consiglio', bucket: 'anon', why: 'Va bene chiedere consiglio, ma senza nomi e dettagli riconoscibili.' },
+    { text: 'Il numero completo della tua carta di credito', bucket: 'never', why: 'Mai, per nessun motivo.' },
+    { text: 'Il testo di un annuncio per vendere la bici', bucket: 'ok', why: 'È pensato per essere pubblico: nessun problema.' },
+  ]}
+/>
+
+## 2. Quando condividi (trasparenza)
+
+Se hai usato l’AI in modo importante per un lavoro, **dillo** quando è rilevante: a scuola, all’università, in un articolo, in un documento di lavoro. Non c’è nulla di cui vergognarsi: è uno strumento, come la calcolatrice o il correttore automatico.
+
+- A scuola e al lavoro **informati sulle regole**: alcuni permettono l’AI, altri no, altri solo in certi modi.
+- Una formula semplice: *“Ho usato un assistente AI per la prima bozza e per correggere il testo; contenuti e verifiche sono miei.”*
+- **Non spacciare per tuo** un testo creativo generato interamente dall’AI, se chi lo riceve si aspetta che l’abbia scritto tu.
+
+## 3. Quando pubblichi o consegni (responsabilità)
+
+Prima di mandare, firmare o pubblicare qualcosa prodotto con l’AI:
+
+- **Rileggilo tutto.** Non solo l’inizio.
+- **Verifica** fatti, numeri e nomi (lezione sul Discernimento).
+- Chiediti: *“Sarei a mio agio a difendere ogni frase di questo testo?”*
+
+<Callout type="key" title="La regola d’oro">
+  <p>L’AI è un collaboratore, non un capro espiatorio. <strong>Se lo firmi tu, è tuo</strong>: errori compresi.</p>
+</Callout>
+
+## Altri rischi da conoscere
+
+- **Truffe con l’AI**: voci clonate, foto false, email perfette. Se un “parente” ti chiama chiedendo soldi urgenti, riattacca e richiama tu al numero che conosci.
+- **Immagini e video falsi** (deepfake): prima di condividere qualcosa di scioccante, cerca conferme su fonti affidabili.
+- **Rapporto con l’AI**: è un ottimo strumento per sfogarsi o riflettere, ma non sostituisce amici, famiglia o un professionista della salute mentale.
+
+<Quiz
+  questions={[
+    {
+      q: 'Vuoi aiuto per scrivere un reclamo alla banca. Cosa incolli nella chat?',
+      options: ['Tutto, IBAN e numero di conto compresi', 'La situazione, con [NOME] e [IBAN] al posto dei dati veri', 'Il PIN, così l’AI verifica il problema'],
+      answer: 1,
+      why: 'L’AI non ha bisogno dei dati veri per scrivere un buon reclamo: li aggiungi tu alla fine.',
+    },
+    {
+      q: 'Hai usato l’AI per la bozza di una relazione di lavoro. Cosa fai prima di consegnarla?',
+      options: ['La consegno così: l’AI non sbaglia', 'La rileggo tutta, verifico i dati e, se richiesto, dico che ho usato l’AI', 'Cambio due parole così sembra mia'],
+      answer: 1,
+      why: 'Rileggere, verificare ed essere trasparenti: sono le tre facce della Diligenza.',
+    },
+    {
+      q: 'Ricevi un messaggio vocale di tuo figlio che chiede soldi urgentemente da un numero sconosciuto. Cosa fai?',
+      options: ['Mando subito i soldi', 'Richiamo mio figlio al suo numero di sempre per verificare', 'Rispondo chiedendo l’IBAN'],
+      answer: 1,
+      why: 'Le voci si possono clonare con l’AI. Verifica sempre attraverso un canale che conosci.',
+    },
+  ]}
+/>

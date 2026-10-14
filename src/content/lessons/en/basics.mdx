@@ -1,0 +1,146 @@
+---
+title: What an AI assistant really is
+description: How it works “behind the scenes”, in plain words. And why it is sometimes wrong with great confidence.
+order: 1
+minutes: 8
+icon: brain
+tag: The basics
+---
+
+You’ve surely heard of ChatGPT, Claude, Gemini, Mistral’s Le Chat or Copilot. They are all **<Term id="assistant">AI assistants</Term>**: programs you can “chat” with as you would with a person. You type a question, you get an answer.
+
+The names and the button colours change, but **they all work the same way**. That’s why this course isn’t about any particular product: what you learn here works for all of them.
+
+<ChatSim messages={[
+  { from: 'user', text: 'Hi! Can you explain in two lines what you are?' },
+  { from: 'ai', text: 'Sure! I’m an **AI assistant**: a program that has read a huge amount of text and learned to reply by writing, one word after another. I can help you write, summarise, explain and brainstorm. But I can also make mistakes, so always check the important stuff.' },
+]} />
+
+## A very good “sentence finisher”
+
+Inside every assistant there is a **<Term id="llm">language model</Term>**. Think of it as your phone keyboard’s autocomplete… but enormously more powerful.
+
+During <Term id="training">training</Term>, the model read a gigantic amount of text (books, websites, articles). From that it learned which words tend to follow others. When you write to it, **it doesn’t look the answer up in an archive**: it builds it by choosing the most suitable word, then the next one, then another.
+
+<NextWord
+  title="Pick the next word"
+  hint="Press “Next word”: the AI draws from the most likely words. Then move the temperature and try again: you’ll get different sentences."
+  start="Every morning, right after waking up, I drink"
+  steps={[
+    [{ w: 'a', p: 0.62 }, { w: 'some', p: 0.2 }, { w: 'my', p: 0.13 }, { w: 'happily', p: 0.05 }],
+    [{ w: 'coffee', p: 0.7 }, { w: 'glass', p: 0.17 }, { w: 'tea', p: 0.1 }, { w: 'smoothie', p: 0.03 }],
+    [{ w: 'while', p: 0.4 }, { w: 'and', p: 0.35 }, { w: 'in', p: 0.2 }, { w: 'singing', p: 0.05 }],
+    [{ w: 'reading', p: 0.45 }, { w: 'watching', p: 0.3 }, { w: 'on', p: 0.2 }, { w: 'with a penguin', p: 0.05 }],
+  ]}
+/>
+
+Did you notice? At low temperature you almost always get the same, “most obvious” sentence. At high temperature it gets more varied, sometimes funny. Assistants use something in between: that’s why **if you ask the same question twice, you may get two different answers**.
+
+<Callout type="key" title="The most important idea of this lesson">
+  <p>An AI assistant doesn’t “know” things the way a person does. It produces the <strong>most likely</strong> text for your request. Usually likely text is also correct… but not always.</p>
+</Callout>
+
+## What it’s good at
+
+Precisely because it has read so much, an AI assistant is excellent with **words and ideas**:
+
+- **Writing and rewriting**: emails, messages, letters, posts. Changing the tone too (kinder, more formal, shorter).
+- **Summarising**: a long document, an article, meeting notes.
+- **Explaining**: a hard concept, a technical term, a bill, with examples tailored to you.
+- **Brainstorming**: ideas for a gift, a name, a trip, a dinner.
+- **Translating** and fixing grammar mistakes.
+- **Organising**: turning messy notes into a list, a plan, a table.
+
+Many assistants today are also <Term id="multimodal">multimodal</Term>: you can send them a photo, a PDF, or talk to them.
+
+## What it’s bad at (and why)
+
+### 1. It makes things up: “hallucinations”
+
+Since it produces *likely* text, it sometimes writes things that are **false but believable**: a wrong date, a quote nobody said, a book that doesn’t exist, a link that goes nowhere. This is called a <Term id="hallucination">hallucination</Term>. And the tone stays confident and convincing even when it’s wrong.
+
+<ChatSim
+  label="A hallucination example"
+  messages={[
+    { from: 'user', text: 'Who won the “Golden Lightbulb” innovation award in 1987?' },
+    { from: 'ai', text: 'The 1987 Golden Lightbulb award went to engineer **Laura Bennett** for her work on portable solar panels.', note: 'This award doesn’t exist. The AI built a plausible answer instead of saying “I don’t know”.' },
+  ]}
+/>
+
+### 2. It has an expiry date
+
+The model stopped studying at some point: that’s its <Term id="cutoff">knowledge cutoff</Term>. It knows nothing about what happened afterwards, **unless the assistant can search the web** (many now do: you can usually tell because it shows sources).
+
+### 3. It has limited memory
+
+During a chat, the assistant remembers what you’ve said… but only up to a point. This memory is called the <Term id="context">context window</Term>. In very long conversations, the oldest parts can “drop out” of memory.
+
+<ContextWindow
+  title="Watch the memory fill up"
+  hint="Add messages to the chat. When memory is full, the oldest messages are forgotten."
+  capacity={5}
+  messages={[
+    'My name is Julia and I’m vegetarian',
+    'Nice to meet you Julia! How can I help?',
+    'I’m hosting a dinner for 6 people',
+    'Great! What kind of dinner?',
+    'Something simple, I’m short on time',
+    'Here are 3 quick ideas…',
+    'Can you give me a shopping list?',
+    'Sure, here’s the list…',
+    'Add a dessert',
+    'I suggest a tiramisu…',
+    'And a main course?',
+    'How about a roast beef?',
+  ]}
+/>
+
+See? The last answer suggests meat: “I’m vegetarian” had dropped out of memory. **Practical tip**: when you change topic, open a new chat. And if a conversation is very long, repeat the important information.
+
+<Callout type="info" title="What about different chats?">
+  <p>Usually, every new chat starts from scratch. Some assistants have a “memory” feature that remembers a few things between chats: you’ll find it in the settings, where you can view, edit or turn it off.</p>
+</Callout>
+
+### 4. It doesn’t count, calculate or “see” like we do
+
+It sounds odd, but a language model can get a simple sum or the number of letters in a word wrong. That’s because it reads text in small pieces called <Term id="token">tokens</Term>, not letter by letter. For important calculations, ask it to use a calculation tool (if it has one) or check with a calculator yourself.
+
+## Summing up
+
+| The AI assistant… | So you… |
+|---|---|
+| writes the most likely text | check important facts |
+| can make things up confidently | don’t trust the tone alone |
+| has a knowledge cutoff | ask for sources on recent news |
+| has limited memory | open new chats and repeat key info |
+| is great with words and ideas | use it to write, explain, organise |
+
+<Quiz
+  title="Test yourself"
+  questions={[
+    {
+      q: 'How does an AI assistant produce its answers?',
+      options: ['It looks up the right answer in a huge archive', 'It picks one word at a time, based on what is most likely', 'It asks a human operator', 'It copies the first Google result'],
+      answer: 1,
+      why: 'It builds text piece by piece, picking the most likely words. That’s why it can sound confident even when it’s wrong.',
+    },
+    {
+      q: 'The AI gives you a quote with name, date and source. What do you do?',
+      options: ['Use it right away: it’s very precise', 'Check it before using it', 'Ask the AI if it’s sure, and use it if it says yes'],
+      answer: 1,
+      why: 'Precise details don’t mean true details. And the AI can confirm wrong things too: check an outside source.',
+    },
+    {
+      q: 'After a very long chat, the AI “forgets” something you told it at the start. Why?',
+      options: ['It got offended', 'The oldest parts dropped out of its short-term memory', 'There’s a virus'],
+      answer: 1,
+      why: 'The context window has a limit. Fix: repeat key information or open a new chat with a summary.',
+    },
+    {
+      q: 'Which task suits an AI assistant best?',
+      options: ['Knowing last night’s match result (without web search)', 'Rewriting an email in a kinder tone', 'Remembering your ID number forever'],
+      answer: 1,
+      why: 'Writing and rewriting is its strength. Recent news needs web search, and personal data is best kept to yourself.',
+    },
+  ]}
+/>

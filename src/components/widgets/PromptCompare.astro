@@ -1,0 +1,145 @@
+---
+/** Side-by-side (or toggled, on small screens) comparison of a vague and a clear request. */
+import Widget from './Widget.astro';
+import { format } from '../../lib/format';
+import { getLang, t } from '../../i18n/ui';
+
+type Side = { prompt: string; answer: string; verdict: string };
+interface Props { before: Side; after: Side; title?: string; hint?: string }
+
+const lang = getLang(Astro.currentLocale);
+const tr = t(lang);
+const { before, after, title, hint } = Astro.props;
+const sides = [
+  { key: 'before', label: tr('w.before'), ...before },
+  { key: 'after', label: tr('w.after'), ...after },
+];
+const uid = `cmp-${Math.random().toString(36).slice(2, 7)}`;
+---
+<prompt-compare>
+  <Widget label={lang === 'it' ? 'Prima e dopo' : 'Before and after'} icon="eye" title={title} hint={hint}>
+    <div class="switch" role="tablist" aria-label={lang === 'it' ? 'Confronta le richieste' : 'Compare the requests'}>
+      {sides.map((s, i) => (
+        <button type="button" role="tab" id={`${uid}-tab-${s.key}`} aria-controls={`${uid}-panel-${s.key}`} data-key={s.key} aria-selected={i === 1 ? 'true' : 'false'} tabindex={i === 1 ? 0 : -1}>{s.label}</button>
+      ))}
+      <span class="thumb" aria-hidden="true"></span>
+    </div>
+    <div class="panes">
+      {sides.map((s, i) => (
+        <div class="pane" role="tabpanel" id={`${uid}-panel-${s.key}`} aria-labelledby={`${uid}-tab-${s.key}`} tabindex="0" data-key={s.key} data-active={i === 1 ? '' : undefined}>
+          <div class="u"><Fragment set:html={format(s.prompt)} /></div>
+          <div class="a"><Fragment set:html={format(s.answer)} /></div>
+          <p class="verdict" data-kind={s.key === 'after' ? 'ok' : 'bad'}>{s.verdict}</p>
+        </div>
+      ))}
+    </div>
+  </Widget>
+</prompt-compare>
+
+<script>
+  import { play } from '../../scripts/sound';
+
+  class PromptCompare extends HTMLElement {
+    connectedCallback() {
+      const tabs = [...this.querySelectorAll<HTMLButtonElement>('[role=tab]')];
+      const select = (tab: HTMLButtonElement) => {
+        tabs.forEach((t) => {
+          t.setAttribute('aria-selected', String(t === tab));
+          t.tabIndex = t === tab ? 0 : -1;
+        });
+        this.dataset.side = tab.dataset.key;
+        this.querySelectorAll<HTMLElement>('.pane').forEach((p) => p.toggleAttribute('data-active', p.dataset.key === tab.dataset.key));
+        play('whoosh');
+      };
+      tabs.forEach((tab, i) => {
+        tab.addEventListener('click', () => select(tab));
+        // Arrow keys move between the two tabs (ARIA tabs pattern).
+        tab.addEventListener('keydown', (e) => {
+          if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) return;
+          e.preventDefault();
+          const next = tabs[e.key === 'Home' ? 0 : e.key === 'End' ? tabs.length - 1 : (i + (e.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length];
+          select(next);
+          next.focus();
+        });
+      });
+      this.dataset.side = 'after';
+    }
+  }
+  customElements.define('prompt-compare', PromptCompare);
+</script>
+
+<style>
+  prompt-compare { display: block; }
+  .switch {
+    position: relative;
+    display: inline-grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 4px;
+    border-radius: var(--radius-pill);
+    background: var(--bg-sunk);
+    margin-block-end: var(--space-4);
+    & button {
+      position: relative;
+      z-index: 1;
+      border: 0;
+      background: none;
+      padding: 0.5em 1.1em;
+      border-radius: var(--radius-pill);
+      font-weight: 650;
+      font-size: var(--step--1);
+      color: var(--text-muted);
+      transition: color 200ms;
+      &[aria-selected='true'] { color: var(--text); }
+    }
+    & .thumb {
+      position: absolute;
+      inset-block: 4px;
+      inset-inline-start: 4px;
+      width: calc(50% - 4px);
+      border-radius: var(--radius-pill);
+      background: var(--bg-elev);
+      box-shadow: var(--shadow-sm);
+      transition: translate 400ms var(--ease-spring);
+    }
+  }
+  prompt-compare[data-side='after'] .thumb { translate: 100% 0; }
+
+  .panes { display: grid; }
+  .pane {
+    grid-area: 1 / 1;
+    display: grid;
+    gap: var(--space-3);
+    align-content: start;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(8px);
+    transition: opacity 300ms, transform 400ms var(--ease-out), visibility 300ms;
+    &[data-active] { opacity: 1; visibility: visible; transform: none; }
+  }
+  .u, .a {
+    padding: var(--space-3) var(--space-4);
+    border-radius: 1.1rem;
+    font-size: var(--step--1);
+    max-width: 92%;
+    & :global(* + *) { margin-block-start: 0.5em; }
+    & :global(ul), & :global(ol) { padding-inline-start: 1.2em; }
+  }
+  .u {
+    justify-self: end;
+    background: var(--accent);
+    color: var(--on-accent);
+    border-end-end-radius: 0.3rem;
+  }
+  .a {
+    background: var(--bg-sunk);
+    border-end-start-radius: 0.3rem;
+  }
+  .verdict {
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius);
+    font-size: var(--step--1);
+    font-weight: 550;
+    &[data-kind='ok'] { background: var(--ok-soft); }
+    &[data-kind='bad'] { background: var(--bad-soft); }
+  }
+</style>

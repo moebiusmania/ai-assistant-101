@@ -1,0 +1,653 @@
+---
+/**
+ * Short animated introduction for the home page (~37s), drawn in SVG.
+ * Every frame is a pure function of time, so play/pause/rewind just move a clock.
+ */
+import Icon from './Icon.astro';
+import { getLang } from '../i18n/ui';
+
+interface Props { icons: string[] }
+const { icons } = Astro.props;
+const lessons = icons.length;
+const lang = getLang(Astro.currentLocale);
+const it = lang === 'it';
+
+const s = it
+  ? {
+      hook: 'Cosa succede quando scrivi a un assistente AI?',
+      ask: 'Mi aiuti a organizzare la settimana?',
+      reply1: 'Certo! Partiamo dalle priorità.',
+      reply2: 'Cosa non può proprio saltare?',
+      nwLabel: 'Come sceglie la prossima parola',
+      model: 'modello',
+      sentence: 'Il gatto dorme sul',
+      words: [['divano', 62], ['letto', 21], ['tetto', 12]] as [string, number][],
+      vague: 'Richiesta vaga',
+      vagueAsk: 'Scrivi un’email.',
+      vagueOut: 'Generica…',
+      clear: 'Richiesta chiara',
+      clearAsk: 'Email al capo per un rinvio…',
+      chips: ['Ruolo', 'Scopo', 'Tono', 'Formato'],
+      clearOut: 'Utile!',
+      answer: 'Risposta',
+      facts: ['La Torre Eiffel si trova a Parigi.', 'È stata inaugurata nel 1889.', 'È alta esattamente 512 metri.'],
+      message: 'Messaggio',
+      fields: [['Nome', 'Giulia Bianchi'], ['IBAN', 'IT60 X054 2811 1010'], ['Password', 'girasole2024']],
+      outro: `${lessons} lezioni · circa 1 ora`,
+      cta: 'Iniziamo?',
+      captions: [
+        'Ogni giorno milioni di persone chiedono aiuto a un assistente AI: per scrivere, organizzarsi, capire.',
+        'Dietro le quinte, l’AI sceglie la parola più probabile, una dopo l’altra. Non consulta un archivio di verità.',
+        'Per questo conta come chiedi: più contesto dai (chi sei, cosa ti serve, tono, formato), più la risposta è utile.',
+        'Può anche sbagliare con grande sicurezza. Dati, date e fonti vanno sempre verificati.',
+        'E alcune cose non vanno mai scritte in chat: password, dati bancari, informazioni sanitarie.',
+        `In ${lessons} lezioni brevi impari a fare tutto questo. Iniziamo?`,
+      ],
+      ui: { label: 'Video introduttivo', transcript: 'Leggi la trascrizione', watch: 'Guarda l’introduzione', play: 'Riproduci', pause: 'Pausa', rewind: 'Riavvolgi', poster: 'Come “ragiona” un assistente AI, come chiedere bene e quando non fidarsi. Tutto in 37 secondi.' },
+    }
+  : {
+      hook: 'What happens when you write to an AI assistant?',
+      ask: 'Can you help me plan my week?',
+      reply1: 'Sure! Let’s start with priorities.',
+      reply2: 'What absolutely can’t be skipped?',
+      nwLabel: 'How it picks the next word',
+      model: 'model',
+      sentence: 'The cat is sleeping on the',
+      words: [['sofa', 62], ['bed', 21], ['roof', 12]] as [string, number][],
+      vague: 'Vague request',
+      vagueAsk: 'Write an email.',
+      vagueOut: 'Generic…',
+      clear: 'Clear request',
+      clearAsk: 'Email my manager to move…',
+      chips: ['Role', 'Goal', 'Tone', 'Format'],
+      clearOut: 'Useful!',
+      answer: 'Answer',
+      facts: ['The Eiffel Tower is in Paris.', 'It opened in 1889.', 'It is exactly 512 metres tall.'],
+      message: 'Message',
+      fields: [['Name', 'Julia White'], ['IBAN', 'GB29 NWBK 6016 1331'], ['Password', 'sunflower2024']],
+      outro: `${lessons} lessons · about 1 hour`,
+      cta: 'Shall we start?',
+      captions: [
+        'Every day, millions of people ask an AI assistant for help: to write, to get organised, to understand.',
+        'Behind the scenes, the AI picks the most likely word, one after another. It doesn’t look things up in a store of truth.',
+        'That’s why how you ask matters: the more context you give (who you are, what you need, tone, format), the more useful the answer.',
+        'It can also be wrong with great confidence. Numbers, dates and sources always need checking.',
+        'And some things never belong in a chat: passwords, bank details, health information.',
+        `In ${lessons} short lessons you’ll learn to do all of this. Shall we start?`,
+      ],
+      ui: { label: 'Intro video', transcript: 'Read the transcript', watch: 'Watch the intro', play: 'Play', pause: 'Pause', rewind: 'Rewind', poster: 'How an AI assistant “thinks”, how to ask well and when not to trust it. All in 37 seconds.' },
+    };
+
+const rows = [200, 270, 340];
+// Opener: little task icons floating around the conversation.
+const floaters: [string, number, number][] = [['pen', 380, 165], ['globe', 585, 160], ['lightbulb', 395, 375], ['book', 570, 380]];
+// Next-word scene: a tiny "model" network (columns of node y positions).
+const net: [number, number[]][] = [[725, [245, 285, 325, 365]], [780, [265, 305, 345]], [835, [266, 326, 386]]];
+const edges = net.slice(0, -1).flatMap(([x1, ys1], c) => ys1.flatMap((y1) => net[c + 1][1].map((y2) => [x1, y1, net[c + 1][0], y2])));
+const nodes = Array.from({ length: lessons }, (_, i) => 200 + (i * 560) / Math.max(1, lessons - 1));
+---
+<intro-video data-i18n={JSON.stringify({ ...s.ui, captions: s.captions })}>
+  <figure class="iv">
+    <div class="stage">
+      <svg class="art" viewBox="95 90 770 350" role="img" aria-label={s.ui.label}>
+
+        <!-- 0 · Opener: you ↔ assistant -->
+        <g class="scene">
+          <text x="480" y="125" class="kicker" text-anchor="middle">{s.hook}</text>
+          <path data-k="arcT" d="M305 238 Q480 150 655 238" class="arc" />
+          <path data-k="arcB" d="M655 292 Q480 380 305 292" class="arc" />
+          {floaters.map(([icon, x, y], i) => (
+            <g data-k={`fl${i}`}>
+              <circle cx={x} cy={y} r="22" class="panel" />
+              <g class="ic" transform={`translate(${x - 11} ${y - 11})`}><Icon name={icon} size={22} /></g>
+            </g>
+          ))}
+          <g data-k="you">
+            <circle cx="240" cy="265" r="58" class="soft" />
+            <circle cx="240" cy="247" r="17" class="fill-accent" />
+            <path d="M208 297a32 30 0 0 1 64 0z" class="fill-accent" />
+          </g>
+          {[0, 1].map((i) => <circle data-k={`ring${i}`} cx="720" cy="265" r="58" class="ring" />)}
+          <g data-k="ai">
+            <circle cx="720" cy="265" r="58" class="fill-accent" />
+            <g class="ic on" transform="translate(696 241)"><Icon name="sparkle" size={48} /></g>
+          </g>
+          {[0, 1].map((i) => (
+            <g data-k={`msg${i}`}>
+              <rect x="-28" y="-17" width="56" height="34" rx="12" class={i === 0 ? 'fill-accent' : 'panel'} />
+              {[-11, 0, 11].map((dx) => <circle cx={dx} cy="0" r="3.5" class={i === 0 ? 'on-accent-fill' : 'fill-muted'} />)}
+            </g>
+          ))}
+        </g>
+
+        <!-- 1 · Chat -->
+        <g class="scene">
+          <g data-k="win">
+            <rect x="250" y="100" width="460" height="320" rx="22" class="panel" />
+            {[0, 1, 2].map((i) => <circle cx={276 + i * 18} cy="126" r="5" class="fill-border" />)}
+            <rect data-k="ubub" x="300" y="160" width="390" height="56" rx="18" class="fill-accent" />
+            <text data-k="utxt" data-type x="320" y="195" class="on-accent md">{s.ask}</text>
+            <g data-k="abub">
+              <rect x="270" y="240" width="360" height="112" rx="18" class="sunk" />
+              {[0, 1, 2].map((i) => <circle data-k={`adot${i}`} cx={300 + i * 20} cy="296" r="6" class="fill-muted" />)}
+              <text data-k="a1" data-type x="292" y="285" class="md">{s.reply1}</text>
+              <text data-k="a2" data-type x="292" y="322" class="md">{s.reply2}</text>
+            </g>
+          </g>
+          <g data-k="uav">
+            <circle cx="740" cy="188" r="20" class="soft" />
+            <circle cx="740" cy="182" r="6.5" class="fill-accent" />
+            <path d="M728 200a12 11 0 0 1 24 0z" class="fill-accent" />
+          </g>
+          <g data-k="aav">
+            <circle cx="222" cy="268" r="20" class="fill-accent" />
+            <g class="ic on" transform="translate(211 257)"><Icon name="sparkle" size={22} /></g>
+          </g>
+        </g>
+
+        <!-- 2 · Next word -->
+        <g class="scene">
+          <text data-k="nwl" x="200" y="120" class="kicker">{s.nwLabel}</text>
+          <text data-k="nws" x="200" y="190" class="display lg">{s.sentence} <tspan data-k="nww" class="fill-accent">{s.words[0][0]}</tspan></text>
+          <rect data-k="nwhl" x="186" y="244" width="490" height="44" rx="12" class="soft" />
+          {s.words.map(([w, p], i) => (
+            <g data-k={`nwr${i}`}>
+              <text x="200" y={274 + i * 60} class="md strong">{w}</text>
+              <rect data-k={`nwb${i}`} class="bar" x="330" y={258 + i * 60} width={p * 4.6} height="22" rx="11" />
+              <text data-k={`nwp${i}`} x={340 + p * 4.6} y={275 + i * 60} class="sm muted">{p}%</text>
+            </g>
+          ))}
+          {edges.map(([x1, y1, x2, y2]) => <line x1={x1} y1={y1} x2={x2} y2={y2} class="edge" />)}
+          {net.map(([x, ys], c) => ys.map((y, j) => (
+            <>
+              <circle cx={x} cy={y} r="8" class="node" />
+              <circle data-k={`n${c}_${j}`} cx={x} cy={y} r="8" class="fill-accent" />
+            </>
+          )))}
+          <text data-k="netl" x="780" y="425" class="xs muted" text-anchor="middle">{s.model}</text>
+        </g>
+
+        <!-- 3 · Vague vs clear -->
+        <g class="scene">
+          <g data-k="pl">
+            <rect x="110" y="100" width="340" height="330" rx="22" class="panel" />
+            <text x="140" y="145" class="kicker">{s.vague}</text>
+            <rect x="140" y="165" width="280" height="50" rx="12" class="sunk" />
+            <text data-k="plq" data-type x="158" y="196" class="prompt">{s.vagueAsk}</text>
+            {[260, 200, 230].map((w, i) => <rect data-k={`pll${i}`} class="line grey" x="140" y={260 + i * 26} width={w} height="12" rx="6" />)}
+            <text data-k="plo" x="140" y="395" class="sm muted">{s.vagueOut}</text>
+          </g>
+          <g data-k="pr">
+            <rect x="510" y="100" width="340" height="330" rx="22" class="panel accent-border" />
+            <text x="540" y="145" class="kicker fill-accent">{s.clear}</text>
+            <rect x="540" y="165" width="280" height="50" rx="12" class="sunk" />
+            <text data-k="prq" data-type x="558" y="196" class="prompt">{s.clearAsk}</text>
+            {s.chips.map((c, i) => (
+              <g data-k={`chip${i}`}>
+                <rect x={540 + i * 71} y="228" width="65" height="26" rx="13" class="soft" />
+                <text x={540 + i * 71 + 32.5} y="246" class="xs fill-accent" text-anchor="middle">{c}</text>
+              </g>
+            ))}
+            {[280, 250, 270, 180].map((w, i) => <rect data-k={`prl${i}`} class="line accent" x="540" y={276 + i * 24} width={w} height="12" rx="6" />)}
+            <g data-k="prok">
+              <circle cx="556" cy="390" r="15" class="fill-ok" />
+              <path d="m549 390 5 5 9-10" class="tick" />
+              <text x="582" y="396" class="sm strong fill-ok">{s.clearOut}</text>
+            </g>
+          </g>
+        </g>
+
+        <!-- 4 · Check the facts -->
+        <g class="scene">
+          <rect x="190" y="110" width="580" height="300" rx="22" class="panel" />
+          <text x="225" y="155" class="kicker">{s.answer}</text>
+          <rect data-k="f2hl" x="208" y={rows[2] - 30} width="544" height="44" rx="12" class="bad-soft" />
+          {s.facts.map((f, i) => <text x="225" y={rows[i]} class="md">{f}</text>)}
+          {[0, 1].map((i) => (
+            <g data-k={`fok${i}`}>
+              <circle cx="722" cy={rows[i] - 7} r="14" class="fill-ok" />
+              <path d={`m715 ${rows[i] - 7} 5 5 9-10`} class="tick" />
+            </g>
+          ))}
+          <g data-k="fbad">
+            <circle cx="722" cy={rows[2] - 7} r="14" class="fill-bad" />
+            <path d={`M722 ${rows[2] - 15}v9M722 ${rows[2] + 1}v.5`} class="tick" />
+          </g>
+          <g data-k="lens">
+            <circle cx="0" cy="0" r="26" class="lens" />
+            <path d="M19 19 36 36" class="lens-handle" />
+          </g>
+        </g>
+
+        <!-- 5 · Privacy -->
+        <g class="scene">
+          <rect x="210" y="120" width="540" height="280" rx="22" class="panel" />
+          <text x="245" y="165" class="kicker">{s.message}</text>
+          {s.fields.map(([k, v], i) => (
+            <>
+              <text x="245" y={225 + i * 55} class="md muted">{k}:</text>
+              <text data-k={`fv${i}`} x="370" y={225 + i * 55} class="md mono">{v}</text>
+              <rect data-k={`rd${i}`} class="redact" x="362" y={203 + i * 55} width="250" height="30" rx="7" />
+            </>
+          ))}
+          <g data-k="shield">
+            <circle cx="690" cy="170" r="34" class="soft" />
+            <path d="M690 150 674 156v12c0 10 7 16 16 18 9-2 16-8 16-18v-12z" class="shield" />
+            <path d="m683 169 5 5 9-9" class="shield" />
+          </g>
+        </g>
+
+        <!-- 6 · Outro -->
+        <g class="scene">
+          <line data-k="path" x1={nodes[0]} y1="230" x2={nodes[nodes.length - 1]} y2="230" class="path" pathLength="1" />
+          {nodes.map((x, i) => (
+            <g>
+              <circle cx={x} cy="230" r="22" class="node" />
+              <g class="ic dim" transform={`translate(${x - 10} 220)`}><Icon name={icons[i]} size={20} /></g>
+              <g data-k={`node${i}`}>
+                <circle cx={x} cy="230" r="22" class="fill-accent" />
+                <g class="ic on" transform={`translate(${x - 10} 220)`}><Icon name={icons[i]} size={20} /></g>
+              </g>
+            </g>
+          ))}
+          <text data-k="o1" x="480" y="320" class="md muted" text-anchor="middle">{s.outro}</text>
+          <text data-k="o2" x="480" y="385" class="display xl fill-accent" text-anchor="middle">{s.cta}</text>
+        </g>
+      </svg>
+      <button class="btn btn-primary big big-play" type="button"><Icon name="play" />{s.ui.watch}</button>
+    </div>
+    <figcaption class="caption">{s.ui.poster}</figcaption>
+    <div class="controls">
+      <button class="btn btn-sm btn-ghost toggle" type="button" aria-label={s.ui.play}>
+        <Icon name="play" class="i-play" /><Icon name="pause" class="i-pause" />
+      </button>
+      <button class="btn btn-sm btn-ghost rewind" type="button" aria-label={s.ui.rewind} title={s.ui.rewind}><Icon name="rewind" /></button>
+      <div class="track" aria-hidden="true"><span class="fill"></span></div>
+      <span class="time">0:00 / 0:37</span>
+    </div>
+    <details class="transcript">
+      <summary>{s.ui.transcript}</summary>
+      {s.captions.map((c) => <p>{c}</p>)}
+    </details>
+  </figure>
+</intro-video>
+
+<script>
+  import { play } from '../scripts/sound';
+  import { strings } from '../scripts/ui';
+
+  const DUR = 37;
+  // Scene boundaries in seconds; captions map 0+1 → caption 0, then one per scene.
+  const SCENES: [number, number][] = [[0, 3], [3, 8.5], [8.5, 15], [15, 22], [22, 28.5], [28.5, 33.5], [33.5, DUR]];
+  const CAPTION_AT = [0, 8.5, 15, 22, 28.5, 33.5];
+
+  const clamp = (v: number) => Math.max(0, Math.min(1, v));
+  const ease = (p: number) => 1 - (1 - p) ** 3;
+  /** Eased progress of a step starting at `a` lasting `d` seconds. */
+  const span = (t: number, a: number, d = 0.5) => ease(clamp((t - a) / d));
+  const lerp = (a: number, b: number, p: number) => a + (b - a) * p;
+  const fmt = (t: number) => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+
+  class IntroVideo extends HTMLElement {
+    i18n = strings(this) as unknown as Record<string, string> & { captions: string[] };
+    k = new Map<string, SVGElement>();
+    full = new Map<SVGElement, string>();
+    scenes = [...this.querySelectorAll<SVGGElement>('.scene')];
+    caption = this.querySelector<HTMLElement>('.caption')!;
+    toggleBtn = this.querySelector<HTMLButtonElement>('.toggle')!;
+    bigPlay = this.querySelector<HTMLButtonElement>('.big-play')!;
+    fill = this.querySelector<HTMLElement>('.fill')!;
+    timeEl = this.querySelector<HTMLElement>('.time')!;
+    t = 0;
+    last = 0;
+    raf = 0;
+    playing = false;
+    started = false;
+    cap = -1;
+    nodeCount = this.querySelectorAll('[data-k^="node"]').length;
+    /** Next-word network nodes as [key, column, row]. */
+    netNodes = [...this.querySelectorAll<SVGElement>('[data-k]')]
+      .map((n) => n.dataset.k!.match(/^n(\d+)_(\d+)$/))
+      .filter((m) => m !== null)
+      .map((m) => [m[0], Number(m[1]), Number(m[2])] as const);
+
+    connectedCallback() {
+      this.querySelectorAll<SVGElement>('[data-k]').forEach((n) => this.k.set(n.dataset.k!, n));
+      this.querySelectorAll<SVGElement>('[data-type]').forEach((n) => this.full.set(n, n.textContent ?? ''));
+      // Size each redaction bar to the value it hides.
+      [0, 1, 2].forEach((i) => {
+        try {
+          const w = (this.k.get(`fv${i}`) as SVGTextElement).getBBox().width;
+          if (w) this.k.get(`rd${i}`)!.setAttribute('width', String(w + 16));
+        } catch { /* not rendered yet: keep default width */ }
+      });
+      this.toggleBtn.addEventListener('click', () => (this.playing ? this.pause() : this.play()));
+      // The big button hides once playing: hand focus to the toolbar's toggle so it isn't lost.
+      this.bigPlay.addEventListener('click', () => { this.play(); this.toggleBtn.focus(); });
+      this.querySelector('.art')!.addEventListener('click', () => (this.playing ? this.pause() : this.play()));
+      this.querySelector('.rewind')!.addEventListener('click', () => this.rewind());
+      // Pause when scrolled out of view.
+      new IntersectionObserver(([e]) => { if (!e.isIntersecting && this.playing) this.pause(); }, { threshold: 0.25 }).observe(this);
+      this.render();
+      this.sync();
+    }
+
+    play() {
+      if (this.t >= DUR) this.t = 0;
+      this.playing = true;
+      this.started = true;
+      this.last = performance.now();
+      cancelAnimationFrame(this.raf);
+      this.raf = requestAnimationFrame(this.tick);
+      play('tap');
+      this.sync();
+    }
+
+    pause() {
+      this.playing = false;
+      cancelAnimationFrame(this.raf);
+      this.sync();
+    }
+
+    rewind() {
+      this.t = 0;
+      this.cap = -1;
+      this.render();
+      play('whoosh');
+      this.sync();
+    }
+
+    tick = (now: number) => {
+      this.t = Math.min(DUR, this.t + (now - this.last) / 1000);
+      this.last = now;
+      this.render();
+      if (this.t >= DUR) { this.pause(); return; }
+      this.raf = requestAnimationFrame(this.tick);
+    };
+
+    sync() {
+      this.dataset.state = this.playing ? 'playing' : this.t >= DUR ? 'ended' : this.started ? 'paused' : 'idle';
+      const label = this.playing ? this.i18n.pause : this.i18n.play;
+      this.toggleBtn.setAttribute('aria-label', label);
+      this.toggleBtn.title = label;
+      this.caption.setAttribute('aria-live', this.playing ? 'polite' : 'off');
+    }
+
+    // ── drawing helpers ──
+    along(key: string, pathKey: string, p: number) {
+      const path = this.k.get(pathKey) as SVGPathElement;
+      const pt = path.getPointAtLength(path.getTotalLength() * p);
+      this.set(key, Math.sin(Math.PI * p), pt.x, pt.y);
+    }
+    set(key: string, o = 1, x = 0, y = 0, sc = 1) {
+      const n = this.k.get(key);
+      if (!n) return;
+      n.style.opacity = String(o);
+      n.style.transform = `translate(${x}px, ${y}px) scale(${sc})`;
+    }
+    type(key: string, p: number) {
+      const n = this.k.get(key)!;
+      const s = this.full.get(n)!;
+      n.textContent = s.slice(0, Math.round(s.length * clamp(p)));
+    }
+    sx(key: string, p: number, o = 1) {
+      const n = this.k.get(key);
+      if (!n) return;
+      n.style.opacity = String(o);
+      n.style.transform = `scaleX(${p})`;
+    }
+
+    render() {
+      const t = this.t;
+      this.fill.style.transform = `scaleX(${t / DUR})`;
+      this.timeEl.textContent = `${fmt(t)} / ${fmt(DUR)}`;
+
+      if (this.started) {
+        let ci = 0;
+        CAPTION_AT.forEach((at, i) => { if (t >= at) ci = i; });
+        if (ci !== this.cap) { this.cap = ci; this.caption.textContent = this.i18n.captions[ci]; }
+      }
+
+      this.scenes.forEach((g, i) => {
+        const [a, b] = SCENES[i];
+        const fadeIn = a === 0 ? 1 : span(t, a, 0.5);
+        const fadeOut = b === DUR ? 1 : 1 - span(t, b - 0.45, 0.45);
+        const o = t < a || t > b ? 0 : Math.min(fadeIn, fadeOut);
+        g.style.opacity = String(o);
+        g.style.visibility = o > 0 ? 'visible' : 'hidden';
+        if (o > 0) this.drawScene(i, t - a);
+      });
+    }
+
+    drawScene(i: number, lt: number) {
+      switch (i) {
+        case 0:
+          // Messages travel back and forth; the assistant "breathes" and pulses.
+          this.along('msg0', 'arcT', (lt * 0.45 + 0.15) % 1);
+          this.along('msg1', 'arcB', (lt * 0.45 + 0.6) % 1);
+          [0, 1].forEach((r) => { const p = (lt * 0.6 + r * 0.5) % 1; this.set(`ring${r}`, 0.55 * (1 - p), 0, 0, 1 + 0.6 * p); });
+          this.set('ai', 1, 0, 0, 1 + 0.03 * Math.sin(lt * 3));
+          [0, 1, 2, 3].forEach((i) => this.set(`fl${i}`, 1, 0, Math.sin(lt * 1.6 + i * 1.3) * 5));
+          break;
+
+        case 1: {
+          const w = span(lt, 0, 0.7);
+          this.set('win', w, 0, (1 - w) * 30);
+          this.set('ubub', span(lt, 0.5, 0.4), (1 - span(lt, 0.5, 0.4)) * 20);
+          this.type('utxt', (lt - 0.7) / 1.6);
+          const ab = span(lt, 2.5, 0.4);
+          this.set('abub', ab, 0, (1 - ab) * 16);
+          this.set('uav', span(lt, 0.4, 0.4), 0, 0, 0.6 + 0.4 * span(lt, 0.4, 0.4));
+          this.set('aav', ab, 0, 0, 0.6 + 0.4 * ab);
+          const thinking = lt > 2.6 && lt < 3.7;
+          [0, 1, 2].forEach((d) => this.set(`adot${d}`, thinking ? 1 : 0, 0, thinking ? -Math.max(0, Math.sin(lt * 9 - d * 0.9)) * 6 : 0));
+          this.type('a1', (lt - 3.7) / 0.8);
+          this.type('a2', (lt - 4.5) / 0.8);
+          break;
+        }
+
+        case 2: {
+          this.set('nwl', span(lt, 0));
+          this.set('nws', span(lt, 0.2), 0, (1 - span(lt, 0.2)) * 12);
+          [0, 1, 2].forEach((r) => {
+            const p = span(lt, 0.8 + r * 0.25, 0.9);
+            this.set(`nwr${r}`, span(lt, 0.6 + r * 0.25, 0.4));
+            this.sx(`nwb${r}`, p);
+            this.set(`nwp${r}`, p);
+          });
+          this.set('nwhl', span(lt, 2.8, 0.4));
+          const w = span(lt, 3.4, 0.6);
+          this.set('nww', w); // a <tspan> can't be transformed, so it only fades in
+          // An activation wave runs through the network while the bars grow; the top word stays lit.
+          for (const [key, c, j] of this.netNodes) {
+            const wave = span(lt, 0.6 + c * 0.45, 0.25) * (1 - span(lt, 1.0 + c * 0.45, 0.5));
+            const keep = c === 2 && j === 0 ? span(lt, 2.8, 0.4) : 0;
+            this.set(key, Math.max(wave * (0.4 + 0.6 * ((j + c) % 2)), keep));
+          }
+          this.set('netl', span(lt, 0.4));
+          break;
+        }
+
+        case 3: {
+          const l = span(lt, 0, 0.6);
+          this.set('pl', l, (1 - l) * -20);
+          this.type('plq', (lt - 0.6) / 0.6);
+          [0, 1, 2].forEach((n) => this.sx(`pll${n}`, span(lt, 1.4 + n * 0.12, 0.5), 0.55));
+          this.set('plo', span(lt, 2.0));
+          const r = span(lt, 2.4, 0.6);
+          this.set('pr', r, (1 - r) * 20);
+          this.type('prq', (lt - 3.0) / 0.8);
+          [0, 1, 2, 3].forEach((c) => {
+            const p = span(lt, 3.8 + c * 0.18, 0.35);
+            this.set(`chip${c}`, p, 0, 0, 0.6 + 0.4 * p);
+          });
+          [0, 1, 2, 3].forEach((n) => this.sx(`prl${n}`, span(lt, 4.7 + n * 0.12, 0.5)));
+          const ok = span(lt, 5.5, 0.4);
+          this.set('prok', ok, 0, 0, 0.7 + 0.3 * ok);
+          break;
+        }
+
+        case 4: {
+          // The lens sweeps each line; a verdict appears when it reaches the end.
+          const keys: [number, number, number][] = [[0.6, 260, 195], [1.4, 650, 195], [1.6, 260, 265], [2.4, 650, 265], [2.6, 260, 335], [3.4, 650, 335], [4.2, 830, 440]];
+          let x = keys[0][1], y = keys[0][2];
+          for (let k = 0; k < keys.length - 1; k++) {
+            const [t0, x0, y0] = keys[k], [t1, x1, y1] = keys[k + 1];
+            if (lt >= t0) { const p = ease(clamp((lt - t0) / (t1 - t0))); x = lerp(x0, x1, p); y = lerp(y0, y1, p); }
+          }
+          this.set('lens', span(lt, 0.3, 0.4) * (1 - span(lt, 3.7, 0.5)), x, y);
+          [0, 1].forEach((n) => { const p = span(lt, 1.4 + n, 0.35); this.set(`fok${n}`, p, 0, 0, 0.6 + 0.4 * p); });
+          const bad = span(lt, 3.4, 0.35);
+          this.set('fbad', bad, 0, 0, 0.6 + 0.4 * bad);
+          this.set('f2hl', bad, bad < 1 ? Math.sin(lt * 40) * 3 * (1 - bad) : 0);
+          break;
+        }
+
+        case 5:
+          [0, 1, 2].forEach((n) => this.sx(`rd${n}`, span(lt, 0.9 + n * 0.5, 0.45)));
+          { const p = span(lt, 2.6, 0.5); this.set('shield', p, 0, 0, 0.6 + 0.4 * p); }
+          break;
+
+        case 6: {
+          const line = this.k.get('path')!;
+          line.style.strokeDashoffset = String(1 - span(lt, 0.2, 1.8));
+          const n = this.nodeCount;
+          for (let j = 0; j < n; j++) { const p = span(lt, 0.3 + (j * 1.6) / n, 0.35); this.set(`node${j}`, p, 0, 0, 0.4 + 0.6 * p); }
+          this.set('o1', span(lt, 1.8), 0, (1 - span(lt, 1.8)) * 10);
+          const c = span(lt, 2.3, 0.6);
+          this.set('o2', c, 0, 0, 0.9 + 0.1 * c);
+          break;
+        }
+      }
+    }
+  }
+  customElements.define('intro-video', IntroVideo);
+</script>
+
+<style>
+  .iv {
+    margin: 0;
+    display: grid;
+    gap: var(--space-4);
+    justify-items: center;
+  }
+  .stage {
+    position: relative;
+    container-type: inline-size;
+    width: 100%;
+    aspect-ratio: 770 / 350;
+    /* A soft glow instead of a screen: the animation sits on the page itself. */
+    background: radial-gradient(ellipse 60% 65% at 50% 50%, var(--accent-soft), transparent 75%);
+    & .art { width: 100%; height: 100%; cursor: pointer; user-select: none; overflow: visible; }
+  }
+
+  /* SVG palette, from the design tokens so it follows the theme. */
+  .art {
+    font-family: var(--font-body);
+    & [data-k], & .scene { transform-box: fill-box; transform-origin: center; }
+    & .panel { fill: var(--bg-elev); stroke: var(--border); stroke-width: 1.5; filter: drop-shadow(0 12px 24px oklch(20% 0.05 280 / 0.12)); }
+    & .accent-border { stroke: color-mix(in oklch, var(--accent) 45%, transparent); }
+    & .sunk { fill: var(--bg-sunk); }
+    & .soft { fill: var(--accent-soft); }
+    & .bad-soft { fill: var(--bad-soft); }
+    & text { fill: var(--text); }
+    & .display { font-family: var(--font-display); font-weight: 650; letter-spacing: -0.01em; }
+    & .xl { font-size: 64px; }
+    & .lg { font-size: 36px; }
+    & .md { font-size: 20px; }
+    & .sm { font-size: 16px; }
+    & .prompt { font-size: 17px; }
+    & .xs { font-size: 12.5px; font-weight: 600; }
+    & .strong { font-weight: 650; }
+    & .mono { font-family: var(--font-mono); }
+    & .kicker { font-size: 14px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; fill: var(--text-muted); }
+    & .muted, & .fill-muted { fill: var(--text-muted); }
+    & .fill-accent, & .bar { fill: var(--accent); }
+    & .on-accent { fill: var(--on-accent); }
+    & .fill-border { fill: var(--border-strong); }
+    & .fill-ok { fill: var(--ok); }
+    & .fill-bad { fill: var(--bad); }
+    & .tick { fill: none; stroke: var(--bg-elev); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+    & .line.grey { fill: var(--border-strong); }
+    & .line.accent { fill: color-mix(in oklch, var(--accent) 55%, transparent); }
+    & .bar, & .line, & .redact { transform-origin: left center; }
+    & .redact { fill: var(--text); }
+    & .lens { fill: color-mix(in oklch, var(--bg-elev) 35%, transparent); stroke: var(--text); stroke-width: 4; }
+    & .lens-handle { stroke: var(--text); stroke-width: 7; stroke-linecap: round; }
+    & .shield { fill: none; stroke: var(--accent); stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
+    & .path { stroke: var(--border-strong); stroke-width: 4; stroke-linecap: round; stroke-dasharray: 1; }
+    & .node { fill: var(--bg-elev); stroke: var(--border-strong); stroke-width: 2; }
+    & .on-accent-fill { fill: var(--on-accent); }
+    & .ic { color: var(--accent); }
+    & .ic.on { color: var(--on-accent); }
+    & .ic.dim { color: var(--text-muted); }
+    & .arc { fill: none; stroke: var(--border-strong); stroke-width: 2; stroke-dasharray: 3 9; stroke-linecap: round; }
+    & .ring { fill: none; stroke: var(--accent); stroke-width: 2; }
+    & .edge { stroke: var(--border); stroke-width: 1.5; }
+  }
+
+  .big-play {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    translate: -50% -50%;
+    box-shadow: var(--shadow-lg);
+    transition: opacity 250ms, scale 300ms var(--ease-out);
+  }
+  intro-video:not([data-state='idle']) .big-play { opacity: 0; scale: 0.92; visibility: hidden; transition-property: opacity, scale, visibility; }
+
+  .caption {
+    max-width: var(--content-w);
+    min-height: 2lh;
+    font-size: var(--step-1);
+    line-height: 1.45;
+    text-align: center;
+    color: var(--text);
+    text-wrap: balance;
+    transition: color 300ms;
+  }
+  intro-video[data-state='idle'] .caption { color: var(--text-muted); }
+
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    width: min(100%, 26rem);
+    padding: var(--space-1) var(--space-4) var(--space-1) var(--space-1);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    background: var(--bg-elev);
+    box-shadow: var(--shadow-sm);
+    & .btn { min-height: 2.25rem; padding-inline: 0.6em; border-radius: var(--radius-pill); }
+  }
+  .toggle :global(.i-pause) { display: none; }
+  intro-video[data-state='playing'] .toggle { & :global(.i-play) { display: none; } & :global(.i-pause) { display: block; } }
+  .track {
+    flex: 1;
+    height: 4px;
+    margin-inline: var(--space-2);
+    border-radius: var(--radius-pill);
+    background: var(--border);
+    overflow: hidden;
+  }
+  .fill {
+    display: block;
+    height: 100%;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  .transcript {
+    width: min(100%, var(--content-w));
+    font-size: var(--step--1);
+    color: var(--text-muted);
+    & summary { cursor: pointer; width: fit-content; margin-inline: auto; font-weight: 600; color: var(--accent); }
+    & p { margin-block-start: var(--space-2); }
+  }
+  .time {
+    font-size: var(--step--1);
+    font-variant-numeric: tabular-nums;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+</style>
