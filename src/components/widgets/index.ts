@@ -13,10 +13,14 @@ import ContextWindow from './ContextWindow.astro';
 import CopyPrompt from './CopyPrompt.astro';
 import Checklist from './Checklist.astro';
 import Certificate from './Certificate.astro';
+import Mission from './Mission.astro';
+import MissionDone from './MissionDone.astro';
+import Track from './Track.astro';
 import Callout from '../Callout.astro';
 import Term from '../Term.astro';
 
 export const lessonComponents = {
   ChatSim, NextWord, SortGame, Quiz, PromptBuilder, PromptCompare, SpotError, Redact,
-  FourD, Loop, ContextWindow, CopyPrompt, Checklist, Certificate, Callout, Term,
+  FourD, Loop, ContextWindow, CopyPrompt, Checklist, Certificate, Mission, MissionDone, Track,
+  Callout, Term,
 };

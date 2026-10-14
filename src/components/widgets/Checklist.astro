@@ -24,24 +24,32 @@ const { id, items, title, hint } = Astro.props;
   import { read, write } from '../../scripts/storage';
 
   class CheckList extends HTMLElement {
+    key = `aic:check:${this.dataset.id}`;
+    boxes = [...this.querySelectorAll<HTMLInputElement>('input')];
+
     connectedCallback() {
-      const key = `aic:check:${this.dataset.id}`;
-      const boxes = [...this.querySelectorAll<HTMLInputElement>('input')];
-      const state = read<number[]>(key, []);
-      boxes.forEach((b, i) => (b.checked = state.includes(i)));
-      const sync = () => {
-        const on = boxes.flatMap((b, i) => (b.checked ? [i] : []));
-        write(key, on);
-        this.querySelector('.n')!.textContent = String(on.length);
-        return on.length;
-      };
-      boxes.forEach((b) =>
+      const state = read<number[]>(this.key, []);
+      this.boxes.forEach((b, i) => (b.checked = state.includes(i)));
+      this.boxes.forEach((b) =>
         b.addEventListener('change', () => {
-          const n = sync();
-          play(n === boxes.length ? 'done' : b.checked ? 'pop' : 'tap');
+          const n = this.sync();
+          play(n === this.boxes.length ? 'done' : b.checked ? 'pop' : 'tap');
         }),
       );
-      sync();
+      this.sync();
+    }
+
+    sync() {
+      const on = this.boxes.flatMap((b, i) => (b.checked ? [i] : []));
+      write(this.key, on);
+      this.querySelector('.n')!.textContent = String(on.length);
+      return on.length;
+    }
+
+    /** Unticks everything (used when a mission is started again). */
+    reset() {
+      this.boxes.forEach((b) => (b.checked = false));
+      this.sync();
     }
   }
   customElements.define('check-list', CheckList);

@@ -1,0 +1,281 @@
+---
+title: "Missione bonus: un compito vero, dall’inizio alla fine"
+description: Scegli un compito di tutti i giorni e portalo a termine con l’assistente AI che preferisci, applicando le 4D un passo alla volta.
+order: 9
+minutes: 25
+icon: flag
+tag: Facoltativa · Ripetibile
+optional: true
+---
+
+Finora hai letto, provato e fatto esercizio. Adesso si fa **sul serio**: scegli una missione, apri il tuo assistente preferito (ChatGPT, Claude, Gemini, Le Chat, Copilot… va bene qualsiasi) in un’altra finestra e segui i passi. Ogni passo è una delle 4D.
+
+<Callout type="tip" title="Una lezione facoltativa, da ripetere">
+  <p>Questa missione non conta nel progresso del corso. Quando hai finito puoi <strong>tornare e sceglierne un’altra</strong>, o ripetere la stessa con un’idea diversa: un nuovo viaggio, un’altra settimana di pasti, un’altra abilità.</p>
+</Callout>
+
+## Scegli la tua missione
+
+<Mission
+  title="Cosa vuoi fare oggi?"
+  hint="Il resto della lezione cambia in base alla tua scelta. Puoi cambiare idea in qualsiasi momento."
+  missions={[
+    { id: 'trip', icon: 'globe', title: 'Un weekend fuori o una piccola festa', desc: 'Una gita, un compleanno, una cena per 8: pianifica, verifica, organizza.' },
+    { id: 'meals', icon: 'cart', title: 'Una settimana di pasti e la lista della spesa', desc: 'Un menù adatto a budget e orari, più una lista divisa per reparto.' },
+    { id: 'skill', icon: 'lightbulb', title: 'Una nuova abilità in 7 giorni', desc: 'Un breve piano di studio, esercizi e quiz: l’AI come tutor.' },
+  ]}
+/>
+
+## 1. Delega: dividi il lavoro
+
+Prima di scrivere, decidi **chi fa cosa**. L’AI è brava con bozze, idee e struttura. Decisioni, soldi e controlli finali restano a te.
+
+<Track id="trip">
+
+| L’AI fa | Tu fai |
+| --- | --- |
+| Propone un programma con gli orari | Scegli date, budget e chi partecipa |
+| Suggerisce luoghi, attività o un menù | Verifichi orari, prezzi e disponibilità sui siti ufficiali |
+| Trasforma il piano in una checklist e una tabella di marcia | Prenoti e paghi, di persona |
+
+</Track>
+
+<Track id="meals">
+
+| L’AI fa | Tu fai |
+| --- | --- |
+| Propone cene adatte ai tuoi vincoli | Decidi cosa ti piace e cosa sai cucinare |
+| Scrive la lista della spesa divisa per reparto | Controlli cosa c’è già in frigo e in dispensa |
+| Suggerisce come riusare gli avanzi | Prendi le decisioni su allergie e salute con una persona qualificata |
+
+</Track>
+
+<Track id="skill">
+
+| L’AI fa | Tu fai |
+| --- | --- |
+| Divide l’abilità in piccoli passi quotidiani | Scegli l’obiettivo e quanto tempo hai |
+| Spiega, propone esercizi e ti corregge | Fai gli esercizi: è lì che si impara davvero |
+| Ti interroga su quello che hai imparato | Verifichi le informazioni importanti su una fonte affidabile |
+
+</Track>
+
+## 2. Descrizione: la prima richiesta
+
+Copia il modello, sostituisci le parti <mark class="ph">[tra parentesi]</mark> e incollalo nel tuo assistente. L’ultima riga chiede all’AI di **farti prima qualche domanda**: rispondi, ne vale la pena.
+
+<Track id="trip">
+  <CopyPrompt
+    title="Pianifica la gita o la festa"
+    icon="globe"
+    when="Weekend fuori, feste, cene con amici"
+    prompt={'Sto organizzando [un weekend a (luogo) / una festa di compleanno / una cena per 8 persone] il [data o periodo].\nChi partecipa: [quante persone, età, eventuali esigenze particolari].\nBudget: [totale o a persona].\nCi piacciono [interessi, cibo, atmosfera]; vogliamo evitare [cose da evitare].\nDammi un programma con gli orari e segnala cosa va prenotato in anticipo.\nPrima di rispondere, fammi al massimo 3 domande se manca qualcosa di importante.'}
+  />
+</Track>
+
+<Track id="meals">
+  <CopyPrompt
+    title="Pianifica le cene della settimana"
+    icon="cart"
+    when="Menù, spesa, usare quello che hai già"
+    prompt={'Pianifica [5] cene per [numero] persone per la prossima settimana.\nVincoli: [vegetariano / senza lattosio / budget intorno a (cifra) / al massimo (minuti) minuti di preparazione].\nHo già: [ingredienti in frigo o in dispensa].\nNon ci piacciono: [cibi da evitare].\nPer ogni cena: nome, tempo di preparazione e una riga di descrizione.\nPrima di rispondere, fammi al massimo 3 domande se manca qualcosa di importante.'}
+  />
+</Track>
+
+<Track id="skill">
+  <CopyPrompt
+    title="Pianifica i 7 giorni di studio"
+    icon="lightbulb"
+    when="Programmi, lingue, hobby, abilità pratiche"
+    prompt={'Voglio imparare [abilità: es. le basi dei fogli di calcolo / 20 frasi utili in spagnolo / come curare le piante da appartamento] in 7 giorni.\nIl mio livello: [principiante assoluto / so già qualcosa].\nHo [minuti] minuti al giorno, con [dispositivo o materiali che ho].\nAlla fine della settimana voglio riuscire a: [obiettivo].\nFammi un piano giorno per giorno: per ogni giorno un concetto, un esercizio e un quiz di 2 domande.\nPrima di rispondere, fammi al massimo 3 domande se manca qualcosa di importante.'}
+  />
+</Track>
+
+## 3. Discernimento: verifica prima di fidarti
+
+La risposta sembrerà convincente. Prima allenati su questo esempio: quali frasi controlleresti?
+
+<Track id="trip">
+  <SpotError
+    title="Trova i punti da verificare"
+    hint="Clicca le frasi che controlleresti prima di fidarti, poi premi “Controlla”."
+    question="Organizzami un sabato fuori porta per due persone, con un budget di 150 €."
+    sentences={[
+      { text: 'Ecco un programma rilassato per il tuo sabato.' },
+      { text: 'Mattina: passeggiata nel centro storico, poi un caffè in piazza.' },
+      { text: 'Il museo del castello è aperto tutti i giorni dalle 9:00 alle 19:00 e l’ingresso è gratuito.', bad: true, why: 'Orari e prezzi cambiano con la stagione e il giorno: verificali sul sito ufficiale del museo.' },
+      { text: 'Per pranzo prenota alla Trattoria Da Gino, valutata 4,9 da oltre 3.000 recensioni.', bad: true, why: 'Un nome e un voto così precisi possono essere inventati o non aggiornati. Cerca il locale su una mappa o un sito di recensioni.' },
+      { text: 'Nel pomeriggio, una passeggiata lungo il fiume: gratis e perfetta per riposarsi.' },
+      { text: 'Costo totale: circa 80 €, quindi sei ben sotto il budget.', bad: true, why: 'I totali sono spesso sbagliati: somma i costi da te e ricordati del viaggio.' },
+    ]}
+  />
+
+Sul tuo programma vero, controlla che:
+
+- **orari, prezzi e prenotazioni** corrispondano ai siti ufficiali;
+- i **tempi siano realistici**, compresi gli spostamenti da un posto all’altro;
+- il **totale torni** e resti nel budget.
+
+</Track>
+
+<Track id="meals">
+  <SpotError
+    title="Trova i punti da verificare"
+    hint="Clicca le frasi che controlleresti prima di fidarti, poi premi “Controlla”."
+    question="Pianifica 5 cene vegetariane per 2 persone, spendendo meno di 40 €."
+    sentences={[
+      { text: 'Lunedì: pasta con zucchine e limone, pronta in 20 minuti.' },
+      { text: 'Martedì: curry di ceci e spinaci, ottimo per usare quello che hai in dispensa.' },
+      { text: 'Mercoledì: Caesar salad con la salsa tradizionale.', bad: true, why: 'La salsa Caesar tradizionale contiene acciughe, e il formaggio è spesso fatto con caglio animale: non è vegetariana. I vincoli sono un punto in cui l’AI sbaglia spesso.' },
+      { text: 'Giovedì: frittata di verdure con insalata.' },
+      { text: 'Tutta la spesa costa circa 18 €.', bad: true, why: 'I prezzi cambiano molto da negozio a negozio: l’AI non conosce i prezzi del tuo supermercato. Controllali tu.' },
+      { text: 'Ogni cena ti dà tutte le proteine di cui hai bisogno nella giornata.', bad: true, why: 'Un’affermazione sulla nutrizione generica e senza basi. Per le esigenze alimentari, chiedi a un medico o a un dietista.' },
+    ]}
+  />
+
+Sul tuo menù vero, controlla che:
+
+- **ogni ricetta rispetti i tuoi vincoli** (vegetariano, allergeni, tempo di preparazione);
+- le **quantità** corrispondano al numero di persone;
+- la **lista della spesa** contenga tutto quello che serve alle ricette, e niente di quello che hai già.
+
+</Track>
+
+<Track id="skill">
+  <SpotError
+    title="Trova i punti da verificare"
+    hint="Clicca le frasi che controlleresti prima di fidarti, poi premi “Controlla”."
+    question="Insegnami le basi dei fogli di calcolo in 7 giorni."
+    sentences={[
+      { text: 'Giorno 1: cosa sono celle, righe e colonne, e come inserire i dati.' },
+      { text: 'Giorno 2: la prima formula. =SOMMA(A1:A5) somma i numeri da A1 ad A5.' },
+      { text: 'Giorno 3: =MEDIA(A1:A5) ti dà il valore più alto dell’intervallo.', bad: true, why: 'Sbagliato: MEDIA calcola la media. Per il valore più alto si usa MAX. Prova tu la formula: la pratica è la verifica migliore.' },
+      { text: 'Giorno 4: ordinare e filtrare un elenco.' },
+      { text: 'Ogni foglio di calcolo salva in automatico una copia di ogni versione, per sempre.', bad: true, why: 'Dipende dal programma e dalle impostazioni: non darlo mai per scontato. Controlla la guida ufficiale del programma.' },
+      { text: 'Al settimo giorno lavorerai a livello professionale.', bad: true, why: 'Una promessa esagerata. Una settimana ti dà le basi: diffida delle risposte che ti dicono quello che vuoi sentirti dire.' },
+    ]}
+  />
+
+Sul tuo piano vero, controlla che:
+
+- **ogni esercizio funzioni** quando lo provi (se non funziona, chiedi all’AI perché);
+- le **informazioni chiave** corrispondano a una guida ufficiale, a un libro o a un sito affidabile;
+- il ritmo sia **realistico** per il tempo che hai ogni giorno.
+
+</Track>
+
+## 4. Migliora insieme all’AI
+
+La prima risposta è una bozza. Migliorala con **brevi richieste successive**: copia queste, adattale e vai avanti finché il risultato non è davvero tuo.
+
+<Track id="trip">
+
+- “Il sabato pomeriggio è troppo pieno: togli un’attività e aggiungi una pausa.”
+- “Dammi un piano B in caso di pioggia.”
+- “Trasforma il programma in una checklist divisa in ‘due settimane prima’, ‘il giorno prima’ e ‘il giorno stesso’.”
+- “Scrivi un breve messaggio per invitare gli altri, con data, ora e cosa portare.”
+
+</Track>
+
+<Track id="meals">
+
+- “Martedì torno tardi: sostituiscilo con qualcosa di pronto in 15 minuti.”
+- “Ora scrivi la lista della spesa divisa per reparto, senza quello che ho già.”
+- “Come posso riusare gli avanzi di lunedì in un’altra cena?”
+- “Rendi la spesa più economica: cosa posso sostituire senza cambiare troppo le ricette?”
+
+</Track>
+
+<Track id="skill">
+
+- “Il giorno 3 era troppo difficile: spiegamelo con un esempio di tutti i giorni e dammi un esercizio più facile.”
+- “Fammi un quiz su quello che ho imparato finora, una domanda alla volta, e aspetta la mia risposta.”
+- “Ecco il mio esercizio: [incolla]. Non darmi la soluzione: dimmi dove ho sbagliato.”
+- “Fammi un riassunto della settimana in una pagina, da tenere.”
+
+</Track>
+
+<Callout type="info">
+  <p>Se la chat diventa molto lunga e l’AI inizia a “dimenticare” le cose, aprine una nuova e inizia con un breve riassunto di quello che hai deciso finora.</p>
+</Callout>
+
+## 5. Diligenza: prima di usarlo
+
+<Track id="trip">
+
+- **Non incollare** in chat numeri di telefono, indirizzi o dati di pagamento di altre persone. Usa segnaposto come [OSPITE 1].
+- **Prenota e paga** solo su siti ufficiali che hai trovato tu, non su link che non hai verificato.
+- Se qualcuno ha **allergie o esigenze particolari**, chiedi direttamente alla persona: non fidarti delle ipotesi dell’AI.
+
+</Track>
+
+<Track id="meals">
+
+- Puoi indicare preferenze generali (“niente carne”, “poco sale”), ma **evita di condividere informazioni dettagliate sulla salute**.
+- Per allergie, intolleranze o diete mediche, l’ultima parola spetta a **un medico o a un dietista**.
+- **Leggi le etichette**: l’AI non conosce i prodotti precisi che compri.
+
+</Track>
+
+<Track id="skill">
+
+- Se l’abilità riguarda la **sicurezza** (elettricità, farmaci, attrezzi, guida), usa l’AI per capire, poi segui le istruzioni ufficiali o un professionista.
+- Se è per **scuola o lavoro**, segui le regole sull’uso dell’AI e di’ come l’hai usata.
+- L’obiettivo è che impari **tu**: prova ogni esercizio prima di chiedere la soluzione.
+
+</Track>
+
+<Callout type="key" title="Il risultato è tuo">
+  <p>L’AI ha proposto, tu hai deciso. Se qualcosa va storto, la responsabilità non è dell’assistente: è proprio per questo che hai verificato.</p>
+</Callout>
+
+## Diario di missione
+
+Spunta i passi man mano che li completi. Tutto resta salvato sul tuo dispositivo.
+
+<Track id="trip">
+  <Checklist
+    id="mission-trip"
+    title="Missione: un weekend fuori o una piccola festa"
+    items={[
+      'Ho deciso cosa delegare e cosa fare da me',
+      'Ho inviato una prima richiesta dettagliata e ho risposto alle domande dell’AI',
+      'Ho verificato orari, prezzi e prenotazioni sui siti ufficiali',
+      'Ho migliorato il programma con almeno 2 richieste successive',
+      'Ho tenuto fuori dalla chat dati personali e di pagamento',
+      'Ho un programma finale che userei davvero',
+    ]}
+  />
+</Track>
+
+<Track id="meals">
+  <Checklist
+    id="mission-meals"
+    title="Missione: una settimana di pasti e la lista della spesa"
+    items={[
+      'Ho deciso cosa delegare e cosa fare da me',
+      'Ho inviato una prima richiesta dettagliata e ho risposto alle domande dell’AI',
+      'Ho controllato che ogni ricetta rispetti i miei vincoli',
+      'Ho migliorato il menù con almeno 2 richieste successive',
+      'Ho una lista della spesa senza le cose che avevo già',
+      'Ho cucinato almeno una delle cene',
+    ]}
+  />
+</Track>
+
+<Track id="skill">
+  <Checklist
+    id="mission-skill"
+    title="Missione: una nuova abilità in 7 giorni"
+    items={[
+      'Ho deciso cosa delegare e cosa fare da me',
+      'Ho inviato una prima richiesta dettagliata e ho risposto alle domande dell’AI',
+      'Ho provato gli esercizi da me e controllato i risultati',
+      'Ho verificato le informazioni chiave su una fonte affidabile',
+      'Ho chiesto all’AI di interrogarmi e ho ricevuto un riscontro onesto',
+      'Ho seguito il piano per almeno 3 giorni',
+    ]}
+  />
+</Track>
+
+<MissionDone />

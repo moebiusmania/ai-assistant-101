@@ -17,6 +17,7 @@ const all = (await getCollection('lessons', (e) => splitId(e.id).lang === lang))
 const idx = all.findIndex((e) => e.id === entry.id);
 const prev = all[idx - 1];
 const next = all[idx + 1];
+const core = all.filter((e) => !e.data.optional).length;
 const toc = headings.filter((h) => h.depth === 2);
 ---
 <Base
@@ -30,7 +31,7 @@ const toc = headings.filter((h) => h.depth === 2);
       <div class="narrow">
         <a class="back" href={`${routes.home(lang)}#lessons`}><Icon name="arrowLeft" size={16} />{tr('lesson.back')}</a>
         <p class="meta">
-          <span class="chip"><Icon name={entry.data.icon} size={16} />{tr('lesson.label')} {idx + 1}/{all.length}</span>
+          <span class="chip"><Icon name={entry.data.icon} size={16} />{entry.data.optional ? tr('lesson.bonus') : `${tr('lesson.label')} ${idx + 1}/${core}`}</span>
           {entry.data.tag && <span class="chip tag">{entry.data.tag}</span>}
           <span class="muted"><Icon name="clock" size={14} /> {entry.data.minutes} {tr('lesson.minutes')}</span>
         </p>

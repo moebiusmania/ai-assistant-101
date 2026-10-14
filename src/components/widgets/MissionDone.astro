@@ -1,0 +1,105 @@
+---
+/**
+ * Closes the chosen mission: marks it accomplished (and the lesson completed),
+ * then offers to pick another mission or to start this one again.
+ */
+import Widget from './Widget.astro';
+import Icon from '../Icon.astro';
+import { getLang } from '../../i18n/ui';
+
+const lang = getLang(Astro.currentLocale);
+const it = lang === 'it';
+// The lesson slug is the last segment of the page URL (/lezioni/<slug>/, /en/lessons/<slug>/).
+const slug = Astro.url.pathname.split('/').filter(Boolean).at(-1);
+const i18n = it
+  ? {
+      done: 'Missione compiuta!',
+      praise: 'Ottimo lavoro! Puoi scegliere un’altra missione o ripetere questa con un’idea nuova.',
+      reset: 'Missione ricominciata: la checklist è di nuovo vuota.',
+    }
+  : {
+      done: 'Mission accomplished!',
+      praise: 'Well done! You can pick another mission or repeat this one with a new idea.',
+      reset: 'Mission restarted: the checklist is empty again.',
+    };
+---
+<mission-done data-slug={slug} data-i18n={JSON.stringify(i18n)}>
+  <Widget label={it ? 'Fine missione' : 'End of mission'} icon="flag">
+    <p class="feedback" data-kind="ok" role="status"></p>
+    <div class="widget-actions">
+      <button type="button" class="btn btn-primary accomplish"><Icon name="flag" /><span class="label">{it ? 'Ho completato la missione' : 'I’ve completed the mission'}</span></button>
+      <button type="button" class="btn other" hidden><Icon name="compass" />{it ? 'Scegli un’altra missione' : 'Pick another mission'}</button>
+      <button type="button" class="btn btn-ghost again" hidden><Icon name="refresh" />{it ? 'Ricomincia questa missione' : 'Start this mission again'}</button>
+    </div>
+  </Widget>
+</mission-done>
+
+<script>
+  import { play } from '../../scripts/sound';
+  import { confetti } from '../../scripts/confetti';
+  import { isDone, markDone } from '../../scripts/progress';
+  import { currentMission, doneMissions, setMissionDone } from '../../scripts/mission';
+  import { strings } from '../../scripts/ui';
+
+  class MissionDone extends HTMLElement {
+    i18n = strings(this);
+    btn = this.querySelector<HTMLButtonElement>('.accomplish')!;
+    label = this.btn.querySelector('.label')!;
+    original = this.label.textContent!;
+    feedback = this.querySelector('.feedback')!;
+
+    connectedCallback() {
+      const other = this.querySelector<HTMLButtonElement>('.other')!;
+      const again = this.querySelector<HTMLButtonElement>('.again')!;
+      this.sync();
+      document.addEventListener('aic:mission', () => {
+        this.feedback.textContent = '';
+        this.sync();
+      });
+
+      this.btn.addEventListener('click', () => {
+        if (doneMissions().includes(currentMission())) return;
+        setMissionDone(currentMission(), true);
+        const slug = this.dataset.slug!;
+        const first = !isDone(slug);
+        markDone(slug);
+        if (first) document.dispatchEvent(new CustomEvent('aic:progress'));
+        this.sync();
+        this.feedback.textContent = this.i18n.praise;
+        play('done');
+        confetti(this.btn);
+      });
+
+      other.addEventListener('click', () => {
+        document.querySelector<HTMLInputElement>('#mission-picker input:checked')?.focus();
+      });
+
+      again.addEventListener('click', () => {
+        const id = currentMission();
+        setMissionDone(id, false);
+        document.querySelector<HTMLElement & { reset?: () => void }>(`.track[data-track="${id}"] check-list`)?.reset?.();
+        this.sync();
+        this.feedback.textContent = this.i18n.reset;
+        play('tap');
+        // The focused button is now hidden: move focus to the main action.
+        this.btn.focus();
+      });
+    }
+
+    sync() {
+      const done = doneMissions().includes(currentMission());
+      this.btn.classList.toggle('is-done', done);
+      this.label.textContent = done ? this.i18n.done : this.original;
+      this.querySelectorAll<HTMLButtonElement>('.other, .again').forEach((b) => (b.hidden = !done));
+    }
+  }
+  customElements.define('mission-done', MissionDone);
+</script>
+
+<style>
+  mission-done { display: block; }
+  .feedback:not(:empty) { margin-block-end: var(--space-2); }
+  .widget-actions { margin-block-start: 0; }
+  .is-done { --btn-bg: var(--ok); --btn-fg: var(--on-status); }
+  .is-done:hover { background: var(--ok); }
+</style>

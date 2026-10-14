@@ -24,6 +24,8 @@ const tr = t(lang);
         btn.querySelector('span')!.textContent = this.dataset.doneLabel!;
       };
       if (isDone(slug)) set();
+      // Another widget (e.g. MissionDone) may complete the lesson too.
+      document.addEventListener('aic:progress', () => { if (isDone(slug)) set(); });
       btn.addEventListener('click', () => {
         const first = !isDone(slug);
         markDone(slug);

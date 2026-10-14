@@ -433,7 +433,7 @@
 
   /* Prose (lesson content) */
   .prose {
-    & > * + * { margin-block-start: var(--space-4); }
+    & > * + *, & .track > * + * { margin-block-start: var(--space-4); }
     & h2 {
       font-size: var(--step-2);
       margin-block-start: var(--space-7);
@@ -565,7 +565,7 @@
   /* Reveal-on-scroll for lesson blocks (progressive enhancement) */
   @supports (animation-timeline: view()) {
     @media (prefers-reduced-motion: no-preference) {
-      .prose > .widget, .prose > .callout, .reveal {
+      .prose > .widget, .prose > .callout, .track > .widget, .track > .callout, .reveal {
         animation: fade-up linear both;
         animation-timeline: view();
         animation-range: entry 0% entry 40%;

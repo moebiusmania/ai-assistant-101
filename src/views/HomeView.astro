@@ -12,6 +12,7 @@ const lessons = (await getCollection('lessons', (e) => splitId(e.id).lang === la
   .sort((a, b) => a.data.order - b.data.order)
   .map((e) => ({ ...e.data, slug: splitId(e.id).slug }));
 const first = lessons[0];
+const core = lessons.filter((l) => !l.optional);
 const why = [1, 2, 3, 4].map((n) => ({
   t: tr(`home.why.${n}.t` as any),
   d: tr(`home.why.${n}.d` as any),
@@ -57,7 +58,7 @@ const demo = lang === 'it'
 
   <section class="container intro">
     <h2>{tr('home.intro.title')}</h2>
-    <IntroVideo icons={lessons.map((l) => l.icon)} />
+    <IntroVideo icons={core.map((l) => l.icon)} />
   </section>
 
   <section class="container why">
@@ -81,14 +82,14 @@ const demo = lang === 'it'
           <circle cx="20" cy="20" r="16" class="bg" />
           <circle cx="20" cy="20" r="16" class="fg" pathLength="100" />
         </svg>
-        <span><b class="done-n">0</b> {tr('home.of')} {lessons.length} {tr('home.done')}</span>
+        <span><b class="done-n">0</b> {tr('home.of')} {core.length} {tr('home.done')}</span>
         <button class="btn btn-sm btn-ghost reset" type="button" data-confirm={tr('home.reset.confirm')} hidden>{tr('home.reset')}</button>
       </div>
     </div>
     <ol class="lesson-list">
       {lessons.map((l, i) => (
         <li class="reveal">
-          <a class="lesson-card card" href={routes.lesson(lang, l.slug)} data-slug={l.slug}>
+          <a class="lesson-card card" href={routes.lesson(lang, l.slug)} data-slug={l.slug} data-optional={l.optional ? '' : undefined}>
             <span class="num">{String(i + 1).padStart(2, '0')}</span>
             <span class="l-ic"><Icon name={l.icon} /></span>
             <span class="l-body">
@@ -115,12 +116,14 @@ const demo = lang === 'it'
     const done = new Set(completed());
     const cards = [...document.querySelectorAll<HTMLAnchorElement>('.lesson-card')];
     cards.forEach((c) => c.toggleAttribute('data-complete', done.has(c.dataset.slug!)));
-    const n = cards.filter((c) => done.has(c.dataset.slug!)).length;
+    // Bonus lessons don't count towards progress, and come after the core ones.
+    const core = cards.filter((c) => !c.hasAttribute('data-optional'));
+    const n = core.filter((c) => done.has(c.dataset.slug!)).length;
     document.querySelector('.done-n')!.textContent = String(n);
-    document.querySelector<HTMLElement>('.overall')!.style.setProperty('--ring', String((n / cards.length) * 100));
-    document.querySelector<HTMLButtonElement>('.overall .reset')!.hidden = n === 0;
+    document.querySelector<HTMLElement>('.overall')!.style.setProperty('--ring', String((n / core.length) * 100));
+    document.querySelector<HTMLButtonElement>('.overall .reset')!.hidden = !cards.some((c) => done.has(c.dataset.slug!));
     const start = document.querySelector<HTMLAnchorElement>('.start')!;
-    const nextCard = cards.find((c) => !done.has(c.dataset.slug!));
+    const nextCard = core.find((c) => !done.has(c.dataset.slug!)) ?? cards.find((c) => !done.has(c.dataset.slug!));
     if (n > 0 && nextCard) {
       start.href = nextCard.href;
       start.querySelector('span')!.textContent = start.dataset.continue!;

@@ -11,6 +11,8 @@ const lessons = defineCollection({
     minutes: z.number(),
     icon: z.string(),
     tag: z.string().optional(),
+    // Bonus lessons are listed but don't count towards course progress.
+    optional: z.boolean().optional(),
   }),
 });
 

@@ -1,0 +1,281 @@
+---
+title: "Bonus mission: a real task, start to finish"
+description: Pick an everyday task and complete it with the AI assistant of your choice, using the 4Ds one step at a time.
+order: 9
+minutes: 25
+icon: flag
+tag: Optional · Repeatable
+optional: true
+---
+
+So far you’ve read, tried and practised. Now it’s **for real**: pick a mission, open your favourite assistant (ChatGPT, Claude, Gemini, Le Chat, Copilot… any will do) in another window and follow the steps. Each step is one of the 4Ds.
+
+<Callout type="tip" title="An optional, repeatable lesson">
+  <p>This mission doesn’t count towards course progress. When you’ve finished, you can <strong>come back and pick another one</strong>, or repeat the same one with a different idea: a new trip, another week of meals, another skill.</p>
+</Callout>
+
+## Choose your mission
+
+<Mission
+  title="What do you want to do today?"
+  hint="The rest of the lesson changes to match your choice. You can change your mind at any time."
+  missions={[
+    { id: 'trip', icon: 'globe', title: 'A weekend away or a small event', desc: 'A trip, a birthday party, a dinner for 8: plan, check, get organised.' },
+    { id: 'meals', icon: 'cart', title: 'A week of meals and a shopping list', desc: 'A menu that fits your budget and schedule, plus a list grouped by aisle.' },
+    { id: 'skill', icon: 'lightbulb', title: 'A new skill in 7 days', desc: 'A short study plan, exercises and quizzes: the AI as your tutor.' },
+  ]}
+/>
+
+## 1. Delegation: split the work
+
+Before you write anything, decide **who does what**. The AI is good at drafts, ideas and structure. Decisions, money and final checks stay with you.
+
+<Track id="trip">
+
+| The AI does | You do |
+| --- | --- |
+| Proposes a programme with timings | Choose dates, budget and who’s coming |
+| Suggests places, activities or a menu | Check opening hours, prices and availability on official sites |
+| Turns the plan into a checklist and a timeline | Book and pay, yourself |
+
+</Track>
+
+<Track id="meals">
+
+| The AI does | You do |
+| --- | --- |
+| Proposes dinners that fit your constraints | Decide what you like and what you can cook |
+| Writes the shopping list grouped by aisle | Check what’s already in the fridge and cupboard |
+| Suggests how to reuse leftovers | Make allergy and health decisions with a qualified person |
+
+</Track>
+
+<Track id="skill">
+
+| The AI does | You do |
+| --- | --- |
+| Breaks the skill into small daily steps | Choose the goal and how much time you have |
+| Explains, sets exercises and corrects you | Do the exercises: that’s where the learning happens |
+| Quizzes you on what you’ve learnt | Check important facts against a reliable source |
+
+</Track>
+
+## 2. Description: the first request
+
+Copy the template, replace the parts <mark class="ph">[in brackets]</mark> and paste it into your assistant. The last line asks the AI to **ask you questions first**: answer them, it’s worth it.
+
+<Track id="trip">
+  <CopyPrompt
+    title="Plan the trip or event"
+    icon="globe"
+    when="Weekends away, parties, dinners with friends"
+    prompt={'I’m organising [a weekend in (place) / a birthday party / a dinner for 8 people] on [date or period].\nWho’s involved: [how many people, ages, any special needs].\nBudget: [total or per person].\nWe like [interests, food, atmosphere]; we want to avoid [things to avoid].\nGive me a plan with timings, and mark what needs booking in advance.\nBefore answering, ask me up to 3 questions if something important is missing.'}
+  />
+</Track>
+
+<Track id="meals">
+  <CopyPrompt
+    title="Plan the week’s dinners"
+    icon="cart"
+    when="Menus, shopping, using up what you have"
+    prompt={'Plan [5] dinners for [number] people for next week.\nConstraints: [vegetarian / no lactose / budget around (amount) / at most (minutes) minutes to cook].\nI already have: [ingredients in the fridge or cupboard].\nWe don’t like: [foods to avoid].\nFor each dinner: name, preparation time and a one-line description.\nBefore answering, ask me up to 3 questions if something important is missing.'}
+  />
+</Track>
+
+<Track id="skill">
+  <CopyPrompt
+    title="Plan the 7 days of study"
+    icon="lightbulb"
+    when="Software, languages, hobbies, practical skills"
+    prompt={'I want to learn [skill: e.g. spreadsheet basics / 20 useful phrases in Spanish / looking after houseplants] in 7 days.\nMy level: [complete beginner / I know a little].\nI have [minutes] minutes a day, with [device or materials I have].\nBy the end of the week I want to be able to: [goal].\nMake me a day-by-day plan: for each day one concept, one exercise and a 2-question quiz.\nBefore answering, ask me up to 3 questions if something important is missing.'}
+  />
+</Track>
+
+## 3. Discernment: check before you trust
+
+The answer will look convincing. Warm up on this example first: which sentences would you check?
+
+<Track id="trip">
+  <SpotError
+    title="Find the points to check"
+    hint="Click the sentences you’d check before trusting them, then press “Check”."
+    question="Plan a Saturday out of town for two, with a budget of 150 €."
+    sentences={[
+      { text: 'Here’s a relaxed plan for your Saturday.' },
+      { text: 'Morning: a walk through the old town, then a coffee in the main square.' },
+      { text: 'The castle museum is open every day from 9:00 to 19:00 and entry is free.', bad: true, why: 'Opening hours and prices change by season and by day: check them on the museum’s official site.' },
+      { text: 'For lunch, book at Trattoria Da Gino, rated 4.9 from over 3,000 reviews.', bad: true, why: 'Such a precise name and rating may be invented or out of date. Look the place up on a map or a review site.' },
+      { text: 'In the afternoon, a walk along the river: free and good for a rest.' },
+      { text: 'Total cost: about 80 €, so you’re well under budget.', bad: true, why: 'Totals are often wrong: add up the costs yourself, and remember transport.' },
+    ]}
+  />
+
+On your real plan, check that:
+
+- **opening hours, prices and bookings** match the official sites;
+- the **timings are realistic**, including travel between one place and the next;
+- the **total adds up** and stays within the budget.
+
+</Track>
+
+<Track id="meals">
+  <SpotError
+    title="Find the points to check"
+    hint="Click the sentences you’d check before trusting them, then press “Check”."
+    question="Plan 5 vegetarian dinners for 2 people, spending less than 40 €."
+    sentences={[
+      { text: 'Monday: pasta with courgettes and lemon, ready in 20 minutes.' },
+      { text: 'Tuesday: chickpea and spinach curry, great for using up what’s in the cupboard.' },
+      { text: 'Wednesday: Caesar salad with traditional dressing.', bad: true, why: 'Traditional Caesar dressing contains anchovies, and the cheese is often made with animal rennet: it isn’t vegetarian. Constraints are a classic place where AI slips.' },
+      { text: 'Thursday: vegetable frittata with a side salad.' },
+      { text: 'The whole shopping list costs about 18 €.', bad: true, why: 'Prices vary a lot between shops and countries: the AI doesn’t know your supermarket’s prices. Check them yourself.' },
+      { text: 'Each dinner gives you all the protein you need for the day.', bad: true, why: 'A sweeping nutrition claim with nothing behind it. For dietary needs, ask a doctor or a dietitian.' },
+    ]}
+  />
+
+On your real menu, check that:
+
+- **every recipe respects your constraints** (vegetarian, allergens, cooking time);
+- **quantities** match the number of people;
+- the **shopping list** includes everything the recipes need, and nothing you already have.
+
+</Track>
+
+<Track id="skill">
+  <SpotError
+    title="Find the points to check"
+    hint="Click the sentences you’d check before trusting them, then press “Check”."
+    question="Teach me spreadsheet basics in 7 days."
+    sentences={[
+      { text: 'Day 1: what cells, rows and columns are, and how to type in data.' },
+      { text: 'Day 2: your first formula. =SUM(A1:A5) adds up the numbers from A1 to A5.' },
+      { text: 'Day 3: =AVERAGE(A1:A5) gives you the largest value in the range.', bad: true, why: 'Wrong: AVERAGE calculates the mean. For the largest value you use MAX. Try the formula yourself: practice is the best check.' },
+      { text: 'Day 4: sorting and filtering a list.' },
+      { text: 'Every spreadsheet automatically keeps a copy of every version, forever.', bad: true, why: 'It depends on the program and its settings: never take it for granted. Check the program’s official help pages.' },
+      { text: 'By day 7 you’ll be working at a professional level.', bad: true, why: 'An exaggerated promise. A week gives you the basics: be wary of answers that tell you what you want to hear.' },
+    ]}
+  />
+
+On your real plan, check that:
+
+- **every exercise works** when you try it yourself (if it doesn’t, ask the AI why);
+- the **key facts** match an official guide, a textbook or a trusted website;
+- the pace is **realistic** for the time you have each day.
+
+</Track>
+
+## 4. Refine together
+
+The first answer is a draft. Improve it with **short follow-ups**: copy these, adapt them and keep going until the result is really yours.
+
+<Track id="trip">
+
+- “Saturday afternoon is too packed: drop one activity and add a break.”
+- “Give me a plan B in case it rains.”
+- “Turn the plan into a checklist split into ‘two weeks before’, ‘the day before’ and ‘on the day’.”
+- “Write a short message to invite the others, with the date, the time and what to bring.”
+
+</Track>
+
+<Track id="meals">
+
+- “On Tuesday I get home late: swap it for something ready in 15 minutes.”
+- “Now write the shopping list grouped by aisle, leaving out what I already have.”
+- “How can I reuse Monday’s leftovers in another dinner?”
+- “Make the list cheaper: what can I swap without changing the recipes too much?”
+
+</Track>
+
+<Track id="skill">
+
+- “Day 3 was too hard: explain it with an everyday example and give me an easier exercise.”
+- “Quiz me on what I’ve learnt so far, one question at a time, and wait for my answer.”
+- “Here’s my exercise: [paste]. Don’t give me the solution: tell me where I went wrong.”
+- “Make me a one-page summary of the week to keep.”
+
+</Track>
+
+<Callout type="info">
+  <p>If the chat gets very long and the AI starts “forgetting” things, open a new one and start with a short summary of what you’ve decided so far.</p>
+</Callout>
+
+## 5. Diligence: before you use it
+
+<Track id="trip">
+
+- **Don’t paste** other people’s phone numbers, addresses or payment details into the chat. Use placeholders like [GUEST 1].
+- **Book and pay** only on official sites you found yourself, not on links you haven’t checked.
+- If someone has **allergies or special needs**, ask them directly: don’t rely on the AI’s guesses.
+
+</Track>
+
+<Track id="meals">
+
+- You can mention general preferences (“no meat”, “not much salt”), but **avoid sharing detailed health information**.
+- For allergies, intolerances or medical diets, the last word goes to **a doctor or a dietitian**.
+- **Read the labels**: the AI doesn’t know the exact products you buy.
+
+</Track>
+
+<Track id="skill">
+
+- If the skill involves **safety** (electricity, medicines, tools, driving), use the AI to understand, then follow the official instructions or a professional.
+- If it’s for **school or work**, follow the rules on using AI and say how you used it.
+- The goal is for **you** to learn: try each exercise before asking for the solution.
+
+</Track>
+
+<Callout type="key" title="The result is yours">
+  <p>The AI suggested, you decided. If something goes wrong, the responsibility isn’t the assistant’s: that’s exactly why you checked.</p>
+</Callout>
+
+## Mission log
+
+Tick off the steps as you complete them. Everything stays saved on your device.
+
+<Track id="trip">
+  <Checklist
+    id="mission-trip"
+    title="Mission: a weekend away or a small event"
+    items={[
+      'I decided what to delegate and what to do myself',
+      'I sent a detailed first request and answered the AI’s questions',
+      'I checked opening hours, prices and bookings on official sites',
+      'I refined the plan with at least 2 follow-ups',
+      'I kept personal and payment details out of the chat',
+      'I have a final plan I would actually use',
+    ]}
+  />
+</Track>
+
+<Track id="meals">
+  <Checklist
+    id="mission-meals"
+    title="Mission: a week of meals and a shopping list"
+    items={[
+      'I decided what to delegate and what to do myself',
+      'I sent a detailed first request and answered the AI’s questions',
+      'I checked that every recipe respects my constraints',
+      'I refined the menu with at least 2 follow-ups',
+      'I have a shopping list without anything I already had',
+      'I cooked at least one of the dinners',
+    ]}
+  />
+</Track>
+
+<Track id="skill">
+  <Checklist
+    id="mission-skill"
+    title="Mission: a new skill in 7 days"
+    items={[
+      'I decided what to delegate and what to do myself',
+      'I sent a detailed first request and answered the AI’s questions',
+      'I tried the exercises myself and checked the results',
+      'I checked the key facts against a reliable source',
+      'I asked to be quizzed and got honest feedback',
+      'I followed the plan for at least 3 days',
+    ]}
+  />
+</Track>
+
+<MissionDone />

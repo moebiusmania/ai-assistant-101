@@ -1,0 +1,152 @@
+---
+/**
+ * Lets the learner pick one mission; the lesson then shows only the matching <Track> blocks.
+ * The choice and the missions already accomplished are remembered on this device.
+ */
+import Widget from './Widget.astro';
+import Icon from '../Icon.astro';
+import { getLang } from '../../i18n/ui';
+import { DEFAULT_MISSION } from '../../scripts/mission';
+
+type Option = { id: string; title: string; desc: string; icon: string };
+interface Props { missions: Option[]; title?: string; hint?: string }
+const lang = getLang(Astro.currentLocale);
+const it = lang === 'it';
+const { missions, title, hint } = Astro.props;
+const label = it ? 'La tua missione' : 'Your mission';
+const i18n = { chosen: it ? 'Missione scelta:' : 'Mission chosen:' };
+---
+<mission-picker data-i18n={JSON.stringify(i18n)}>
+  <Widget id="mission-picker" label={label} icon="flag" title={title} hint={hint}>
+    <fieldset>
+      <legend class="visually-hidden">{title ?? label}</legend>
+      {missions.map((m) => (
+        <label class="opt" data-id={m.id}>
+          <input type="radio" name="mission" value={m.id} checked={m.id === DEFAULT_MISSION} />
+          <span class="dot" aria-hidden="true"></span>
+          <span class="ic"><Icon name={m.icon} /></span>
+          <span class="txt">
+            <span class="ttl">{m.title}</span>
+            <span class="desc">{m.desc}</span>
+            <span class="done" hidden><Icon name="check" size={14} />{it ? 'Missione compiuta' : 'Mission accomplished'}</span>
+          </span>
+        </label>
+      ))}
+    </fieldset>
+    <p class="visually-hidden status" role="status"></p>
+  </Widget>
+</mission-picker>
+
+<script>
+  import { play } from '../../scripts/sound';
+  import { strings } from '../../scripts/ui';
+  import { DEFAULT_MISSION, doneMissions, savedMission, showMission } from '../../scripts/mission';
+
+  class MissionPicker extends HTMLElement {
+    i18n = strings(this);
+    connectedCallback() {
+      const radios = [...this.querySelectorAll<HTMLInputElement>('input')];
+      const ids = radios.map((r) => r.value);
+      const saved = savedMission();
+      const start = ids.includes(saved) ? saved : DEFAULT_MISSION;
+      radios.forEach((r) => (r.checked = r.value === start));
+      showMission(start, false);
+      this.syncDone();
+      document.addEventListener('aic:mission-done', () => this.syncDone());
+
+      radios.forEach((r) =>
+        r.addEventListener('change', () => {
+          if (!r.checked) return;
+          showMission(r.value);
+          play('tap');
+          const title = r.closest('label')!.querySelector('.ttl')!.textContent;
+          this.querySelector('.status')!.textContent = `${this.i18n.chosen} ${title}`;
+        }),
+      );
+    }
+
+    syncDone() {
+      const done = new Set(doneMissions());
+      this.querySelectorAll<HTMLElement>('.opt').forEach((o) => {
+        o.querySelector<HTMLElement>('.done')!.hidden = !done.has(o.dataset.id!);
+      });
+    }
+  }
+  customElements.define('mission-picker', MissionPicker);
+</script>
+
+<style>
+  mission-picker { display: block; }
+  fieldset {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+    gap: var(--space-3);
+  }
+  .opt {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-3);
+    align-content: start;
+    padding: var(--space-4);
+    border-radius: var(--radius);
+    border: 2px solid var(--border-control);
+    background: var(--bg-sunk);
+    cursor: pointer;
+    transition: border-color 200ms, background-color 200ms, transform 300ms var(--ease-out);
+    &:hover { border-color: var(--accent); transform: translateY(-2px); }
+    &:has(input:focus-visible) { outline: 3px solid var(--accent); outline-offset: 2px; }
+    & input { position: absolute; opacity: 0; pointer-events: none; }
+    &:has(input:checked) {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      & .dot::after { scale: 1; }
+    }
+  }
+  /* Side by side, the cards are narrow: stack the icon above the text. */
+  @container (width > 36rem) {
+    .opt { grid-template-columns: 1fr; }
+  }
+  /* Radio indicator: the filled dot shows the choice without relying on colour alone. */
+  .dot {
+    position: absolute;
+    inset-block-start: var(--space-3);
+    inset-inline-end: var(--space-3);
+    width: 1.25rem; height: 1.25rem;
+    border-radius: 50%;
+    border: 2px solid var(--border-control);
+    display: grid; place-items: center;
+    &::after {
+      content: '';
+      width: 0.6rem; height: 0.6rem;
+      border-radius: 50%;
+      background: var(--accent);
+      scale: 0;
+      transition: scale 300ms var(--ease-spring);
+    }
+  }
+  .ic {
+    display: grid; place-items: center;
+    width: 2.5rem; height: 2.5rem;
+    border-radius: 0.8rem;
+    background: var(--bg-elev);
+    color: var(--accent);
+    & :global(svg) { width: 1.25rem; height: 1.25rem; }
+  }
+  .txt { display: grid; gap: var(--space-1); padding-inline-end: var(--space-5); }
+  .ttl { font-family: var(--font-display); font-weight: 700; line-height: 1.25; }
+  .desc { font-size: var(--step--1); color: var(--text-muted); }
+  .done {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
+    width: fit-content;
+    margin-block-start: var(--space-1);
+    font-size: 0.8rem;
+    font-weight: 650;
+    color: var(--teal-ink);
+  }
+</style>
