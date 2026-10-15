@@ -1,0 +1,235 @@
+/*
+ * Skeuomorphic skin: halfway between the flat base design and 2008 —
+ * lit bevels, soft gloss, recessed wells, a faint paper grain.
+ *
+ * Opt-in: imported after global.css in src/layouts/Base.astro.
+ * Remove that import to go back to the flat look; nothing else depends on this file.
+ *
+ * Site-wide rules reopen global.css's layers, so they win by source order exactly as if
+ * they were written there. Component-scoped Astro styles are unlayered (and beat any
+ * layer), so those overrides live at the bottom, unlayered, behind :root:not(#_)
+ * for id-level specificity.
+ */
+
+/* ───────────────────────── tokens ───────────────────────── */
+@layer tokens {
+  :root {
+    --border: light-dark(oklch(87% 0.012 280), oklch(31% 0.015 280));
+
+    --bevel: inset 0 1px 0 light-dark(oklch(100% 0 0 / 0.95), oklch(100% 0 0 / 0.09));
+    --bevel-low: inset 0 -1px 0 light-dark(oklch(20% 0.02 280 / 0.06), oklch(0% 0 0 / 0.35));
+    --inset: inset 0 2px 4px light-dark(oklch(20% 0.03 280 / 0.12), oklch(0% 0 0 / 0.5)),
+      inset 0 1px 1px light-dark(oklch(20% 0.03 280 / 0.1), oklch(0% 0 0 / 0.4));
+    --gloss: linear-gradient(to bottom, oklch(100% 0 0 / 0.16), oklch(100% 0 0 / 0.05) 48%, transparent 52%);
+    --surface: linear-gradient(to bottom,
+      light-dark(oklch(100% 0 0), oklch(24.5% 0.017 280)),
+      light-dark(oklch(97.6% 0.006 85), oklch(20.5% 0.015 280)));
+    --surface-sunk: linear-gradient(to bottom,
+      light-dark(oklch(94.5% 0.008 85), oklch(13% 0.012 280)),
+      light-dark(oklch(96.5% 0.008 85), oklch(15.5% 0.012 280)));
+    --emboss: 0 1px 0 light-dark(oklch(100% 0 0 / 0.85), oklch(0% 0 0 / 0.6));
+    --rim: 0 1px 0 light-dark(oklch(100% 0 0 / 0.8), oklch(100% 0 0 / 0.05));
+    --texture: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.45 0 0 0 0 0.55 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    /* Light mode darkens downward (white text gains contrast); dark mode lightens upward (dark text stays ≥ 4.5:1). */
+    --accent-face: linear-gradient(to bottom, light-dark(var(--accent), var(--accent-strong)), light-dark(var(--accent-strong), var(--accent)));
+    --accent-text-shadow: 0 -1px 0 light-dark(oklch(0% 0 0 / 0.25), oklch(100% 0 0 / 0.25));
+
+    /* The shared shadows carry the bevel, so every raised surface gets a lit edge. */
+    --shadow-sm: var(--bevel), var(--bevel-low),
+      0 1px 2px light-dark(oklch(20% 0.02 280 / 0.12), oklch(0% 0 0 / 0.5));
+    --shadow: var(--bevel), var(--bevel-low),
+      0 1px 2px light-dark(oklch(20% 0.02 280 / 0.1), oklch(0% 0 0 / 0.45)),
+      0 10px 24px -8px light-dark(oklch(20% 0.05 280 / 0.2), oklch(0% 0 0 / 0.6));
+    --shadow-lg: var(--bevel),
+      0 2px 4px light-dark(oklch(20% 0.03 280 / 0.1), oklch(0% 0 0 / 0.4)),
+      0 24px 60px -20px light-dark(oklch(30% 0.1 280 / 0.3), oklch(0% 0 0 / 0.75));
+  }
+}
+
+/* ───────────────────────── base ───────────────────────── */
+@layer base {
+  body {
+    background:
+      var(--texture),
+      radial-gradient(ellipse 120% 60% at 50% 0%, light-dark(oklch(100% 0 0 / 0.7), oklch(100% 0 0 / 0.025)), transparent 70%),
+      var(--bg);
+    background-attachment: scroll, fixed, scroll;
+  }
+
+  h1, h2, h3, h4 { text-shadow: var(--emboss); }
+
+  :not(pre) > code { box-shadow: inset 0 1px 2px light-dark(oklch(20% 0.05 280 / 0.12), oklch(0% 0 0 / 0.4)); }
+
+  /* Text fields read as recessed wells. */
+  textarea, input:not([type='checkbox'], [type='radio'], [type='range'], [type='search']) {
+    box-shadow: var(--inset);
+  }
+}
+
+/* ───────────────────────── components ───────────────────────── */
+@layer components {
+  .btn {
+    /* Darkens the face toward the bottom so it reads as a convex surface. */
+    --btn-shade: light-dark(oklch(20% 0.03 280 / 0.07), oklch(0% 0 0 / 0.22));
+    border-block-end-color: color-mix(in oklch, var(--btn-border) 70%, black);
+    background: var(--gloss), linear-gradient(to bottom, transparent, var(--btn-shade)), var(--btn-bg);
+    text-shadow: var(--emboss);
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--dur) var(--ease-out), background-color var(--dur), box-shadow var(--dur), border-color var(--dur), color var(--dur), filter var(--dur);
+    &:hover { box-shadow: var(--shadow); filter: brightness(1.03); }
+    &:active { transform: translateY(1px); box-shadow: var(--inset); filter: brightness(0.97); }
+  }
+  .btn-primary {
+    --btn-border: light-dark(var(--accent-strong), var(--accent));
+    --btn-shade: light-dark(oklch(20% 0.1 280 / 0.22), oklch(0% 0 0 / 0.12));
+    text-shadow: var(--accent-text-shadow);
+    &:hover { background: var(--gloss), linear-gradient(to bottom, transparent, var(--btn-shade)), var(--btn-bg); border-color: var(--btn-border); box-shadow: var(--bevel), 0 6px 20px -6px color-mix(in oklch, var(--accent) 70%, transparent); }
+  }
+  .btn-ghost {
+    background: transparent;
+    box-shadow: none;
+    text-shadow: none;
+    &:hover { background: var(--accent-soft); box-shadow: var(--inset); filter: none; }
+  }
+
+  .icon-btn {
+    &:hover { background: var(--gloss), var(--surface); border-color: var(--border); box-shadow: var(--shadow-sm); }
+    &:active { transform: scale(0.94); box-shadow: var(--inset); }
+    & svg { filter: drop-shadow(var(--emboss)); }
+  }
+
+  .chip {
+    background: var(--gloss), var(--accent-soft);
+    border: 1px solid color-mix(in oklch, var(--accent) 22%, transparent);
+    box-shadow: var(--bevel);
+  }
+
+  .card { background: var(--surface); }
+
+  /* Header: a brushed toolbar. */
+  .site-header {
+    background:
+      var(--texture),
+      linear-gradient(to bottom,
+        color-mix(in oklch, light-dark(oklch(100% 0 0), oklch(26% 0.018 280)) 90%, transparent),
+        color-mix(in oklch, light-dark(oklch(94% 0.01 85), oklch(19% 0.014 280)) 90%, transparent));
+    border-block-end: 1px solid var(--border-strong);
+    box-shadow: var(--bevel), var(--rim), 0 6px 16px -10px light-dark(oklch(20% 0.03 280 / 0.35), oklch(0% 0 0 / 0.8));
+
+    & .brand {
+      text-shadow: var(--emboss);
+      & svg { filter: drop-shadow(0 1px 1.5px light-dark(oklch(20% 0.05 280 / 0.3), oklch(0% 0 0 / 0.6))); }
+    }
+    & nav a {
+      text-shadow: var(--emboss);
+      &[aria-current='page'] { background: var(--surface-sunk); box-shadow: var(--inset); }
+    }
+  }
+  @media (width < 40rem) {
+    .site-header nav {
+      background: var(--surface-sunk);
+      box-shadow: var(--inset), var(--rim);
+      & a[aria-current='page'] { background: var(--gloss), var(--surface); box-shadow: var(--shadow-sm); }
+    }
+  }
+
+  .read-progress {
+    height: 4px;
+    background: var(--gloss), linear-gradient(90deg, var(--accent), var(--teal));
+    box-shadow: 0 1px 3px color-mix(in oklch, var(--accent) 50%, transparent);
+  }
+
+  .lang-switch {
+    background: var(--surface-sunk);
+    box-shadow: var(--inset), var(--rim);
+    & a[aria-current='true'] {
+      background: var(--gloss), var(--accent-face);
+      box-shadow: var(--bevel), 0 1px 2px light-dark(oklch(20% 0.05 280 / 0.3), oklch(0% 0 0 / 0.6));
+      text-shadow: var(--accent-text-shadow);
+    }
+  }
+
+  /* Footer: a recessed base plate. */
+  .site-footer {
+    border-block-start: 1px solid var(--border-strong);
+    background: var(--texture), var(--surface-sunk);
+    box-shadow: inset 0 6px 12px -8px light-dark(oklch(20% 0.03 280 / 0.18), oklch(0% 0 0 / 0.6)), 0 -1px 0 light-dark(oklch(100% 0 0 / 0.8), oklch(100% 0 0 / 0.04));
+    & .footer-bottom { box-shadow: inset 0 1px 0 light-dark(oklch(100% 0 0 / 0.8), oklch(100% 0 0 / 0.04)); }
+  }
+
+  .prose {
+    & blockquote { background: var(--gloss), var(--accent-soft); box-shadow: var(--shadow-sm); }
+    & table { border-color: var(--border-strong); background: var(--surface); box-shadow: var(--shadow-sm); }
+    & th {
+      background: linear-gradient(to bottom, light-dark(oklch(97% 0.008 85), oklch(27% 0.017 280)), light-dark(oklch(92.5% 0.01 85), oklch(22% 0.015 280)));
+      border-block-end: 1px solid var(--border-strong);
+      box-shadow: var(--bevel);
+      text-shadow: var(--emboss);
+    }
+    /* An engraved groove. */
+    & hr { height: 2px; background: linear-gradient(to bottom, var(--border-strong) 50%, light-dark(oklch(100% 0 0), oklch(100% 0 0 / 0.05)) 50%); }
+    & .modes p, & .risk li { background: var(--surface); box-shadow: var(--shadow-sm); }
+  }
+
+  mark.ph { box-shadow: inset 0 -1px 0 color-mix(in oklch, var(--amber) 45%, transparent); }
+
+  /* Widget shell: a raised panel with a lit rim. */
+  .widget {
+    background: var(--texture), var(--surface);
+    border-color: var(--border-strong);
+    & .widget-label {
+      text-shadow: var(--emboss);
+      padding: 0.2em 0.7em 0.2em 0.55em;
+      border-radius: var(--radius-pill);
+      background: var(--gloss), var(--accent-soft);
+      border: 1px solid color-mix(in oklch, var(--accent) 22%, transparent);
+      box-shadow: var(--bevel);
+    }
+  }
+
+  .feedback:not(:empty) { box-shadow: var(--inset); border: 1px solid color-mix(in oklch, currentColor 18%, transparent); }
+}
+
+/* ─────────────── component-scoped overrides (unlayered) ─────────────── */
+:root:not(#_) {
+  /* Home */
+  & .hero-head h1 em {
+    /* text-shadow paints over a background-clipped gradient; a filter sits behind it instead. */
+    text-shadow: none;
+    filter: drop-shadow(var(--emboss));
+  }
+  & .bubble.u { background: var(--gloss), var(--accent-face); }
+  & .bubble.a { background: var(--surface); }
+  & .orbit span { background: var(--gloss), var(--surface); }
+  & :is(.why-ic, .l-ic) {
+    background: var(--gloss), linear-gradient(to bottom, transparent, color-mix(in oklch, var(--accent) 12%, transparent)), var(--accent-soft);
+    border: 1px solid color-mix(in oklch, var(--accent) 25%, transparent);
+    box-shadow: var(--bevel), 0 2px 4px -1px color-mix(in oklch, var(--accent) 30%, transparent);
+  }
+  & .mini-ring .bg { stroke: var(--border-strong); }
+  & .l-status { border-color: var(--border-strong); background: var(--surface-sunk); box-shadow: var(--inset); }
+  & .lesson-card[data-complete] .l-status {
+    background: var(--gloss), var(--ok);
+    border-color: color-mix(in oklch, var(--ok) 80%, black);
+    box-shadow: var(--bevel), 0 1px 3px color-mix(in oklch, var(--ok) 50%, transparent);
+  }
+
+  /* Lesson */
+  & .meta .tag { background: var(--gloss), var(--surface); }
+  & .callout {
+    background: var(--gloss), var(--c-soft);
+    border-color: color-mix(in oklch, var(--c) 30%, transparent);
+    box-shadow: var(--shadow-sm);
+  }
+  & .callout-icon {
+    background: var(--gloss), var(--surface);
+    border: 1px solid color-mix(in oklch, var(--c) 30%, transparent);
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* Glossary */
+  & label.search {
+    background: var(--surface-sunk);
+    box-shadow: var(--inset), 0 1px 0 light-dark(oklch(100% 0 0 / 0.9), oklch(100% 0 0 / 0.05));
+  }
+}
