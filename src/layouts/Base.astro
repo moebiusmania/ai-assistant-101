@@ -219,6 +219,18 @@ const ogLocale: Record<Lang, string> = { it: 'it_IT', en: 'en_US', es: 'es_ES' }
         hideInstall(); // the prompt can only be shown once
       });
 
+      // Small screens: the header slides away while scrolling down and comes back on any scroll up.
+      const header = document.querySelector<HTMLElement>('.site-header')!;
+      const narrow = matchMedia('(width < 40rem)');
+      let lastY = scrollY;
+      addEventListener('scroll', () => {
+        const y = scrollY;
+        if (Math.abs(y - lastY) < 6) return; // ignore tiny jitters (and iOS bounce)
+        header.toggleAttribute('data-away', narrow.matches && y > lastY && y > header.offsetHeight);
+        lastY = y;
+      }, { passive: true });
+      narrow.addEventListener('change', () => header.removeAttribute('data-away'));
+
       // Language menu: focus the current language on open; arrow keys move between options.
       const langList = document.querySelector<HTMLElement>('#lang-list')!;
       const langLinks = [...langList.querySelectorAll<HTMLAnchorElement>('a')];

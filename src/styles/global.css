@@ -345,6 +345,11 @@
       & a { padding: 0.3em 0.9em; }
     }
     .site-header .lang-menu { order: 4; margin-inline-start: auto; }
+
+    /* Slides away while scrolling down, back on any scroll up (data-away is set in Base.astro).
+       It never hides while it holds focus, e.g. with the language menu open. */
+    .site-header { transition: translate 300ms var(--ease-out); }
+    .site-header[data-away]:not(:focus-within) { translate: 0 -100%; }
   }
   /* Very narrow (small phones, 400% zoom): keep only the logo; the name stays as the link's accessible name. */
   @media (width < 22.5rem) {

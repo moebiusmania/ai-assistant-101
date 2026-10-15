@@ -4,9 +4,9 @@ type Entry = { term: string; def: string };
 
 export const glossary: Record<string, Record<Lang, Entry>> = {
   assistant: {
-    it: { term: 'Assistente AI', def: 'Un programma con cui “chatti” scrivendo o parlando: ChatGPT, Claude, Gemini, Le Chat, Copilot e simili. Risponde generando testo (e a volte immagini o codice).' },
-    en: { term: 'AI assistant', def: 'A program you “chat” with by typing or speaking: ChatGPT, Claude, Gemini, Le Chat, Copilot and similar. It replies by generating text (and sometimes images or code).' },
-    es: { term: 'Asistente de IA', def: 'Un programa con el que “chateas” escribiendo o hablando: ChatGPT, Claude, Gemini, Le Chat, Copilot y similares. Responde generando texto (y a veces imágenes o código).' },
+    it: { term: 'Assistente AI', def: 'Un programma con cui “chatti” scrivendo o parlando: ChatGPT, Claude, Gemini, Mistral, Copilot e simili. Risponde generando testo (e a volte immagini o codice).' },
+    en: { term: 'AI assistant', def: 'A program you “chat” with by typing or speaking: ChatGPT, Claude, Gemini, Mistral, Copilot and similar. It replies by generating text (and sometimes images or code).' },
+    es: { term: 'Asistente de IA', def: 'Un programa con el que “chateas” escribiendo o hablando: ChatGPT, Claude, Gemini, Mistral, Copilot y similares. Responde generando texto (y a veces imágenes o código).' },
   },
   llm: {
     it: { term: 'Modello linguistico (LLM)', def: 'Il “motore” dentro l’assistente. È un programma che ha letto enormi quantità di testo e ha imparato a prevedere quale parola viene dopo.' },

@@ -75,4 +75,4 @@ The code is MIT (`LICENSE`). The course content is CC BY-NC-SA 4.0 (`LICENSE-CON
 
 - When you change a lesson, update the `it/`, `en/` and `es/` versions.
 - When you add a UI string, add the key to `ui.it`, `ui.en` and `ui.es`. The `UIKey` type is derived from `ui.it`.
-- The course is product-agnostic. Lessons mention several assistants (ChatGPT, Claude, Gemini, Le Chat, Copilot) and don't favor one.
+- The course is product-agnostic. Lessons mention several assistants (ChatGPT, Claude, Gemini, Mistral, Copilot) and don't favor one.

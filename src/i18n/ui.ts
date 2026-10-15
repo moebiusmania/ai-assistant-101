@@ -25,7 +25,7 @@ export const ui = {
     'home.kicker': 'Corso gratuito · circa 1 ora',
     'home.title': 'Usa gli assistenti AI <em>con la testa</em>, non a caso.',
     'home.lead':
-      'ChatGPT, Claude, Gemini, Le Chat, Copilot… Funzionano tutti in modo simile. In 8 lezioni brevi impari a chiedere bene, a capire quando fidarti e a proteggere i tuoi dati. Niente gergo, tanti esempi da provare.',
+      'ChatGPT, Claude, Gemini, Mistral, Copilot… Funzionano tutti in modo simile. In 8 lezioni brevi impari a chiedere bene, a capire quando fidarti e a proteggere i tuoi dati. Niente gergo, tanti esempi da provare.',
     'home.start': 'Inizia il corso',
     'home.continue': 'Riprendi da dove eri',
     'home.lessons': 'Le lezioni',
@@ -129,7 +129,7 @@ export const ui = {
     'home.kicker': 'Free course · about 1 hour',
     'home.title': 'Use AI assistants <em>with your head</em>, not by chance.',
     'home.lead':
-      'ChatGPT, Claude, Gemini, Le Chat, Copilot… They all work in a similar way. In 8 short lessons you’ll learn to ask well, to know when to trust the answer and to protect your data. No jargon, lots of examples to try.',
+      'ChatGPT, Claude, Gemini, Mistral, Copilot… They all work in a similar way. In 8 short lessons you’ll learn to ask well, to know when to trust the answer and to protect your data. No jargon, lots of examples to try.',
     'home.start': 'Start the course',
     'home.continue': 'Pick up where you left off',
     'home.lessons': 'Lessons',
@@ -233,7 +233,7 @@ export const ui = {
     'home.kicker': 'Curso gratuito · aproximadamente 1 hora',
     'home.title': 'Usa los asistentes de IA <em>con cabeza</em>, no al azar.',
     'home.lead':
-      'ChatGPT, Claude, Gemini, Le Chat, Copilot… Todos funcionan de forma parecida. En 8 lecciones breves aprenderás a pedir bien, a saber cuándo fiarte y a proteger tus datos. Sin jerga, con muchos ejemplos para probar.',
+      'ChatGPT, Claude, Gemini, Mistral, Copilot… Todos funcionan de forma parecida. En 8 lecciones breves aprenderás a pedir bien, a saber cuándo fiarte y a proteger tus datos. Sin jerga, con muchos ejemplos para probar.',
     'home.start': 'Empezar el curso',
     'home.continue': 'Seguir donde lo dejaste',
     'home.lessons': 'Las lecciones',
