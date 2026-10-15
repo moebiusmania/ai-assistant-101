@@ -2,13 +2,13 @@
 import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
 import { glossaryFor } from '../i18n/glossary';
-import { getLang, routes, t } from '../i18n/ui';
+import { alternates, getLang, routes, t } from '../i18n/ui';
 
 const lang = getLang(Astro.currentLocale);
 const tr = t(lang);
 const terms = glossaryFor(lang);
 ---
-<Base title={tr('glossary.title')} description={tr('glossary.lead')} alternates={{ it: routes.glossary('it'), en: routes.glossary('en') }}>
+<Base title={tr('glossary.title')} description={tr('glossary.lead')} alternates={alternates(routes.glossary)}>
   <div class="narrow page">
     <h1>{tr('glossary.title')}</h1>
     <p class="lead">{tr('glossary.lead')}</p>

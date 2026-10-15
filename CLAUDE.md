@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-"Parlare con l’AI / Talking to AI" is a static Astro + MDX site: an interactive course on using AI assistants that isn't tied to any one product. Italian is the default locale and is served at `/`. English is served at `/en/`. Some concepts come from the AI Fluency Framework by Rick Dakan and Joseph Feller (CC BY-NC-SA 4.0). The site targets WCAG 2.1 AA in both themes, is an installable PWA that works offline, and deploys to https://moebiusmania.github.io/ai-assistant-101/.
+"Parlare con l’AI / Talking to AI" is a static Astro + MDX site: an interactive course on using AI assistants that isn't tied to any one product. Italian is the default locale and is served at `/`. English is served at `/en/` and Spanish at `/es/`. Some concepts come from the AI Fluency Framework by Rick Dakan and Joseph Feller (CC BY-NC-SA 4.0). The site targets WCAG 2.1 AA in both themes, is an installable PWA that works offline, and deploys to https://moebiusmania.github.io/ai-assistant-101/.
 
 ## Commands
 
@@ -22,31 +22,33 @@ There is no test suite or linter. To verify a change, run `bun run build` and ch
 
 ## Architecture
 
-**Bilingual routing.** `astro.config.mjs` sets up i18n with `it` as the default locale and no prefix. The page files are thin per-locale wrappers that render shared views from `src/views/`:
-- `src/pages/index.astro` / `src/pages/en/index.astro` → `HomeView`
-- `src/pages/lezioni/[slug].astro` / `src/pages/en/lessons/[slug].astro` → `LessonView`
-- `src/pages/glossario.astro` / `src/pages/en/glossary.astro` → `GlossaryView`
+**Multilingual routing.** `astro.config.mjs` sets up i18n for `it`, `en` and `es`, with `it` as the default locale and no prefix. The page files are thin per-locale wrappers that render shared views from `src/views/`:
+- `src/pages/index.astro` / `src/pages/en/index.astro` / `src/pages/es/index.astro` → `HomeView`
+- `src/pages/lezioni/[slug].astro` / `src/pages/en/lessons/[slug].astro` / `src/pages/es/lecciones/[slug].astro` → `LessonView`
+- `src/pages/glossario.astro` / `src/pages/en/glossary.astro` / `src/pages/es/glosario.astro` → `GlossaryView`
 
-Views get the language from `getLang(Astro.currentLocale)`. Always build URLs with `routes.*` in `src/i18n/ui.ts`, never by hand: the paths differ by locale (`/lezioni/` vs `/en/lessons/`, `/glossario/` vs `/en/glossary/`).
+Views get the language from `getLang(Astro.currentLocale)`. Always build URLs with `routes.*` in `src/i18n/ui.ts`, never by hand: the paths differ by locale (`/lezioni/`, `/en/lessons/`, `/es/lecciones/`). Use `alternates(route)` for a page's per-language URLs. To add a language: add it to `languages`, `paths` and `ui` in `ui.ts`, to the locales in `astro.config.mjs`, to every `pick()` call and glossary entry, add its pages, lessons and manifest route, and draw its flag in `src/components/Flag.astro`.
+
+The header language menu is a flag button that opens a popover list of languages (`Base.astro`).
 
 **Base path.** `astro.config.mjs` reads `site` and `base` from the `SITE` and `BASE` env vars (default `/`), because GitHub Pages serves the site under `/ai-assistant-101/`. Never hard-code a root-relative URL such as `href="/favicon.svg"`. Use `routes.*` for pages and `url('/path')` from `src/i18n/ui.ts` for everything else. In client scripts, use `import.meta.env.BASE_URL`.
 
-**Lessons content collection.** `src/content.config.ts` uses a glob loader over `src/content/lessons/**/*.mdx`. Its frontmatter schema is `title`, `description`, `order`, `minutes`, `icon`, an optional `tag`, and an optional `optional` flag for bonus lessons, which are listed but left out of the progress count and the lesson numbering. Entry ids look like `it/basics`, and `splitId()` turns them into `{ lang, slug }`. A lesson must use the same slug (file name) in `it/` and `en/` because hreflang alternates and the language switcher rely on it. `order` sets the position in the prev/next pager and the home list. `icon` must be a key of the `paths` map in `src/components/Icon.astro`.
+**Lessons content collection.** `src/content.config.ts` uses a glob loader over `src/content/lessons/**/*.mdx`. Its frontmatter schema is `title`, `description`, `order`, `minutes`, `icon`, an optional `tag`, and an optional `optional` flag for bonus lessons, which are listed but left out of the progress count and the lesson numbering. Entry ids look like `it/basics`, and `splitId()` turns them into `{ lang, slug }`. A lesson must use the same slug (file name) in `it/`, `en/` and `es/` because hreflang alternates and the language switcher rely on it. `order` sets the position in the prev/next pager and the home list. `icon` must be a key of the `paths` map in `src/components/Icon.astro`.
 
 **Widgets in MDX.** `src/components/widgets/index.ts` exports `lessonComponents`, which `LessonView` passes to `<Content components={...}>`. That makes every widget, plus `Callout` and `Term`, usable in any lesson without an import. When you add a new widget, register it there. Widgets follow this pattern:
 - The server side wraps its markup in `Widget.astro` (label/icon/title/hint chrome) inside a custom element such as `<quiz-box>`.
-- Localized strings come from the `w.*` keys in `ui.ts` through `t(lang)`, or from inline `lang === 'it' ? … : …` ternaries. They are serialized into `data-i18n` and read on the client with `strings(this)` from `src/scripts/ui.ts`. Structured props go through `data-config` and `data(el)`.
+- Localized strings come from the `w.*` keys in `ui.ts` through `t(lang)`, or from inline `pick(lang, { it: …, en: …, es: … })` lookups (never two-way ternaries, which silently break for a third language). They are serialized into `data-i18n` and read on the client with `strings(this)` from `src/scripts/ui.ts`. Structured props go through `data-config` and `data(el)`.
 - The client side is a `<script>` that defines a custom element class (`class QuizBox extends HTMLElement`) and imports helpers from `src/scripts/` (`sound`, `confetti`, `storage`, `progress`).
 
 **Missions.** The bonus lesson `mission` lets the learner pick one of several tasks with `<Mission>`. Content specific to one task goes inside `<Track id="…">`, and only the chosen track is shown (`DEFAULT_MISSION` in `src/scripts/mission.ts` is the one rendered visible). `<MissionDone>` marks the chosen mission accomplished and can restart it.
 
-**Glossary.** `src/i18n/glossary.ts` maps ids to `{ it, en }` entries. In MDX, `<Term id="...">text</Term>` renders a popover definition. An unknown id silently renders plain text.
+**Glossary.** `src/i18n/glossary.ts` maps ids to `{ it, en, es }` entries. In MDX, `<Term id="...">text</Term>` renders a popover definition. An unknown id silently renders plain text.
 
 **Client state.** All persistence is in `localStorage`, accessed only through the safe `read`/`write` wrappers in `src/scripts/storage.ts`. Keys use the `aic:` prefix (`aic:progress`, `aic:theme`, `aic:sound`, `aic:name`, `aic:motion-paused`, `aic:check:<id>`, `aic:mission`, `aic:missions`). Lesson completion lives in `src/scripts/progress.ts`. `LessonComplete` dispatches an `aic:progress` document event when a lesson is completed.
 
 **Formatting helper.** `src/lib/format.ts` is a tiny markdown-ish formatter for chat bubbles and examples. It supports paragraphs, `- `/`1. ` lists, `**bold**`, `` `code` ``, and `[placeholder]`, which renders as a highlighted `<mark>`. It can also wrap each word in a span for the "streaming" typing effect.
 
-**PWA.** `src/pwa/manifest.ts` builds a web app manifest per locale. It's served by `src/pages/manifest.webmanifest.ts` and `src/pages/en/manifest.webmanifest.ts`, and both share the same `id` and `scope`. `src/pwa/integration.mjs` is an Astro integration. After the build, it fills the `src/pwa/sw.js` template with the list of every file in `dist/` (except fonts, which are cached on first use) and a content-hash cache version, then writes `dist/sw.js`. Pages are network-first with a cache fallback, and assets are cache-first. `Base.astro` registers the worker in production only and shows the header install button when the browser fires `beforeinstallprompt`. The icons in `public/icons/` were rendered from `public/favicon.svg`: keep the maskable icon's glyph inside the central 80% safe zone.
+**PWA.** `src/pwa/manifest.ts` builds a web app manifest per locale. It's served by `src/pages/manifest.webmanifest.ts`, `src/pages/en/manifest.webmanifest.ts` and `src/pages/es/manifest.webmanifest.ts`, and all share the same `id` and `scope`. `src/pwa/integration.mjs` is an Astro integration. After the build, it fills the `src/pwa/sw.js` template with the list of every file in `dist/` (except fonts, which are cached on first use) and a content-hash cache version, then writes `dist/sw.js`. Pages are network-first with a cache fallback, and assets are cache-first. `Base.astro` registers the worker in production only and shows the header install button when the browser fires `beforeinstallprompt`. The icons in `public/icons/` were rendered from `public/favicon.svg`: keep the maskable icon's glyph inside the central 80% safe zone.
 
 **Styles.** `src/styles/global.css` is vanilla CSS with cascade layers (`reset, tokens, base, layout, components, utilities`), design tokens (`--space-*`, `--step-*`, `--accent`, …), `light-dark()` theming, and modern features such as the Popover API, anchor positioning, `@starting-style`, and scroll-driven animations. Component styles are scoped `<style>` blocks that use the same tokens and native CSS nesting.
 
@@ -71,6 +73,6 @@ The code is MIT (`LICENSE`). The course content is CC BY-NC-SA 4.0 (`LICENSE-CON
 
 ## Content conventions
 
-- When you change a lesson, update both the `it/` and `en/` versions.
-- When you add a UI string, add the key to both `ui.it` and `ui.en`. The `UIKey` type is derived from `ui.it`.
+- When you change a lesson, update the `it/`, `en/` and `es/` versions.
+- When you add a UI string, add the key to `ui.it`, `ui.en` and `ui.es`. The `UIKey` type is derived from `ui.it`.
 - The course is product-agnostic. Lessons mention several assistants (ChatGPT, Claude, Gemini, Le Chat, Copilot) and don't favor one.

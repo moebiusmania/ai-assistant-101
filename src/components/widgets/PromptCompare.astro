@@ -2,7 +2,7 @@
 /** Side-by-side (or toggled, on small screens) comparison of a vague and a clear request. */
 import Widget from './Widget.astro';
 import { format } from '../../lib/format';
-import { getLang, t } from '../../i18n/ui';
+import { getLang, t, pick } from '../../i18n/ui';
 
 type Side = { prompt: string; answer: string; verdict: string };
 interface Props { before: Side; after: Side; title?: string; hint?: string }
@@ -17,8 +17,8 @@ const sides = [
 const uid = `cmp-${Math.random().toString(36).slice(2, 7)}`;
 ---
 <prompt-compare>
-  <Widget label={lang === 'it' ? 'Prima e dopo' : 'Before and after'} icon="eye" title={title} hint={hint}>
-    <div class="switch" role="tablist" aria-label={lang === 'it' ? 'Confronta le richieste' : 'Compare the requests'}>
+  <Widget label={pick(lang, { it: 'Prima e dopo', en: 'Before and after', es: 'Antes y después' })} icon="eye" title={title} hint={hint}>
+    <div class="switch" role="tablist" aria-label={pick(lang, { it: 'Confronta le richieste', en: 'Compare the requests', es: 'Compara las peticiones' })}>
       {sides.map((s, i) => (
         <button type="button" role="tab" id={`${uid}-tab-${s.key}`} aria-controls={`${uid}-panel-${s.key}`} data-key={s.key} aria-selected={i === 1 ? 'true' : 'false'} tabindex={i === 1 ? 0 : -1}>{s.label}</button>
       ))}

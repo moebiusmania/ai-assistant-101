@@ -1,0 +1,125 @@
+---
+title: "Descripción: hacerse entender"
+description: Las mejores respuestas nacen de las peticiones más claras. Estos son los “ingredientes” de un buen prompt.
+order: 4
+minutes: 10
+icon: pen
+tag: 2.ª D · Descripción
+---
+
+Lo que le escribes al asistente se llama <Term id="prompt">prompt</Term>. No necesitas una fórmula mágica: necesitas **explicarte como lo harías con una persona capaz que no te conoce**.
+
+## Verás la diferencia enseguida
+
+<PromptCompare
+  title="La misma petición, dos formas de pedirla"
+  hint="Cambia entre las dos versiones con el selector."
+  before={{
+    prompt: 'Escribe un correo a mi jefe.',
+    answer: 'Asunto: Actualización\n\nEstimado/a [Nombre]:\n\nLe escribo para informarle sobre los proyectos en curso. No dude en contactarme si tiene alguna pregunta.\n\nUn saludo cordial',
+    verdict: 'Respuesta genérica: la IA no sabe por qué escribes, a quién ni con qué tono. Ha tenido que adivinar.',
+  }}
+  after={{
+    prompt: 'Escribe un correo breve a mi jefe, Marcos, para pedirle trabajar desde casa el viernes porque viene un técnico a arreglar la caldera. Nos tuteamos. Máximo 5 líneas.',
+    answer: 'Asunto: ¿Teletrabajo el viernes?\n\nHola, Marcos:\nel viernes viene un técnico a arreglarme la caldera: ¿te parece bien que trabaje desde casa? Estaré disponible por chat y teléfono como siempre.\n\nMuchas gracias,\nLucía',
+    verdict: 'Respuesta lista para usar: la IA sabía quién, qué, por qué, con qué tono y qué extensión.',
+  }}
+/>
+
+## Los ingredientes de una buena petición
+
+No hacen falta todos siempre. Pero cuanto más importante es la tarea, más ingredientes merece la pena añadir.
+
+<PromptBuilder
+  title="Construye tu petición"
+  hint="Activa los ingredientes de uno en uno y mira cómo cambia la respuesta."
+  base="Dame ideas para una cena."
+  ingredients={[
+    { label: 'Contexto', tip: 'Quién eres, la situación', text: 'El sábado vienen 6 amigos a casa, dos son vegetarianos.' },
+    { label: 'Objetivo', tip: 'Lo que de verdad quieres', text: 'Quiero un menú completo que pueda preparar con antelación, para disfrutar de la velada.' },
+    { label: 'Límites', tip: 'Tiempo, presupuesto, reglas', text: 'Presupuesto máximo de 60 €, sin horno porque está estropeado.' },
+    { label: 'Formato', tip: 'Cómo quieres la respuesta', text: 'Dame el menú en una lista y luego la lista de la compra agrupada por sección.' },
+    { label: 'Rol/tono', tip: 'Cómo debe “comportarse”', text: 'Responde como un cocinero práctico y cercano.' },
+    { label: 'Preguntas', tip: 'Invítala a preguntar', text: 'Si te falta información, pregúntame antes de responder.' },
+  ]}
+  answers={[
+    'Aquí tienes algunas ideas:\n- Lasaña\n- Pollo asado\n- Risotto de setas\n- Tiramisú',
+    'Aquí tienes un menú vegetariano para 6 que puedes preparar antes:\n- Entrante: tostas variadas\n- Primero: ensalada de pasta con verduras a la plancha\n- Segundo: berenjenas gratinadas (horno a 180°)\n- Postre: tiramisú',
+    '¡Qué buen plan! Antes, una pregunta: ¿alguna alergia? Mientras tanto, aquí tienes una propuesta **sin horno y por menos de 60 €**:\n1. Entrante: hummus con crudités y picos\n2. Primero: ensalada de pasta con tomates cherry, aceitunas y albahaca\n3. Segundo: tortilla de calabacín (en sartén, buenísima también fría)\n4. Postre: tiramisú (¡prepáralo la noche antes!)\n\n**Lista de la compra**: Frutería: calabacines, tomates cherry, albahaca… Frescos: huevos, mascarpone… Despensa: pasta, garbanzos, bizcochos de soletilla…',
+  ]}
+/>
+
+<Callout type="key" title="Las tres cosas que hay que describir">
+  <p>El marco de las 4D divide la Descripción en tres partes:</p>
+  <p><strong>Producto</strong>: qué quieres: formato, extensión, tono, destinatario.<br />
+  <strong>Proceso</strong>: cómo debe trabajar: “hazme preguntas primero”, “razona paso a paso”, “dame 3 alternativas”.<br />
+  <strong>Actuación</strong>: qué tipo de compañero quieres: “sé crítico y directo”, “explícamelo como a un principiante”.</p>
+</Callout>
+
+## 5 costumbres que marcan la diferencia
+
+### 1. Pon ejemplos
+
+Si tienes un ejemplo de lo que te gusta, enséñalo. *“Escribe un pie de foto para esta imagen con el mismo estilo que estos dos que ya he publicado: [ejemplo 1], [ejemplo 2].”*
+
+### 2. Pídele que te haga preguntas
+
+Una de las peticiones más útiles de todas: **“Antes de responder, hazme las preguntas que necesites.”** La IA te ayudará a aclarar cosas en las que no habías pensado.
+
+### 3. Divide las tareas grandes
+
+En lugar de “organiza mi mudanza”, ve por etapas: primero la lista de cosas por hacer, luego el calendario, luego los mensajes que hay que enviar.
+
+### 4. No te conformes con la primera respuesta
+
+Un chat es una conversación: siempre puedes decir *“más corto”*, *“menos formal”*, *“el punto 3 no me convence, propón otra cosa”*. No hace falta empezar de cero.
+
+<ChatSim
+  label="Mejorar paso a paso"
+  messages={[
+    { from: 'user', text: 'Escribe un mensaje de cumpleaños para mi hermana Ana.' },
+    { from: 'ai', text: '¡Feliz cumpleaños, Ana! Que este nuevo año te traiga alegría, serenidad y muchos sueños cumplidos. ¡Felicidades! 🎂' },
+    { from: 'user', text: 'Bonito, pero demasiado formal. Nos tomamos mucho el pelo, y cumple 40 aunque siempre dice que tiene 29.' },
+    { from: 'ai', text: '¡Feliz 29 cumpleaños, Ana (por undécimo año consecutivo)! 🎉 El secreto de tu eterna juventud está a salvo conmigo… al menos mientras pagues tú la tarta. ¡Te quiero!' },
+  ]}
+/>
+
+### 5. Escribe como hablas
+
+No hace falta “lenguaje de ordenador”. Las frases normales y completas funcionan muy bien. La voz también: muchos asistentes te dejan dictar.
+
+## Una fórmula para recordar
+
+Si quieres un recordatorio sencillo, piensa en estas cuatro preguntas:
+
+> **Quién soy · Qué quiero · Cómo lo quiero · Qué evitar**
+
+<CopyPrompt
+  title="Plantilla para todo"
+  icon="pen"
+  when="Cópiala y sustituye las partes entre corchetes."
+  prompt={'Soy [quién eres / tu situación].\nMe gustaría [lo que necesitas] porque [objetivo].\nLa respuesta debe ser [formato, extensión, tono].\nEvita [lo que no quieres].\nSi te falta información, hazme preguntas antes de responder.'}
+/>
+
+<Quiz
+  questions={[
+    {
+      q: '¿Qué petición dará probablemente el mejor resultado?',
+      options: ['“Receta.”', '“Una receta rápida para 2 personas con calabacín y huevos, sin horno.”', '“¡¡¡Dame la mejor receta del mundo!!!”'],
+      answer: 1,
+      why: 'Incluye contexto (2 personas), ingredientes y límites (rápida, sin horno).',
+    },
+    {
+      q: 'No te gusta la primera respuesta. ¿Qué haces?',
+      options: ['Cierro el chat: la IA no funciona', 'Digo qué no me convence y le pido que mejore', 'Vuelvo a escribir exactamente la misma pregunta'],
+      answer: 1,
+      why: 'Para eso está la conversación: da comentarios precisos y la IA se ajusta.',
+    },
+    {
+      q: '¿Para qué sirve decir “antes de responder, hazme preguntas”?',
+      options: ['Para perder el tiempo', 'Para que salga información que no habías dado', 'Para nada, la IA no puede hacer preguntas'],
+      answer: 1,
+      why: 'La IA te ayuda a aclarar el contexto y los objetivos, y la respuesta final te encajará mucho mejor.',
+    },
+  ]}
+/>

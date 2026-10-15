@@ -1,0 +1,132 @@
+---
+title: Recetas para el día a día
+description: Plantillas listas para copiar en las situaciones más habituales. ¡Sustituye las partes entre corchetes y listo!
+order: 7
+minutes: 10
+icon: book
+tag: En la práctica
+---
+
+Ahora que conoces las 4D, aquí tienes una colección de **peticiones listas para usar** en la vida diaria. Funcionan con cualquier asistente. Las partes <mark class="ph">[entre corchetes]</mark> son para que las sustituyas con tu información.
+
+<Callout type="tip">
+  <p>Estas plantillas son un punto de partida, no una fórmula mágica. Después de la primera respuesta, <strong>sigue la conversación</strong>: “más corto”, “más sencillo”, “dame una alternativa”.</p>
+</Callout>
+
+## Escribir y comunicar
+
+<div class="recipes">
+  <CopyPrompt
+    title="Correo complicado"
+    icon="pen"
+    when="Bajas, reclamaciones, peticiones delicadas"
+    prompt={'Tengo que escribir un correo a [destinatario] sobre [motivo].\nEsta es la situación: [explícala en 2-3 frases].\nQuiero un tono [educado pero firme / cercano / formal].\nMáximo [número] líneas. Usa [NOMBRE] en lugar de los datos personales.'}
+  />
+  <CopyPrompt
+    title="Corrige mi texto"
+    icon="wand"
+    when="Corregir sin reescribir"
+    prompt={'Corrige los errores de gramática y puntuación de este texto, sin cambiar su estilo.\nLuego enumera los principales cambios que has hecho.\n\nTexto: [pégalo aquí]'}
+  />
+  <CopyPrompt
+    title="Cambia el tono"
+    icon="chat"
+    when="Cuando un mensaje suena demasiado duro (o demasiado blando)"
+    prompt={'Reescribe este mensaje para que sea [más amable / más firme / más breve], manteniendo el mismo significado. Dame 2 versiones.\n\nMensaje: [pégalo aquí]'}
+  />
+</div>
+
+## Entender y aprender
+
+<div class="recipes">
+  <CopyPrompt
+    title="Explícamelo fácil"
+    icon="lightbulb"
+    when="Conceptos difíciles, artículos, términos técnicos"
+    prompt={'Explícame [tema] como si tuviera 12 años.\nUsa un ejemplo de la vida cotidiana.\nAl final, hazme 2 preguntas para comprobar que lo he entendido.'}
+  />
+  <CopyPrompt
+    title="Profesor particular"
+    icon="brain"
+    when="Estudiar una materia o un idioma"
+    prompt={'Quiero aprender [tema]. Mi nivel es [principiante / intermedio].\nSé un profesor paciente: explícame un concepto cada vez, luego ponme un ejercicio y corrígeme.\nNo me des la solución enseguida: dame una pista si me equivoco.'}
+  />
+  <CopyPrompt
+    title="Descifra un documento"
+    icon="search"
+    when="Facturas, contratos, cartas oficiales (¡sin datos personales!)"
+    prompt={'Te pego [una factura / un contrato / una carta]. He quitado los datos personales.\nExplícame con palabras sencillas:\n1. De qué trata\n2. Qué tengo que hacer y para cuándo\n3. Si hay algo a lo que deba prestar atención\n\nDocumento: [pégalo aquí]'}
+  />
+</div>
+
+<Callout type="warn">
+  <p>Para documentos legales, médicos o financieros importantes, usa la IA para <strong>entender y preparar tus preguntas</strong>, y luego consulta a un profesional.</p>
+</Callout>
+
+## Organizar y decidir
+
+<div class="recipes">
+  <CopyPrompt
+    title="Resumen útil"
+    icon="layers"
+    when="Artículos, actas, documentos largos"
+    prompt={'Resume este texto en [5] puntos clave.\nLuego escribe en una frase lo más importante que hay que recordar.\nSi hay plazos o tareas, enuméralos aparte.\n\nTexto: [pégalo aquí]'}
+  />
+  <CopyPrompt
+    title="Organiza un viaje"
+    icon="globe"
+    when="Excursiones, vacaciones, fines de semana"
+    prompt={'Organiza [número] días en [lugar] en [mes].\nSomos [quiénes: una pareja, una familia con niños de X años…], nos gusta [intereses], no nos gusta [cosas que evitar].\nPresupuesto aproximado: [cantidad].\nDame un plan día a día. Dime qué conviene reservar con antelación.'}
+  />
+  <CopyPrompt
+    title="Pros y contras"
+    icon="compass"
+    when="Elecciones y comparaciones"
+    prompt={'Tengo que elegir entre [opción A] y [opción B].\nLo que me importa: [criterios].\nHaz una tabla de pros y contras de cada una, y luego dime qué preguntas debería hacerme para decidir.\nNo decidas por mí.'}
+  />
+  <CopyPrompt
+    title="Menú semanal"
+    icon="sparkle"
+    when="Compra y cocina"
+    prompt={'Planifica [5] cenas para [número] personas.\nLímites: [vegetariano / sin gluten / presupuesto / poco tiempo].\nLuego haz la lista de la compra agrupada por sección.'}
+  />
+</div>
+
+## Practicar y prepararse
+
+<div class="recipes">
+  <CopyPrompt
+    title="Simulacro de entrevista"
+    icon="chat"
+    when="Entrevistas de trabajo, exámenes orales"
+    prompt={'Hazme un simulacro de entrevista para el puesto de [puesto].\nHazme una pregunta cada vez y espera mi respuesta.\nDespués de cada respuesta dame una opinión sincera: qué funciona y qué mejorar.'}
+  />
+  <CopyPrompt
+    title="Crítico sincero"
+    icon="eye"
+    when="Cuando quieres una opinión de verdad, no cumplidos"
+    prompt={'Aquí tienes [mi idea / mi texto / mi proyecto]: [pégalo aquí].\nHaz de abogado del diablo: enumera los 3 puntos más débiles y qué podría salir mal.\nSé directo, no hace falta que seas amable.'}
+  />
+</div>
+
+## Veamos una en acción
+
+<ChatSim
+  messages={[
+    { from: 'user', text: 'Explícame qué es la inflación como si tuviera 12 años. Usa un ejemplo de la vida cotidiana. Al final, hazme 2 preguntas para comprobar que lo he entendido.' },
+    { from: 'ai', text: 'Imagina que hoy un helado cuesta **2 €**. El año que viene, exactamente el mismo helado cuesta **2,20 €**. El helado no ha cambiado: es tu dinero el que “vale” un poco menos. Eso es la **inflación**: los precios en general suben, y con la misma paga compras menos cosas.\n\nTe toca:\n1. Si tu paga sigue igual pero hay inflación, ¿puedes comprar más o menos helados?\n2. ¿Por qué crees que pueden subir los precios?' },
+  ]}
+/>
+
+<Checklist
+  id="recipes"
+  title="El reto de esta semana"
+  hint="Prueba al menos tres de estas recetas con tu asistente favorito."
+  items={[
+    'He reescrito un mensaje cambiando el tono',
+    'Me han explicado un tema difícil',
+    'He resumido un artículo largo',
+    'He hecho una simulación (entrevista, examen, conversación en otro idioma)',
+    'He pedido a la IA que critique una de mis ideas',
+  ]}
+/>

@@ -6,14 +6,14 @@
 import Widget from './Widget.astro';
 import Icon from '../Icon.astro';
 import { format, wordCount } from '../../lib/format';
-import { getLang, t } from '../../i18n/ui';
+import { getLang, t, pick } from '../../i18n/ui';
 
 type Msg = { from: 'user' | 'ai'; text: string; note?: string };
 interface Props { messages: Msg[]; label?: string; title?: string; hint?: string; bare?: boolean }
 
 const lang = getLang(Astro.currentLocale);
 const tr = t(lang);
-const { messages, label = lang === 'it' ? 'Esempio di chat' : 'Chat example', title, hint, bare = false } = Astro.props;
+const { messages, label = pick(lang, { it: 'Esempio di chat', en: 'Chat example', es: 'Ejemplo de chat' }), title, hint, bare = false } = Astro.props;
 const rendered = messages.map((m) => {
   const html = format(m.text, { stream: m.from === 'ai' });
   return { ...m, html, words: wordCount(html) };

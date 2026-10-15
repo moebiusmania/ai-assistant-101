@@ -5,7 +5,7 @@
  */
 import Widget from './Widget.astro';
 import { format } from '../../lib/format';
-import { getLang, t } from '../../i18n/ui';
+import { getLang, t, pick } from '../../i18n/ui';
 
 type Ingredient = { label: string; text: string; tip: string };
 interface Props {
@@ -30,10 +30,10 @@ const colors = [
   ['oklch(60% 0.12 240)', 'light-dark(oklch(50% 0.13 240), oklch(76% 0.1 240))'],
 ];
 const color = (i: number) => `--c:${colors[i % colors.length][0]};--c-ink:${colors[i % colors.length][1]}`;
-const levels = lang === 'it' ? ['Generica', 'Discreta', 'Su misura'] : ['Generic', 'Decent', 'Tailored'];
+const levels = pick(lang, { it: ['Generica', 'Discreta', 'Su misura'], en: ['Generic', 'Decent', 'Tailored'], es: ['Genérica', 'Aceptable', 'A medida'] });
 ---
 <prompt-builder data-levels={JSON.stringify(levels)}>
-  <Widget label={lang === 'it' ? 'Laboratorio' : 'Workshop'} icon="wand" title={title} hint={hint}>
+  <Widget label={pick(lang, { it: 'Laboratorio', en: 'Workshop', es: 'Taller' })} icon="wand" title={title} hint={hint}>
     <div class="grid">
       <div class="left">
         <div class="toggles">
@@ -61,7 +61,7 @@ const levels = lang === 'it' ? ['Generica', 'Discreta', 'Su misura'] : ['Generic
           <span class="cap" aria-live="polite">{tr('w.quality')}: <b class="level">{levels[0]}</b></span>
           <span class="track" aria-hidden="true"><span class="fill"></span></span>
         </div>
-        <p class="cap">{lang === 'it' ? 'Possibile risposta' : 'Possible answer'}</p>
+        <p class="cap">{pick(lang, { it: 'Possibile risposta', en: 'Possible answer', es: 'Posible respuesta' })}</p>
         <div class="answers">
           {answers.map((a, i) => <div class="answer" data-level={i} hidden={i > 0} set:html={format(a)} />)}
         </div>

@@ -4,7 +4,7 @@ import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
 import HeroCanvas from '../components/HeroCanvas.astro';
 import IntroVideo from '../components/IntroVideo.astro';
-import { getLang, routes, splitId, t } from '../i18n/ui';
+import { alternates, getLang, pick, routes, splitId, t } from '../i18n/ui';
 
 const lang = getLang(Astro.currentLocale);
 const tr = t(lang);
@@ -18,14 +18,18 @@ const why = [1, 2, 3, 4].map((n) => ({
   d: tr(`home.why.${n}.d` as any),
   icon: ['brain', 'pen', 'eye', 'shield'][n - 1],
 }));
-const dNames = lang === 'it'
-  ? ['Delega', 'Descrizione', 'Discernimento', 'Diligenza']
-  : ['Delegation', 'Description', 'Discernment', 'Diligence'];
-const demo = lang === 'it'
-  ? { q: 'Mi aiuti a scrivere un messaggio gentile per disdire la palestra?', a: 'Certo! Ecco una proposta breve e cortese. Vuoi che sia più formale o più amichevole?' }
-  : { q: 'Can you help me write a polite message to cancel my gym membership?', a: 'Of course! Here’s a short, polite draft. Would you like it more formal or more friendly?' };
+const dNames = pick(lang, {
+  it: ['Delega', 'Descrizione', 'Discernimento', 'Diligenza'],
+  en: ['Delegation', 'Description', 'Discernment', 'Diligence'],
+  es: ['Delegación', 'Descripción', 'Discernimiento', 'Diligencia'],
+});
+const demo = pick(lang, {
+  it: { q: 'Mi aiuti a scrivere un messaggio gentile per disdire la palestra?', a: 'Certo! Ecco una proposta breve e cortese. Vuoi che sia più formale o più amichevole?' },
+  en: { q: 'Can you help me write a polite message to cancel my gym membership?', a: 'Of course! Here’s a short, polite draft. Would you like it more formal or more friendly?' },
+  es: { q: '¿Me ayudas a escribir un mensaje amable para darme de baja del gimnasio?', a: '¡Claro! Aquí tienes una propuesta breve y cortés. ¿La prefieres más formal o más cercana?' },
+});
 ---
-<Base alternates={{ it: routes.home('it'), en: routes.home('en') }} autoHeader>
+<Base alternates={alternates(routes.home)} autoHeader>
   <section class="hero">
     <HeroCanvas />
     <span class="hero-third" aria-hidden="true"></span>

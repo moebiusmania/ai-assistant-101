@@ -139,14 +139,17 @@
     box-shadow: 0 1px 3px color-mix(in oklch, var(--accent) 50%, transparent);
   }
 
-  .lang-switch {
-    background: var(--surface-sunk);
-    box-shadow: var(--inset), var(--rim);
-    & a[aria-current='true'] {
-      background: var(--gloss), var(--accent-face);
-      box-shadow: var(--bevel), 0 1px 2px light-dark(oklch(20% 0.05 280 / 0.3), oklch(0% 0 0 / 0.6));
-      text-shadow: var(--accent-text-shadow);
-    }
+  .lang-btn {
+    background: var(--gloss), var(--surface);
+    box-shadow: var(--shadow-sm);
+    &:hover { background: var(--gloss), var(--surface); }
+    &:active { box-shadow: var(--inset); }
+    & .flag { box-shadow: 0 1px 1.5px light-dark(oklch(20% 0.05 280 / 0.35), oklch(0% 0 0 / 0.6)); }
+  }
+  .lang-list {
+    background: var(--texture), var(--surface);
+    border-color: var(--border-strong);
+    & a[aria-current='true'] { background: var(--surface-sunk); box-shadow: var(--inset); }
   }
 
   /* Footer: a recessed base plate. */

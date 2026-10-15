@@ -1,0 +1,110 @@
+---
+title: "Delegación: qué pedirle a la IA (y qué no)"
+description: No todo hay que dárselo a la IA. Aprende cuándo te ahorra tiempo y cuándo es mejor hacerlo tú.
+order: 3
+minutes: 7
+icon: hand
+tag: 1.ª D · Delegación
+---
+
+La primera pregunta no es *“¿cómo se lo pido?”*, sino **“¿tiene sentido pedírselo a la IA?”**. Delegar bien significa tres cosas.
+
+## 1. Saber qué quieres (antes de abrir el chat)
+
+Parece obvio, pero es el error más común: se abre el asistente “a ver qué pasa”. Párate 20 segundos y pregúntate:
+
+- **¿Cuál es el objetivo?** No “escribir un correo”, sino “conseguir que la tienda me devuelva el dinero”.
+- **¿Qué me importa?** ¿Rapidez? ¿Precisión? ¿Un toque personal?
+- **¿Cómo sabré que el resultado es bueno?**
+
+<Callout type="tip" title="El truco de los 20 segundos">
+  <p>Prueba a decir en voz alta lo que quieres conseguir, en una sola frase. Si no te sale, la IA tampoco podrá adivinarlo por ti.</p>
+</Callout>
+
+## 2. Conocer tu herramienta
+
+Cada asistente tiene puntos fuertes y límites. Antes de confiarle algo, pregúntate:
+
+- ¿Puede **buscar en la web**, o solo trabaja con lo que aprendió?
+- ¿Puede **leer archivos**, fotos, PDF?
+- ¿Adónde van a parar los datos que le doy? (Lo verás en la lección sobre la Diligencia.)
+
+Si no lo sabes, pregúntaselo al propio asistente. Pero recuerda: lo que dice de sí mismo también puede estar mal. Para las cosas importantes, revisa la configuración o la página de ayuda del servicio.
+
+## 3. Repartir el trabajo
+
+Rara vez la elección es “todo a la IA” o “todo para mí”. A menudo la mejor solución es **repartir**:
+
+| Suele estar bien para la IA | Suele ser mejor que lo hagas tú |
+|---|---|
+| Primer borrador de un texto | Decisiones importantes (salud, dinero, leyes) |
+| Resumir, reordenar, reformular | Lo que necesita tus recuerdos y emociones |
+| Buscar ideas y alternativas | Comprobar datos y cifras |
+| Explicar conceptos de forma sencilla | Mensajes muy personales (pésames, disculpas de verdad) |
+| Hacer de “gimnasio”: simulaciones, cuestionarios | Juzgar a personas (contrataciones, evaluaciones) |
+
+<SortGame
+  title="¿Delegar o no?"
+  hint="Para cada situación elige: ¿se lo das a la IA, lo hacéis juntos o lo haces tú?"
+  buckets={[
+    { id: 'ai', label: 'A la IA', desc: 'Se puede delegar, con una revisión final' },
+    { id: 'both', label: 'Juntos', desc: 'La IA ayuda, pero lo esencial es tuyo' },
+    { id: 'me', label: 'Yo', desc: 'Mejor no delegar' },
+  ]}
+  items={[
+    { text: 'Reescribir con más claridad las notas de una reunión', bucket: 'ai', why: 'Una tarea de ordenar texto, perfecta para la IA. Luego échale un vistazo.' },
+    { text: 'Decidir si dejar un tratamiento médico', bucket: 'me', why: 'Una decisión de salud: la IA puede ayudarte a preparar preguntas, pero decides tú con tu médico.' },
+    { text: 'Escribir el discurso para el cumpleaños de tu madre', bucket: 'both', why: 'La IA puede ayudar con la estructura y las frases, pero los recuerdos y las emociones son tuyos.' },
+    { text: 'Encontrar 10 ideas de cena con pocos ingredientes', bucket: 'ai', why: 'Lluvia de ideas de bajo riesgo: ideal.' },
+    { text: 'Elegir qué candidato contratar', bucket: 'me', why: 'Juzgar a personas requiere responsabilidad humana y hay riesgo de sesgos.' },
+    { text: 'Preparar una reclamación a tu compañía telefónica', bucket: 'both', why: 'La IA hace un borrador estupendo; tú añades los detalles reales y revisas el tono.' },
+    { text: 'Entender una palabra difícil de un artículo', bucket: 'ai', why: 'Explicar conceptos es uno de sus puntos fuertes.' },
+  ]}
+/>
+
+## ¿Cuánto “cuesta” un error?
+
+Una regla sencilla para decidir: **cuanto más caro sea un error, más tienes que comprobar** (o hacerlo tú).
+
+<div class="risk">
+
+- 🟢 **Bajo**: ideas para un regalo, una receta, el nombre de una lista de reproducción. Si se equivoca, no pasa nada.
+- 🟡 **Medio**: un correo de trabajo, un resumen para estudiar. Reléelo con atención.
+- 🔴 **Alto**: salud, dinero, documentos legales, seguridad. Usa la IA solo para entender y prepararte, y luego consulta a un profesional.
+
+</div>
+
+<Checklist
+  id="delegation"
+  title="Antes de delegar, pregúntate:"
+  items={[
+    '¿Sé explicar en una frase lo que quiero conseguir?',
+    '¿La IA es adecuada para este tipo de tarea?',
+    '¿Qué gravedad tendría un error?',
+    '¿Qué parte debe seguir siendo mía?',
+    '¿Tendré tiempo de revisar el resultado?',
+  ]}
+/>
+
+<Quiz
+  questions={[
+    {
+      q: '¿Cuál es el primer paso para delegar bien?',
+      options: ['Escribir un prompt larguísimo', 'Tener claro lo que quieres conseguir', 'Elegir el asistente más famoso'],
+      answer: 1,
+      why: 'Si el objetivo no está claro para ti, tampoco puede estarlo para la IA.',
+    },
+    {
+      q: 'Necesitas entender los efectos secundarios de un medicamento. ¿Qué haces?',
+      options: ['Se lo pregunto a la IA y sigo lo que dice', 'Uso la IA para entender los términos y preparar preguntas, y luego consulto a un médico o farmacéutico', 'No hablo de ello con nadie'],
+      answer: 1,
+      why: 'En salud, la IA te ayuda a entender y prepararte, pero las decisiones se toman con un profesional.',
+    },
+    {
+      q: 'Cuanto más caro es un error…',
+      options: ['…más puedes fiarte de la IA', '…más tienes que comprobar o hacerlo tú', '…no cambia nada'],
+      answer: 1,
+      why: 'Cuánto compruebas debe crecer con el riesgo.',
+    },
+  ]}
+/>

@@ -2,7 +2,7 @@
 /** Visualizes the context window: as the chat grows, the oldest messages fall out of memory. */
 import Widget from './Widget.astro';
 import Icon from '../Icon.astro';
-import { getLang, t } from '../../i18n/ui';
+import { getLang, t, pick } from '../../i18n/ui';
 
 interface Props { messages: string[]; capacity?: number; title?: string; hint?: string }
 const lang = getLang(Astro.currentLocale);
@@ -10,7 +10,7 @@ const tr = t(lang);
 const { messages, capacity = 6, title, hint } = Astro.props;
 ---
 <context-window data-messages={JSON.stringify(messages)} data-capacity={capacity}>
-  <Widget label={lang === 'it' ? 'Simulazione' : 'Simulation'} icon="layers" title={title} hint={hint}>
+  <Widget label={pick(lang, { it: 'Simulazione', en: 'Simulation', es: 'Simulación' })} icon="layers" title={title} hint={hint}>
     <div class="stage">
       <div class="forgotten" role="group" aria-label={tr('w.forgotten')}>
         <span class="cap" aria-hidden="true">{tr('w.forgotten')}</span>

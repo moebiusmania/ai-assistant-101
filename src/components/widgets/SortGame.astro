@@ -5,7 +5,7 @@
  */
 import Widget from './Widget.astro';
 import Icon from '../Icon.astro';
-import { getLang, t } from '../../i18n/ui';
+import { getLang, t, pick } from '../../i18n/ui';
 
 type Bucket = { id: string; label: string; color?: string; desc?: string };
 type Item = { text: string; bucket: string; why: string };
@@ -13,15 +13,15 @@ interface Props { buckets: Bucket[]; items: Item[]; title?: string; hint?: strin
 
 const lang = getLang(Astro.currentLocale);
 const tr = t(lang);
-const { buckets, items, title, hint, label = lang === 'it' ? 'Gioco: smista le carte' : 'Game: sort the cards' } = Astro.props;
+const { buckets, items, title, hint, label = pick(lang, { it: 'Gioco: smista le carte', en: 'Game: sort the cards', es: 'Juego: clasifica las cartas' }) } = Astro.props;
 const i18n = {
-  pick: lang === 'it' ? 'Scegli dove mettere:' : 'Choose where to put:',
-  all: lang === 'it' ? 'Hai smistato tutte le carte!' : 'You sorted all the cards!',
+  pick: pick(lang, { it: 'Scegli dove mettere:', en: 'Choose where to put:', es: 'Elige dónde poner:' }),
+  all: pick(lang, { it: 'Hai smistato tutte le carte!', en: 'You sorted all the cards!', es: '¡Has clasificado todas las cartas!' }),
   correct: tr('w.correct'),
   wrong: tr('w.wrong'),
-  answer: lang === 'it' ? 'La risposta migliore è' : 'The best answer is',
-  placedOk: lang === 'it' ? 'giusto' : 'correct',
-  placedBad: lang === 'it' ? 'spostata qui, era altrove' : 'moved here, it belonged elsewhere',
+  answer: pick(lang, { it: 'La risposta migliore è', en: 'The best answer is', es: 'La mejor respuesta es' }),
+  placedOk: pick(lang, { it: 'giusto', en: 'correct', es: 'correcto' }),
+  placedBad: pick(lang, { it: 'spostata qui, era altrove', en: 'moved here, it belonged elsewhere', es: 'movida aquí, iba en otro sitio' }),
 };
 const colors = ['var(--accent)', 'var(--teal-ink)', 'var(--amber-ink)', 'var(--coral-ink)'];
 ---

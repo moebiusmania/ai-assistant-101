@@ -10,7 +10,7 @@ export default defineConfig({
   base: process.env.BASE || '/',
   integrations: [mdx(), pwa()],
   i18n: {
-    locales: ['it', 'en'],
+    locales: ['it', 'en', 'es'],
     defaultLocale: 'it',
     routing: { prefixDefaultLocale: false },
   },

@@ -5,7 +5,7 @@
  */
 import Widget from './Widget.astro';
 import Icon from '../Icon.astro';
-import { getLang, t } from '../../i18n/ui';
+import { getLang, t, pick } from '../../i18n/ui';
 
 interface Props { text: string; title?: string; hint?: string }
 const lang = getLang(Astro.currentLocale);
@@ -23,14 +23,14 @@ const html = esc(text)
   .replace(/\n/g, '<br>');
 const i18n = {
   masked: tr('w.masked'),
-  all: lang === 'it' ? 'Ottimo! Ora il testo si può condividere senza esporre nessuno.' : 'Great! Now the text can be shared without exposing anyone.',
-  missing: lang === 'it' ? 'Ci sono ancora dati personali visibili (evidenziati).' : 'There is still personal data visible (highlighted).',
-  over: lang === 'it' ? 'Hai nascosto anche cose non necessarie: l’AI potrebbe aver bisogno di quel contesto.' : 'You also hid things that weren’t necessary: the AI might need that context.',
-  flag: lang === 'it' ? 'dato personale ancora visibile' : 'personal data still visible',
+  all: pick(lang, { it: 'Ottimo! Ora il testo si può condividere senza esporre nessuno.', en: 'Great! Now the text can be shared without exposing anyone.', es: '¡Muy bien! Ahora el texto se puede compartir sin exponer a nadie.' }),
+  missing: pick(lang, { it: 'Ci sono ancora dati personali visibili (evidenziati).', en: 'There is still personal data visible (highlighted).', es: 'Todavía hay datos personales visibles (resaltados).' }),
+  over: pick(lang, { it: 'Hai nascosto anche cose non necessarie: l’AI potrebbe aver bisogno di quel contesto.', en: 'You also hid things that weren’t necessary: the AI might need that context.', es: 'También has ocultado cosas que no hacía falta: la IA podría necesitar ese contexto.' }),
+  flag: pick(lang, { it: 'dato personale ancora visibile', en: 'personal data still visible', es: 'dato personal todavía visible' }),
 };
 ---
 <redact-game data-i18n={JSON.stringify(i18n)} data-total={total}>
-  <Widget label={lang === 'it' ? 'Esercizio privacy' : 'Privacy exercise'} icon="lock" title={title} hint={hint}>
+  <Widget label={pick(lang, { it: 'Esercizio privacy', en: 'Privacy exercise', es: 'Ejercicio de privacidad' })} icon="lock" title={title} hint={hint}>
     <div class="doc" set:html={html} />
     <div class="widget-actions">
       <button class="btn btn-primary check" type="button"><Icon name="shield" />{tr('w.check')}</button>

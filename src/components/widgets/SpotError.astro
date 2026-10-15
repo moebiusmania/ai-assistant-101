@@ -2,7 +2,7 @@
 /** An AI answer split into sentences: click the ones you'd double-check, then reveal. */
 import Widget from './Widget.astro';
 import Icon from '../Icon.astro';
-import { getLang, t } from '../../i18n/ui';
+import { getLang, t, pick } from '../../i18n/ui';
 
 type Sentence = { text: string; bad?: boolean; why?: string };
 interface Props { question: string; sentences: Sentence[]; title?: string; hint?: string }
@@ -13,16 +13,16 @@ const { question, sentences, title, hint } = Astro.props;
 const bads = sentences.filter((s) => s.bad).length;
 const i18n = {
   found: tr('w.found'),
-  perfect: lang === 'it' ? 'Perfetto: hai trovato tutti i punti dubbi senza falsi allarmi.' : 'Perfect: you found every doubtful point with no false alarms.',
-  missed: lang === 'it' ? 'Ti è sfuggito qualcosa: guarda le frasi in rosso.' : 'You missed something: look at the sentences in red.',
-  extra: lang === 'it' ? 'Alcune frasi che hai segnato erano corrette (va bene essere prudenti!).' : 'Some sentences you flagged were correct (being careful is fine!).',
-  hit: lang === 'it' ? 'trovata' : 'found',
-  miss: lang === 'it' ? 'sfuggita' : 'missed',
-  extraMark: lang === 'it' ? 'segnata, ma era corretta' : 'flagged, but it was correct',
+  perfect: pick(lang, { it: 'Perfetto: hai trovato tutti i punti dubbi senza falsi allarmi.', en: 'Perfect: you found every doubtful point with no false alarms.', es: 'Perfecto: has encontrado todos los puntos dudosos sin falsas alarmas.' }),
+  missed: pick(lang, { it: 'Ti è sfuggito qualcosa: guarda le frasi in rosso.', en: 'You missed something: look at the sentences in red.', es: 'Se te ha escapado algo: mira las frases en rojo.' }),
+  extra: pick(lang, { it: 'Alcune frasi che hai segnato erano corrette (va bene essere prudenti!).', en: 'Some sentences you flagged were correct (being careful is fine!).', es: 'Algunas frases que has marcado eran correctas (¡está bien ser prudente!).' }),
+  hit: pick(lang, { it: 'trovata', en: 'found', es: 'encontrada' }),
+  miss: pick(lang, { it: 'sfuggita', en: 'missed', es: 'se te escapó' }),
+  extraMark: pick(lang, { it: 'segnata, ma era corretta', en: 'flagged, but it was correct', es: 'marcada, pero era correcta' }),
 };
 ---
 <spot-error data-i18n={JSON.stringify(i18n)} data-total={bads}>
-  <Widget label={lang === 'it' ? 'Occhio critico' : 'Critical eye'} icon="search" title={title} hint={hint}>
+  <Widget label={pick(lang, { it: 'Occhio critico', en: 'Critical eye', es: 'Ojo crítico' })} icon="search" title={title} hint={hint}>
     <div class="q"><Icon name="chat" />{question}</div>
     <div class="answer">
       {sentences.map((s) => (

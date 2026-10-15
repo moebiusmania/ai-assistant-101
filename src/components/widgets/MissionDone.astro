@@ -5,31 +5,36 @@
  */
 import Widget from './Widget.astro';
 import Icon from '../Icon.astro';
-import { getLang } from '../../i18n/ui';
+import { getLang, pick } from '../../i18n/ui';
 
 const lang = getLang(Astro.currentLocale);
-const it = lang === 'it';
-// The lesson slug is the last segment of the page URL (/lezioni/<slug>/, /en/lessons/<slug>/).
+// The lesson slug is the last segment of the page URL (/lezioni/<slug>/, /en/lessons/<slug>/, /es/lecciones/<slug>/).
 const slug = Astro.url.pathname.split('/').filter(Boolean).at(-1);
-const i18n = it
-  ? {
-      done: 'Missione compiuta!',
-      praise: 'Ottimo lavoro! Puoi scegliere un’altra missione o ripetere questa con un’idea nuova.',
-      reset: 'Missione ricominciata: la checklist è di nuovo vuota.',
-    }
-  : {
-      done: 'Mission accomplished!',
-      praise: 'Well done! You can pick another mission or repeat this one with a new idea.',
-      reset: 'Mission restarted: the checklist is empty again.',
-    };
+const i18n = pick(lang, {
+  it: {
+    done: 'Missione compiuta!',
+    praise: 'Ottimo lavoro! Puoi scegliere un’altra missione o ripetere questa con un’idea nuova.',
+    reset: 'Missione ricominciata: la checklist è di nuovo vuota.',
+  },
+  en: {
+    done: 'Mission accomplished!',
+    praise: 'Well done! You can pick another mission or repeat this one with a new idea.',
+    reset: 'Mission restarted: the checklist is empty again.',
+  },
+  es: {
+    done: '¡Misión cumplida!',
+    praise: '¡Buen trabajo! Puedes elegir otra misión o repetir esta con una idea nueva.',
+    reset: 'Misión reiniciada: la lista vuelve a estar vacía.',
+  },
+});
 ---
 <mission-done data-slug={slug} data-i18n={JSON.stringify(i18n)}>
-  <Widget label={it ? 'Fine missione' : 'End of mission'} icon="flag">
+  <Widget label={pick(lang, { it: 'Fine missione', en: 'End of mission', es: 'Fin de la misión' })} icon="flag">
     <p class="feedback" data-kind="ok" role="status"></p>
     <div class="widget-actions">
-      <button type="button" class="btn btn-primary accomplish"><Icon name="flag" /><span class="label">{it ? 'Ho completato la missione' : 'I’ve completed the mission'}</span></button>
-      <button type="button" class="btn other" hidden><Icon name="compass" />{it ? 'Scegli un’altra missione' : 'Pick another mission'}</button>
-      <button type="button" class="btn btn-ghost again" hidden><Icon name="refresh" />{it ? 'Ricomincia questa missione' : 'Start this mission again'}</button>
+      <button type="button" class="btn btn-primary accomplish"><Icon name="flag" /><span class="label">{pick(lang, { it: 'Ho completato la missione', en: 'I’ve completed the mission', es: 'He completado la misión' })}</span></button>
+      <button type="button" class="btn other" hidden><Icon name="compass" />{pick(lang, { it: 'Scegli un’altra missione', en: 'Pick another mission', es: 'Elige otra misión' })}</button>
+      <button type="button" class="btn btn-ghost again" hidden><Icon name="refresh" />{pick(lang, { it: 'Ricomincia questa missione', en: 'Start this mission again', es: 'Empezar de nuevo esta misión' })}</button>
     </div>
   </Widget>
 </mission-done>

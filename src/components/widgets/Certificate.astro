@@ -2,14 +2,24 @@
 /** Draws a personal completion certificate on a canvas and lets the user download it. */
 import Widget from './Widget.astro';
 import Icon from '../Icon.astro';
-import { getLang, t } from '../../i18n/ui';
+import { getLang, t, pick } from '../../i18n/ui';
 
 const lang = getLang(Astro.currentLocale);
 const tr = t(lang);
-const i18n = { title: tr('cert.title'), body: tr('cert.body'), course: tr('cert.course'), lang };
+const i18n = {
+  title: tr('cert.title'),
+  body: tr('cert.body'),
+  course: tr('cert.course'),
+  locale: pick(lang, { it: 'it-IT', en: 'en-GB', es: 'es-ES' }),
+  labels: pick(lang, {
+    it: ['Delega', 'Descrizione', 'Discernimento', 'Diligenza'],
+    en: ['Delegation', 'Description', 'Discernment', 'Diligence'],
+    es: ['Delegación', 'Descripción', 'Discernimiento', 'Diligencia'],
+  }),
+};
 ---
 <cert-maker data-i18n={JSON.stringify(i18n)}>
-  <Widget label={lang === 'it' ? 'Il tuo attestato' : 'Your certificate'} icon="trophy" title={tr('cert.make')}>
+  <Widget label={pick(lang, { it: 'Il tuo attestato', en: 'Your certificate', es: 'Tu certificado' })} icon="trophy" title={tr('cert.make')}>
     <form class="row">
       <label class="visually-hidden" for="cert-name">{tr('cert.name')}</label>
       <input id="cert-name" name="name" type="text" maxlength="40" placeholder={tr('cert.name')} autocomplete="name" required />
@@ -17,7 +27,7 @@ const i18n = { title: tr('cert.title'), body: tr('cert.body'), course: tr('cert.
     </form>
     <canvas width="1600" height="1000" role="img" hidden></canvas>
     <div class="widget-actions">
-      <a class="btn download" hidden download={lang === 'it' ? 'attestato-ai.png' : 'certificate-ai.png'}><Icon name="download" />{tr('cert.download')}</a>
+      <a class="btn download" hidden download={pick(lang, { it: 'attestato-ai.png', en: 'certificate-ai.png', es: 'certificado-ia.png' })}><Icon name="download" />{tr('cert.download')}</a>
     </div>
   </Widget>
 </cert-maker>
@@ -107,7 +117,7 @@ const i18n = { title: tr('cert.title'), body: tr('cert.body'), course: tr('cert.
 
       // 4D badges (darker shades so the white labels reach 4.5:1)
       const ds = [['D', '#6d5cf0'], ['D', '#0f7d71'], ['D', '#a8650d'], ['D', '#c2412f']];
-      const labels = this.i18n.lang === 'it' ? ['Delega', 'Descrizione', 'Discernimento', 'Diligenza'] : ['Delegation', 'Description', 'Discernment', 'Diligence'];
+      const labels = this.i18n.labels as unknown as string[];
       ds.forEach(([, col], i) => {
         const x = 130 + i * 250, y = 700;
         c.fillStyle = col;
@@ -121,7 +131,7 @@ const i18n = { title: tr('cert.title'), body: tr('cert.body'), course: tr('cert.
 
       c.fillStyle = '#6b6880';
       c.font = `400 28px ${body}`;
-      const date = new Date().toLocaleDateString(this.i18n.lang === 'it' ? 'it-IT' : 'en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+      const date = new Date().toLocaleDateString(this.i18n.locale, { day: 'numeric', month: 'long', year: 'numeric' });
       c.fillText(date, 130, 880);
 
       // Text alternative for the drawn image.

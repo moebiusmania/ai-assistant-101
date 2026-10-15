@@ -1,7 +1,7 @@
 ---
 /** Interactive 4D wheel: click a segment to explore each competency. */
 import Widget from './Widget.astro';
-import { getLang } from '../../i18n/ui';
+import { getLang, pick } from '../../i18n/ui';
 
 type D = { name: string; question: string; short: string; subs: { t: string; d: string }[]; example: string };
 interface Props { items: [D, D, D, D]; title?: string; hint?: string }
@@ -27,11 +27,11 @@ const labelPos = (i: number) => {
   const m = (R + r) / 2;
   return { x: cx + m * Math.cos(a), y: cy + m * Math.sin(a) };
 };
-const subLabel = lang === 'it' ? 'Le tre abilità' : 'The three skills';
-const exLabel = lang === 'it' ? 'Esempio' : 'Example';
+const subLabel = pick(lang, { it: 'Le tre abilità', en: 'The three skills', es: 'Las tres habilidades' });
+const exLabel = pick(lang, { it: 'Esempio', en: 'Example', es: 'Ejemplo' });
 ---
 <four-d>
-  <Widget label={lang === 'it' ? 'Esplora le 4D' : 'Explore the 4Ds'} icon="compass" title={title} hint={hint}>
+  <Widget label={pick(lang, { it: 'Esplora le 4D', en: 'Explore the 4Ds', es: 'Explora las 4D' })} icon="compass" title={title} hint={hint}>
     <div class="layout">
       <svg class="wheel" viewBox="0 0 200 200" role="tablist" aria-label="4D">
         <circle cx="100" cy="100" r="48" class="hub" />

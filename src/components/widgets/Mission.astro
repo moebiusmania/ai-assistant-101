@@ -5,16 +5,15 @@
  */
 import Widget from './Widget.astro';
 import Icon from '../Icon.astro';
-import { getLang } from '../../i18n/ui';
+import { getLang, pick } from '../../i18n/ui';
 import { DEFAULT_MISSION } from '../../scripts/mission';
 
 type Option = { id: string; title: string; desc: string; icon: string };
 interface Props { missions: Option[]; title?: string; hint?: string }
 const lang = getLang(Astro.currentLocale);
-const it = lang === 'it';
 const { missions, title, hint } = Astro.props;
-const label = it ? 'La tua missione' : 'Your mission';
-const i18n = { chosen: it ? 'Missione scelta:' : 'Mission chosen:' };
+const label = pick(lang, { it: 'La tua missione', en: 'Your mission', es: 'Tu misión' });
+const i18n = { chosen: pick(lang, { it: 'Missione scelta:', en: 'Mission chosen:', es: 'Misión elegida:' }) };
 ---
 <mission-picker data-i18n={JSON.stringify(i18n)}>
   <Widget id="mission-picker" label={label} icon="flag" title={title} hint={hint}>
@@ -28,7 +27,7 @@ const i18n = { chosen: it ? 'Missione scelta:' : 'Mission chosen:' };
           <span class="txt">
             <span class="ttl">{m.title}</span>
             <span class="desc">{m.desc}</span>
-            <span class="done" hidden><Icon name="check" size={14} />{it ? 'Missione compiuta' : 'Mission accomplished'}</span>
+            <span class="done" hidden><Icon name="check" size={14} />{pick(lang, { it: 'Missione compiuta', en: 'Mission accomplished', es: 'Misión cumplida' })}</span>
           </span>
         </label>
       ))}

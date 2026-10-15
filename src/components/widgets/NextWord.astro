@@ -5,7 +5,7 @@
  */
 import Widget from './Widget.astro';
 import Icon from '../Icon.astro';
-import { getLang, t } from '../../i18n/ui';
+import { getLang, t, pick } from '../../i18n/ui';
 
 type Step = { w: string; p: number }[];
 interface Props { start: string; steps: Step[]; title?: string; hint?: string }
@@ -13,12 +13,12 @@ interface Props { start: string; steps: Step[]; title?: string; hint?: string }
 const lang = getLang(Astro.currentLocale);
 const tr = t(lang);
 const { start, steps, title, hint } = Astro.props;
-const i18n = { done: lang === 'it' ? 'Frase completata! Prova di nuovo con un’altra temperatura.' : 'Sentence complete! Try again with a different temperature.' };
+const i18n = { done: pick(lang, { it: 'Frase completata! Prova di nuovo con un’altra temperatura.', en: 'Sentence complete! Try again with a different temperature.', es: '¡Frase completada! Prueba de nuevo con otra temperatura.' }) };
 ---
 <next-word data-config={JSON.stringify({ start, steps })} data-i18n={JSON.stringify(i18n)}>
-  <Widget label={lang === 'it' ? 'Prova tu' : 'Try it'} icon="brain" title={title} hint={hint}>
+  <Widget label={pick(lang, { it: 'Prova tu', en: 'Try it', es: 'Pruébalo' })} icon="brain" title={title} hint={hint}>
     <p class="sentence" aria-live="polite"><span class="text">{start}</span><span class="caret" aria-hidden="true"></span></p>
-    <ol class="bars" aria-label={lang === 'it' ? 'Parole candidate' : 'Candidate words'}></ol>
+    <ol class="bars" aria-label={pick(lang, { it: 'Parole candidate', en: 'Candidate words', es: 'Palabras candidatas' })}></ol>
     <div class="controls">
       <label class="temp">
         <span>{tr('w.temperature')}: <output>1.0</output></span>

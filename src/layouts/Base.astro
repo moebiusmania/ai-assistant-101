@@ -2,9 +2,10 @@
 import '@fontsource-variable/inter';
 import '@fontsource-variable/bricolage-grotesque';
 import '../styles/global.css';
-import '../styles/skeuo.css';
+// import '../styles/skeuo.css'; // opt-in skeuomorphic skin
 import Icon from '../components/Icon.astro';
-import { getLang, languages, routes, t, url, type Lang } from '../i18n/ui';
+import Flag from '../components/Flag.astro';
+import { alternates as allRoutes, getLang, langs, languages, routes, t, url, type Lang } from '../i18n/ui';
 
 interface Props {
   title?: string;
@@ -19,17 +20,13 @@ interface Props {
 const lang = getLang(Astro.currentLocale);
 const tr = t(lang);
 const { title, description = tr('site.tagline'), readingProgress = false, autoHeader = false } = Astro.props;
-const alternates: Record<Lang, string> = {
-  it: routes.home('it'),
-  en: routes.home('en'),
-  ...Astro.props.alternates,
-};
+const alternates: Record<Lang, string> = { ...allRoutes(routes.home), ...Astro.props.alternates };
 const fullTitle = title ? `${title} · ${tr('site.name')}` : `${tr('site.name')} — ${tr('site.tagline')}`;
 const path = Astro.url.pathname;
 // Social previews need absolute URLs.
 const pageUrl = new URL(path, Astro.site).href;
 const ogImage = new URL(url('/og-image.png'), Astro.site).href;
-const ogLocale: Record<Lang, string> = { it: 'it_IT', en: 'en_US' };
+const ogLocale: Record<Lang, string> = { it: 'it_IT', en: 'en_US', es: 'es_ES' };
 ---
 <!doctype html>
 <html lang={lang}>
@@ -39,7 +36,7 @@ const ogLocale: Record<Lang, string> = { it: 'it_IT', en: 'en_US' };
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="icon" type="image/svg+xml" href={url('/favicon.svg')} />
-    <link rel="manifest" href={url(lang === 'it' ? '/manifest.webmanifest' : '/en/manifest.webmanifest')} />
+    <link rel="manifest" href={routes.manifest(lang)} />
     <link rel="apple-touch-icon" href={url('/icons/apple-touch-icon.png')} />
     {Object.entries(alternates).map(([l, href]) => <link rel="alternate" hreflang={l} href={href} />)}
     <link rel="canonical" href={pageUrl} />
@@ -92,12 +89,22 @@ const ogLocale: Record<Lang, string> = { it: 'it_IT', en: 'en_US' };
           <a href={routes.glossary(lang)} aria-current={path === routes.glossary(lang) ? 'page' : undefined}>{tr('nav.glossary')}</a>
         </nav>
         <div class="tools">
-          <div class="lang-switch" role="group" aria-label={tr('lang.switch')}>
-            {(Object.keys(languages) as Lang[]).map((l) => (
-              <a href={alternates[l]} hreflang={l} lang={l} aria-current={l === lang ? 'true' : undefined} title={languages[l]}>
-                {l.toUpperCase()}
-              </a>
-            ))}
+          <div class="lang-menu">
+            <button class="lang-btn" type="button" popovertarget="lang-list" aria-label={`${tr('lang.switch')}: ${languages[lang]}`} title={tr('lang.switch')}>
+              <Flag lang={lang} />
+              <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+            </button>
+            <ul id="lang-list" class="lang-list" popover aria-label={tr('lang.switch')}>
+              {langs.map((l) => (
+                <li>
+                  <a href={alternates[l]} hreflang={l} lang={l} aria-current={l === lang ? 'true' : undefined}>
+                    <Flag lang={l} />
+                    <span>{languages[l]}</span>
+                    {l === lang && <Icon name="check" size={16} />}
+                  </a>
+                </li>
+              ))}
+            </ul>
           </div>
           <button class="icon-btn install-btn" type="button" hidden aria-label={tr('pwa.install')} title={tr('pwa.install')}>
             <Icon name="download" />
@@ -209,6 +216,20 @@ const ogLocale: Record<Lang, string> = { it: 'it_IT', en: 'en_US' };
         if (!installPrompt) return;
         await installPrompt.prompt();
         hideInstall(); // the prompt can only be shown once
+      });
+
+      // Language menu: focus the current language on open; arrow keys move between options.
+      const langList = document.querySelector<HTMLElement>('#lang-list')!;
+      const langLinks = [...langList.querySelectorAll<HTMLAnchorElement>('a')];
+      langList.addEventListener('toggle', (e) => {
+        if ((e as ToggleEvent).newState === 'open') (langList.querySelector<HTMLElement>('[aria-current]') ?? langLinks[0]).focus();
+      });
+      langList.addEventListener('keydown', (e) => {
+        const i = langLinks.indexOf(document.activeElement as HTMLAnchorElement);
+        const next = { ArrowDown: i + 1, ArrowUp: i - 1, Home: 0, End: langLinks.length - 1 }[e.key];
+        if (next === undefined) return;
+        e.preventDefault();
+        langLinks[(next + langLinks.length) % langLinks.length].focus();
       });
 
       const soundBtn = document.querySelector<HTMLButtonElement>('.sound-toggle')!;

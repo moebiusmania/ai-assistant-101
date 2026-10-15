@@ -1,0 +1,146 @@
+---
+title: Qué es de verdad un asistente de IA
+description: Cómo funciona “por dentro”, en palabras sencillas. Y por qué a veces se equivoca con total seguridad.
+order: 1
+minutes: 8
+icon: brain
+tag: Lo básico
+---
+
+Seguro que has oído hablar de ChatGPT, Claude, Gemini, Le Chat de Mistral o Copilot. Todos son **<Term id="assistant">asistentes de IA</Term>**: programas con los que puedes “chatear” como lo harías con una persona. Escribes una pregunta y recibes una respuesta.
+
+Cambian los nombres y el color de los botones, pero **todos funcionan de la misma manera**. Por eso este curso no trata de ningún producto en concreto: lo que aprendes aquí sirve para todos.
+
+<ChatSim messages={[
+  { from: 'user', text: '¡Hola! ¿Me explicas en dos líneas qué eres?' },
+  { from: 'ai', text: '¡Claro! Soy un **asistente de IA**: un programa que ha leído una enorme cantidad de texto y ha aprendido a responder escribiendo, una palabra tras otra. Puedo ayudarte a escribir, resumir, explicar y buscar ideas. Pero también puedo equivocarme, así que comprueba siempre lo importante.' },
+]} />
+
+## Un “completador de frases” muy bueno
+
+Dentro de cada asistente hay un **<Term id="llm">modelo de lenguaje</Term>**. Piensa en el autocompletado del teclado de tu móvil… pero muchísimo más potente.
+
+Durante el <Term id="training">entrenamiento</Term>, el modelo leyó una cantidad gigantesca de textos (libros, webs, artículos). De ahí aprendió qué palabras suelen ir detrás de otras. Cuando le escribes, **no busca la respuesta en un archivo**: la construye eligiendo la palabra más adecuada, luego la siguiente, y luego otra.
+
+<NextWord
+  title="Elige la siguiente palabra"
+  hint="Pulsa “Siguiente palabra”: la IA elige entre las palabras más probables. Luego mueve la temperatura y vuelve a probar: saldrán frases distintas."
+  start="Cada mañana, nada más despertarme, bebo"
+  steps={[
+    [{ w: 'un', p: 0.62 }, { w: 'mi', p: 0.2 }, { w: 'algo', p: 0.13 }, { w: 'feliz', p: 0.05 }],
+    [{ w: 'café', p: 0.7 }, { w: 'vaso', p: 0.17 }, { w: 'té', p: 0.1 }, { w: 'batido', p: 0.03 }],
+    [{ w: 'mientras', p: 0.4 }, { w: 'y', p: 0.35 }, { w: 'en', p: 0.2 }, { w: 'cantando', p: 0.05 }],
+    [{ w: 'leo', p: 0.45 }, { w: 'miro', p: 0.3 }, { w: 'el', p: 0.2 }, { w: 'con un pingüino', p: 0.05 }],
+  ]}
+/>
+
+¿Te has fijado? Con temperatura baja sale casi siempre la misma frase, la “más obvia”. Con temperatura alta es más variada, a veces graciosa. Los asistentes usan un punto intermedio: por eso **si haces dos veces la misma pregunta, puedes recibir dos respuestas distintas**.
+
+<Callout type="key" title="La idea más importante de esta lección">
+  <p>Un asistente de IA no “sabe” las cosas como una persona. Produce el texto <strong>más probable</strong> para tu petición. Normalmente el texto probable también es correcto… pero no siempre.</p>
+</Callout>
+
+## En qué es bueno
+
+Precisamente porque ha leído tanto, un asistente de IA es excelente con **las palabras y las ideas**:
+
+- **Escribir y reescribir**: correos, mensajes, cartas, publicaciones. También cambiar el tono (más amable, más formal, más breve).
+- **Resumir**: un documento largo, un artículo, las notas de una reunión.
+- **Explicar**: un concepto difícil, un término técnico, una factura, con ejemplos pensados para ti.
+- **Dar ideas**: para un regalo, un nombre, un viaje, una cena.
+- **Traducir** y corregir errores de gramática.
+- **Organizar**: convertir notas desordenadas en una lista, un plan, una tabla.
+
+Hoy muchos asistentes son además <Term id="multimodal">multimodales</Term>: puedes enviarles una foto, un PDF o hablarles.
+
+## En qué falla (y por qué)
+
+### 1. Se inventa cosas: las “alucinaciones”
+
+Como produce texto *probable*, a veces escribe cosas **falsas pero creíbles**: una fecha equivocada, una cita que nadie dijo, un libro que no existe, un enlace que no lleva a ninguna parte. Esto se llama <Term id="hallucination">alucinación</Term>. Y el tono sigue siendo seguro y convincente aunque se equivoque.
+
+<ChatSim
+  label="Un ejemplo de alucinación"
+  messages={[
+    { from: 'user', text: '¿Quién ganó el premio a la innovación “Bombilla de Oro” en 1987?' },
+    { from: 'ai', text: 'El premio Bombilla de Oro de 1987 fue para la ingeniera **Laura Benítez** por su trabajo sobre paneles solares portátiles.', note: 'Este premio no existe. La IA ha construido una respuesta plausible en lugar de decir “no lo sé”.' },
+  ]}
+/>
+
+### 2. Tiene fecha de caducidad
+
+El modelo dejó de estudiar en un momento dado: es su <Term id="cutoff">fecha de corte</Term>. No sabe nada de lo que pasó después, **salvo que el asistente pueda buscar en la web** (hoy muchos pueden: normalmente lo notas porque muestra las fuentes).
+
+### 3. Tiene una memoria limitada
+
+Durante un chat, el asistente recuerda lo que le has dicho… pero solo hasta cierto punto. Esta memoria se llama <Term id="context">ventana de contexto</Term>. En conversaciones muy largas, las partes más antiguas pueden “salirse” de la memoria.
+
+<ContextWindow
+  title="Mira cómo se llena la memoria"
+  hint="Añade mensajes al chat. Cuando la memoria está llena, los mensajes más antiguos se olvidan."
+  capacity={5}
+  messages={[
+    'Me llamo Lucía y soy vegetariana',
+    '¡Encantado, Lucía! ¿En qué te ayudo?',
+    'Organizo una cena para 6 personas',
+    '¡Genial! ¿Qué tipo de cena?',
+    'Algo sencillo, que voy justa de tiempo',
+    'Aquí tienes 3 ideas rápidas…',
+    '¿Me haces la lista de la compra?',
+    'Claro, aquí está la lista…',
+    'Añade un postre',
+    'Te propongo una tarta de queso…',
+    '¿Y un segundo plato?',
+    '¿Qué tal un asado de ternera?',
+  ]}
+/>
+
+¿Lo ves? La última respuesta propone carne: “soy vegetariana” se había salido de la memoria. **Consejo práctico**: cuando cambies de tema, abre un chat nuevo. Y si una conversación es muy larga, repite la información importante.
+
+<Callout type="info" title="¿Y entre chats distintos?">
+  <p>Normalmente, cada chat nuevo empieza de cero. Algunos asistentes tienen una función de “memoria” que recuerda algunas cosas entre chats: la encontrarás en la configuración, donde puedes verla, editarla o desactivarla.</p>
+</Callout>
+
+### 4. No cuenta, calcula ni “ve” como nosotros
+
+Parece raro, pero un modelo de lenguaje puede fallar una suma sencilla o el número de letras de una palabra. Es porque lee el texto en trocitos llamados <Term id="token">tokens</Term>, no letra a letra. Para cálculos importantes, pídele que use una herramienta de cálculo (si la tiene) o compruébalo tú con una calculadora.
+
+## En resumen
+
+| El asistente de IA… | Así que tú… |
+|---|---|
+| escribe el texto más probable | compruebas los datos importantes |
+| puede inventarse cosas con seguridad | no te fías solo del tono |
+| tiene una fecha de corte | pides fuentes para las noticias recientes |
+| tiene memoria limitada | abres chats nuevos y repites lo clave |
+| es buenísimo con palabras e ideas | lo usas para escribir, explicar, organizar |
+
+<Quiz
+  title="Ponte a prueba"
+  questions={[
+    {
+      q: '¿Cómo produce sus respuestas un asistente de IA?',
+      options: ['Busca la respuesta correcta en un archivo enorme', 'Elige una palabra cada vez, según lo que es más probable', 'Pregunta a un operador humano', 'Copia el primer resultado de Google'],
+      answer: 1,
+      why: 'Construye el texto pieza a pieza, eligiendo las palabras más probables. Por eso puede sonar seguro incluso cuando se equivoca.',
+    },
+    {
+      q: 'La IA te da una cita con nombre, fecha y fuente. ¿Qué haces?',
+      options: ['La uso enseguida: es muy precisa', 'La compruebo antes de usarla', 'Le pregunto a la IA si está segura, y si dice que sí la uso'],
+      answer: 1,
+      why: 'Detalles precisos no significa detalles verdaderos. Y la IA también puede confirmar cosas falsas: comprueba en una fuente externa.',
+    },
+    {
+      q: 'Tras un chat muy largo, la IA “olvida” algo que le dijiste al principio. ¿Por qué?',
+      options: ['Se ha ofendido', 'Las partes más antiguas se salieron de su memoria a corto plazo', 'Hay un virus'],
+      answer: 1,
+      why: 'La ventana de contexto tiene un límite. Solución: repite la información clave o abre un chat nuevo con un resumen.',
+    },
+    {
+      q: '¿Qué tarea encaja mejor con un asistente de IA?',
+      options: ['Saber el resultado del partido de anoche (sin búsqueda web)', 'Reescribir un correo con un tono más amable', 'Recordar tu número de DNI para siempre'],
+      answer: 1,
+      why: 'Escribir y reescribir es su punto fuerte. Las noticias recientes necesitan búsqueda web, y los datos personales mejor guardarlos para ti.',
+    },
+  ]}
+/>

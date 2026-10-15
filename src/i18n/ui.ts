@@ -1,6 +1,7 @@
-export const languages = { it: 'Italiano', en: 'English' } as const;
+export const languages = { it: 'Italiano', en: 'English', es: 'Español' } as const;
 export type Lang = keyof typeof languages;
 export const defaultLang: Lang = 'it';
+export const langs = Object.keys(languages) as Lang[];
 
 export const ui = {
   it: {
@@ -209,13 +210,119 @@ export const ui = {
     'footer.license.code': 'The source code is released under the <a href="https://github.com/moebiusmania/ai-assistant-101/blob/main/LICENSE">MIT license</a>.',
     'footer.source': 'Source code on GitHub',
   },
+  es: {
+    'site.name': 'Hablar con la IA',
+    'site.tagline': 'Un curso sencillo para usar bien los asistentes de IA',
+    'site.ogAlt': 'Vista previa de Parlare con l’AI (Hablar con la IA), en italiano: «Usa los asistentes de IA con cabeza, no al azar.» Curso gratuito de aproximadamente 1 hora, con un ejemplo de chat con un asistente.',
+    'nav.home': 'Inicio',
+    'nav.lessons': 'Lecciones',
+    'nav.glossary': 'Glosario',
+    'nav.skip': 'Ir al contenido',
+    'nav.main': 'Principal',
+    'nav.pager': 'Lección anterior y siguiente',
+    'theme.toggle': 'Cambiar tema claro/oscuro',
+    'theme.light': 'Tema claro',
+    'theme.dark': 'Tema oscuro',
+    'sound.toggle': 'Activar o desactivar los sonidos',
+    'lang.switch': 'Idioma',
+    'motion.pause': 'Pausar las animaciones',
+    'motion.play': 'Reanudar las animaciones',
+    'pwa.install': 'Instalar la app',
+    'home.kicker': 'Curso gratuito · aproximadamente 1 hora',
+    'home.title': 'Usa los asistentes de IA <em>con cabeza</em>, no al azar.',
+    'home.lead':
+      'ChatGPT, Claude, Gemini, Le Chat, Copilot… Todos funcionan de forma parecida. En 8 lecciones breves aprenderás a pedir bien, a saber cuándo fiarte y a proteger tus datos. Sin jerga, con muchos ejemplos para probar.',
+    'home.start': 'Empezar el curso',
+    'home.continue': 'Seguir donde lo dejaste',
+    'home.lessons': 'Las lecciones',
+    'home.progress': 'Tu progreso',
+    'home.of': 'de',
+    'home.done': 'completadas',
+    'home.reset': 'Borrar el progreso',
+    'home.reset.confirm': '¿Seguro que quieres borrar tu progreso?',
+    'home.intro.title': 'Antes de empezar',
+    'home.why.title': 'Qué aprenderás',
+    'home.why.1.t': 'Entender cómo “razona”',
+    'home.why.1.d': 'Qué hay detrás de las respuestas y por qué a veces se inventa cosas.',
+    'home.why.2.t': 'Pedir de la forma correcta',
+    'home.why.2.d': 'Peticiones claras = respuestas útiles. Con fórmulas listas para copiar.',
+    'home.why.3.t': 'Comprobar las respuestas',
+    'home.why.3.d': 'Las preguntas que debes hacerte antes de fiarte de lo que lees.',
+    'home.why.4.t': 'Usarlo con seguridad',
+    'home.why.4.d': 'Qué no escribir nunca, y cuándo decir que has usado la IA.',
+    'home.agnostic':
+      'El curso no depende de ningún producto: lo que aprendes sirve para cualquier asistente de IA.',
+    'lesson.minutes': 'min',
+    'lesson.label': 'Lección',
+    'lesson.bonus': 'Lección extra',
+    'lesson.prev': 'Lección anterior',
+    'lesson.next': 'Lección siguiente',
+    'lesson.complete': 'Marcar como completada',
+    'lesson.completed': '¡Completada!',
+    'lesson.back': 'Todas las lecciones',
+    'lesson.status.done': 'Hecha',
+    'lesson.status.todo': 'Pendiente',
+    'w.check': 'Comprobar',
+    'w.retry': 'Reintentar',
+    'w.next': 'Siguiente',
+    'w.correct': '¡Correcto!',
+    'w.wrong': 'No del todo.',
+    'w.score': 'Puntuación',
+    'w.copy': 'Copiar',
+    'w.copied': '¡Copiado!',
+    'w.replay': 'Volver a ver',
+    'w.you': 'Tú',
+    'w.ai': 'Asistente',
+    'w.typing': 'está escribiendo…',
+    'w.nextword': 'Siguiente palabra',
+    'w.reset': 'Empezar de nuevo',
+    'w.temperature': 'Creatividad (temperatura)',
+    'w.low': 'predecible',
+    'w.high': 'creativa',
+    'w.addmsg': 'Añadir un mensaje',
+    'w.memory': 'Memoria del chat',
+    'w.forgotten': 'olvidado',
+    'w.quality': 'Calidad de la petición',
+    'w.yourprompt': 'Tu petición',
+    'w.found': 'Encontrados',
+    'w.reveal': 'Mostrar las soluciones',
+    'w.masked': 'Datos ocultos',
+    'w.before': 'Petición vaga',
+    'w.after': 'Petición clara',
+    'w.saved': 'Guardado en tu dispositivo',
+    'cert.name': 'Tu nombre',
+    'cert.make': 'Crea tu certificado',
+    'cert.download': 'Descargar la imagen',
+    'cert.title': 'Certificado de finalización',
+    'cert.body': 'ha completado el curso',
+    'cert.course': 'Hablar con la IA — usar bien los asistentes de IA',
+    'glossary.title': 'Glosario',
+    'glossary.lead': 'Las palabras difíciles, explicadas de forma sencilla.',
+    'glossary.search': 'Busca una palabra…',
+    'glossary.none': 'No se ha encontrado ninguna palabra.',
+    'footer.credit':
+      'Algunos conceptos proceden del <a href="https://academy.claude.com/courses/ai-fluency-framework-foundations/introduction-to-ai-fluency">AI Fluency Framework</a> de Rick Dakan y Joseph Feller (licencia CC BY-NC-SA 4.0).',
+    'footer.local': 'Tu progreso se guarda solo en tu navegador.',
+    'footer.about': 'El curso',
+    'footer.made': 'Cómo está hecho',
+    'footer.ai':
+      'Este sitio se ha creado con la ayuda de herramientas de inteligencia artificial, bajo la supervisión de un desarrollador humano que ha revisado y comprobado el código y los contenidos.',
+    'footer.licenses': 'Licencias',
+    'footer.license.content':
+      'Los contenidos del curso se distribuyen con licencia <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es" rel="license">Creative Commons BY-NC-SA 4.0</a>: puedes compartirlos y adaptarlos con fines no comerciales, citando la fuente y usando la misma licencia.',
+    'footer.license.code': 'El código fuente se distribuye con <a href="https://github.com/moebiusmania/ai-assistant-101/blob/main/LICENSE">licencia MIT</a>.',
+    'footer.source': 'Código fuente en GitHub',
+  },
 } as const;
 
 export type UIKey = keyof (typeof ui)['it'];
 
 export function getLang(locale: string | undefined): Lang {
-  return locale === 'en' ? 'en' : 'it';
+  return locale && locale in languages ? (locale as Lang) : defaultLang;
 }
+
+/** Picks the value for `lang` from a per-language record: `pick(lang, { it: '…', en: '…', es: '…' })`. */
+export const pick = <T,>(lang: Lang, values: Record<Lang, T>): T => values[lang];
 
 export function t(lang: Lang) {
   return (key: UIKey): string => ui[lang][key] ?? ui[defaultLang][key];
@@ -224,12 +331,24 @@ export function t(lang: Lang) {
 /** Prefixes a root-relative path with the deploy base (e.g. `/repo` on GitHub Pages). */
 export const url = (path: string) => `${import.meta.env.BASE_URL.replace(/\/$/, '')}${path}`;
 
+/** Path prefix and localized path segments for each language. */
+const paths: Record<Lang, { prefix: string; lessons: string; glossary: string }> = {
+  it: { prefix: '', lessons: 'lezioni', glossary: 'glossario' },
+  en: { prefix: '/en', lessons: 'lessons', glossary: 'glossary' },
+  es: { prefix: '/es', lessons: 'lecciones', glossary: 'glosario' },
+};
+
 /** Localized URLs. Lesson slugs are shared between languages. */
 export const routes = {
-  home: (lang: Lang) => url(lang === 'it' ? '/' : '/en/'),
-  lesson: (lang: Lang, slug: string) => url(lang === 'it' ? `/lezioni/${slug}/` : `/en/lessons/${slug}/`),
-  glossary: (lang: Lang) => url(lang === 'it' ? '/glossario/' : '/en/glossary/'),
+  home: (lang: Lang) => url(`${paths[lang].prefix}/`),
+  lesson: (lang: Lang, slug: string) => url(`${paths[lang].prefix}/${paths[lang].lessons}/${slug}/`),
+  glossary: (lang: Lang) => url(`${paths[lang].prefix}/${paths[lang].glossary}/`),
+  manifest: (lang: Lang) => url(`${paths[lang].prefix}/manifest.webmanifest`),
 };
+
+/** The same page in every language, e.g. `alternates((l) => routes.glossary(l))`. */
+export const alternates = (route: (lang: Lang) => string) =>
+  Object.fromEntries(langs.map((l) => [l, route(l)])) as Record<Lang, string>;
 
 /** The `glob` loader ids look like `it/basics`. */
 export function splitId(id: string): { lang: Lang; slug: string } {

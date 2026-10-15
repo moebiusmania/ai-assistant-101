@@ -1,0 +1,115 @@
+---
+title: "Discernimiento: fiarse, pero con criterio"
+description: Aprende a distinguir cuándo una respuesta es buena, cuándo hay que comprobarla y cuándo va directa a la papelera.
+order: 5
+minutes: 10
+icon: eye
+tag: 3.ª D · Discernimiento
+---
+
+La IA escribe bien. **Demasiado bien**: incluso cuando se equivoca, el texto es ordenado, seguro, convincente. El discernimiento es la capacidad de no dejarse encandilar por la forma y mirar el fondo.
+
+## Tres cosas que evaluar
+
+El marco de las 4D propone mirar una respuesta desde tres ángulos:
+
+1. **El producto**: ¿es correcto? ¿Completo? ¿Adecuado para mi objetivo y mi destinatario?
+2. **El proceso**: ¿los pasos tienen sentido? ¿Hay saltos lógicos o conclusiones precipitadas?
+3. **La actuación**: ¿ha seguido mis instrucciones? ¿Me está dando la razón sin más?
+
+<Callout type="warn" title="Cuidado con la IA que “te da la razón”">
+  <p>Los asistentes tienden a ser complacientes. Si preguntas “mi idea es genial, ¿verdad?”, probablemente te dirán que sí. Para una opinión sincera, pídela de forma explícita: <em>“Dime los 3 puntos débiles de esta idea.”</em></p>
+</Callout>
+
+## Las señales de alarma
+
+Estas son las señales que deberían ponerte en guardia:
+
+- **Números, fechas y porcentajes muy precisos** sin una fuente.
+- **Citas** atribuidas a personajes famosos.
+- **Títulos de libros, estudios, leyes** o sentencias concretas.
+- **Enlaces** y direcciones web (a menudo inventados o rotos).
+- **Promesas absolutas**: “siempre”, “nunca”, “garantizado”, “sin riesgos”.
+- Noticias **recientes**, si el asistente no ha buscado en la web.
+
+<SpotError
+  title="Encuentra los puntos que comprobar"
+  hint="Lee la respuesta de la IA y haz clic en las frases que comprobarías antes de fiarte. Luego pulsa “Comprobar”."
+  question="¿Me das algunos consejos para dormir mejor?"
+  sentences={[
+    { text: 'Aquí tienes algunos consejos útiles para mejorar tu descanso.' },
+    { text: 'Intenta acostarte y levantarte más o menos a la misma hora, también el fin de semana.' },
+    { text: 'Un estudio de la Universidad de Harvard de 2019 demostró que el 94 % de las personas duerme mejor tras beber leche caliente.', bad: true, why: 'Estudio, año y porcentaje, todo muy preciso y sin fuente: una señal típica de alucinación. Compruébalo (probablemente es inventado).' },
+    { text: 'Evita las pantallas brillantes la hora antes de dormir.' },
+    { text: 'La melatonina es un suplemento natural, así que no tiene ningún efecto secundario: puedes tomar toda la que quieras.', bad: true, why: '“Natural” no significa “sin riesgos”, y “toda la que quieras” es un consejo peligroso. Para salud y dosis, consulta a un médico o farmacéutico.' },
+    { text: 'Mantén el dormitorio fresco, a oscuras y en silencio.' },
+    { text: 'Para saber más, lee la guía oficial en www.ministerio-dormirbien.es/guia.', bad: true, why: 'Los enlaces pueden ser inventados. Busca tú la web oficial en lugar de fiarte de la dirección.' },
+  ]}
+/>
+
+## El ciclo Descripción ↔ Discernimiento
+
+Describir y evaluar no son dos momentos separados: forman un **ciclo**. Pides → evalúas → ajustas la petición → vuelves a evaluar. Así llegas a un buen resultado.
+
+<Loop
+  title="Un ejemplo paso a paso"
+  hint="Pulsa “Siguiente” para seguir el ciclo."
+  a="Describir"
+  b="Evaluar"
+  steps={[
+    { side: 'a', text: 'Pregunto: “Explícame qué es el tipo de interés de un préstamo.”' },
+    { side: 'b', text: 'Leo la respuesta: correcta, pero llena de tecnicismos. No entiendo mucho.' },
+    { side: 'a', text: 'Ajusto: “Explícamelo de forma sencilla, con un ejemplo con cifras pequeñas.”' },
+    { side: 'b', text: '¡Ahora está claro! Pero noto que no menciona la TAE, que vi en el contrato.' },
+    { side: 'a', text: 'Pregunto: “¿Qué diferencia hay entre el tipo de interés y la TAE? ¿Cuál debo comparar entre dos ofertas?”' },
+    { side: 'b', text: 'Respuesta útil. Compruebo el punto clave en una web oficial de información al consumidor: confirmado. ✓' },
+  ]}
+/>
+
+## Cómo comprobar (sin volverte loco)
+
+No hace falta comprobarlo todo. Usa el sentido común y el **nivel de riesgo** de la lección sobre la Delegación. Cuando importa, así es como se hace:
+
+<Checklist
+  id="discernment"
+  title="Antes de usar una respuesta importante"
+  items={[
+    '¿He comprobado números, fechas y nombres en una fuente fiable?',
+    '¿He abierto los enlaces para ver si existen de verdad?',
+    '¿Le he preguntado a la IA: “¿Cómo de segura estás? ¿Qué podría estar mal?”',
+    '¿He pedido fuentes, y las he comprobado yo?',
+    '¿La respuesta encaja con lo que ya sé?',
+    'En salud, dinero o leyes: ¿he hablado con un profesional?',
+  ]}
+/>
+
+<Callout type="tip" title="El truco de la segunda opinión">
+  <p>Abre un chat nuevo (u otro asistente) y pídele que <strong>revise</strong> la respuesta: “Busca posibles errores en este texto”. No es una garantía, pero a menudo saca a la luz los puntos débiles.</p>
+</Callout>
+
+## Ojo también con los sesgos
+
+La IA ha aprendido de textos escritos por personas, y ha heredado también sus <Term id="bias">sesgos</Term>. Por ejemplo, puede dar por hecho que “la enfermera” es una mujer y “el ingeniero” un hombre, o poner siempre ejemplos de una sola cultura. Si lo notas, señálalo y pide una versión más equilibrada.
+
+<Quiz
+  questions={[
+    {
+      q: '¿Cuál de estas frases de la IA comprobarías primero?',
+      options: ['“Beber agua es importante para la salud.”', '“Según el instituto nacional de estadística, el 37,4 % de las personas cambió de trabajo en 2021.”', '“Hay muchas formas de organizar una fiesta.”'],
+      answer: 1,
+      why: 'Fuente precisa + porcentaje preciso + año: compruébalo en la fuente original.',
+    },
+    {
+      q: 'Quieres una opinión sincera sobre tu plan de negocio. ¿Qué preguntas?',
+      options: ['“Es una idea genial, ¿verdad?”', '“¿Cuáles son los 3 principales riesgos y puntos débiles de este plan?”', '“Hazme un cumplido.”'],
+      answer: 1,
+      why: 'Pedir críticas de forma explícita contrarresta la tendencia de la IA a darte la razón.',
+    },
+    {
+      q: '¿Qué es el ciclo Descripción–Discernimiento?',
+      options: ['Preguntar una vez y aceptar la respuesta', 'Preguntar, evaluar, ajustar la petición y volver a evaluar', 'Usar dos asistentes a la vez'],
+      answer: 1,
+      why: 'Mejoras por etapas: cada evaluación te ayuda a describir mejor lo que quieres.',
+    },
+  ]}
+/>

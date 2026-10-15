@@ -2,7 +2,7 @@
 /** The Description–Discernment loop, stepped through with an example conversation. */
 import Widget from './Widget.astro';
 import Icon from '../Icon.astro';
-import { getLang, t } from '../../i18n/ui';
+import { getLang, t, pick } from '../../i18n/ui';
 
 type Step = { side: 'a' | 'b'; text: string };
 interface Props { a: string; b: string; steps: Step[]; title?: string; hint?: string }
@@ -12,7 +12,7 @@ const { a, b, steps, title, hint } = Astro.props;
 const loop = 'M 80 110 C 80 20, 320 20, 320 110 C 320 200, 80 200, 80 110 Z';
 ---
 <loop-diagram data-steps={JSON.stringify(steps)}>
-  <Widget label={lang === 'it' ? 'Il ciclo' : 'The loop'} icon="refresh" title={title} hint={hint}>
+  <Widget label={pick(lang, { it: 'Il ciclo', en: 'The loop', es: 'El ciclo' })} icon="refresh" title={title} hint={hint}>
     <svg viewBox="0 0 400 220" class="diagram" aria-hidden="true">
       <defs>
         <marker id="loop-arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
@@ -26,7 +26,7 @@ const loop = 'M 80 110 C 80 20, 320 20, 320 110 C 320 200, 80 200, 80 110 Z';
       <g class="node b"><circle cx="320" cy="110" r="44" /><text x="320" y="115" text-anchor="middle">{b}</text></g>
       <circle class="dot" r="8" cx="80" cy="110" />
     </svg>
-    <ol class="steps" aria-live="polite" tabindex="0" aria-label={title ?? (lang === 'it' ? 'Passaggi' : 'Steps')}>
+    <ol class="steps" aria-live="polite" tabindex="0" aria-label={title ?? (pick(lang, { it: 'Passaggi', en: 'Steps', es: 'Pasos' }))}>
       {steps.map((s, i) => (
         <li data-side={s.side} hidden={i > 0}><span class="badge">{s.side === 'a' ? a : b}</span>{s.text}</li>
       ))}

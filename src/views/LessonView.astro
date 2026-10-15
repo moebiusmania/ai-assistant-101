@@ -4,12 +4,13 @@ import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
 import LessonComplete from '../components/widgets/LessonComplete.astro';
 import { lessonComponents } from '../components/widgets';
-import { getLang, routes, splitId, t } from '../i18n/ui';
+import { alternates, getLang, pick, routes, splitId, t } from '../i18n/ui';
 
 interface Props { entry: CollectionEntry<'lessons'> }
 const { entry } = Astro.props;
 const lang = getLang(Astro.currentLocale);
 const tr = t(lang);
+const tocLabel = pick(lang, { it: 'In questa lezione', en: 'In this lesson', es: 'En esta lección' });
 const { slug } = splitId(entry.id);
 const { Content, headings } = await render(entry);
 
@@ -23,7 +24,7 @@ const toc = headings.filter((h) => h.depth === 2);
 <Base
   title={entry.data.title}
   description={entry.data.description}
-  alternates={{ it: routes.lesson('it', slug), en: routes.lesson('en', slug) }}
+  alternates={alternates((l) => routes.lesson(l, slug))}
   readingProgress
 >
   <article class="lesson">
@@ -42,8 +43,8 @@ const toc = headings.filter((h) => h.depth === 2);
 
     <div class="lesson-body">
       {toc.length > 2 && (
-        <nav class="toc" aria-label={lang === 'it' ? 'In questa lezione' : 'In this lesson'}>
-          <p>{lang === 'it' ? 'In questa lezione' : 'In this lesson'}</p>
+        <nav class="toc" aria-label={tocLabel}>
+          <p>{tocLabel}</p>
           <ol>{toc.map((h) => <li><a href={`#${h.slug}`}>{h.text}</a></li>)}</ol>
         </nav>
       )}

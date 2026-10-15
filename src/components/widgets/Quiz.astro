@@ -2,7 +2,7 @@
 /** Multiple-choice quiz, one question at a time, with explanations and a final score. */
 import Widget from './Widget.astro';
 import Icon from '../Icon.astro';
-import { getLang, t } from '../../i18n/ui';
+import { getLang, t, pick } from '../../i18n/ui';
 
 type Q = { q: string; options: string[]; answer: number; why: string };
 interface Props { questions: Q[]; title?: string; hint?: string }
@@ -13,14 +13,14 @@ const { questions, title, hint } = Astro.props;
 const i18n = {
   correct: tr('w.correct'),
   wrong: tr('w.wrong'),
-  result: lang === 'it' ? 'Hai risposto bene a' : 'You got',
-  of: lang === 'it' ? 'domande su' : 'questions right out of',
-  great: lang === 'it' ? 'Ottimo lavoro! 🎉' : 'Great job! 🎉',
-  ok: lang === 'it' ? 'Bene! Rileggi le spiegazioni delle risposte sbagliate.' : 'Good! Read the explanations for the ones you missed.',
-  low: lang === 'it' ? 'Nessun problema: ripassa la lezione e riprova.' : 'No problem: review the lesson and try again.',
-  finish: lang === 'it' ? 'Vedi il risultato' : 'See result',
-  rightMark: lang === 'it' ? 'risposta giusta' : 'correct answer',
-  pickMark: lang === 'it' ? 'la tua risposta' : 'your answer',
+  result: pick(lang, { it: 'Hai risposto bene a', en: 'You got', es: 'Has acertado' }),
+  of: pick(lang, { it: 'domande su', en: 'questions right out of', es: 'preguntas de' }),
+  great: pick(lang, { it: 'Ottimo lavoro! 🎉', en: 'Great job! 🎉', es: '¡Buen trabajo! 🎉' }),
+  ok: pick(lang, { it: 'Bene! Rileggi le spiegazioni delle risposte sbagliate.', en: 'Good! Read the explanations for the ones you missed.', es: '¡Bien! Vuelve a leer las explicaciones de las respuestas que fallaste.' }),
+  low: pick(lang, { it: 'Nessun problema: ripassa la lezione e riprova.', en: 'No problem: review the lesson and try again.', es: 'No pasa nada: repasa la lección y vuelve a intentarlo.' }),
+  finish: pick(lang, { it: 'Vedi il risultato', en: 'See result', es: 'Ver el resultado' }),
+  rightMark: pick(lang, { it: 'risposta giusta', en: 'correct answer', es: 'respuesta correcta' }),
+  pickMark: pick(lang, { it: 'la tua risposta', en: 'your answer', es: 'tu respuesta' }),
 };
 ---
 <quiz-box data-i18n={JSON.stringify(i18n)}>

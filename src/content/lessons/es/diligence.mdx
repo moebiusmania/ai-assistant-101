@@ -1,0 +1,100 @@
+---
+title: "Diligencia: privacidad, honestidad y responsabilidad"
+description: Qué no escribir nunca a un asistente de IA, cuándo decir que lo has usado y por qué la última palabra es siempre tuya.
+order: 6
+minutes: 9
+icon: shield
+tag: 4.ª D · Diligencia
+---
+
+La última D quizá sea la más importante: **tú eres responsable** de cómo usas la IA y de lo que sale de ella. El marco la divide en tres momentos.
+
+## 1. Cuando eliges (qué usar y qué compartir)
+
+### Protege tus datos
+
+Cuando escribes en un chat, el texto se envía a los servidores de la empresa que ofrece el servicio. Según la configuración, las conversaciones pueden **guardarse**, **ser leídas por revisores** o **usarse para mejorar el modelo**.
+
+<Callout type="warn" title="Nunca escribas en un chat">
+  <p>Contraseñas y códigos de acceso · números completos de tarjeta y datos bancarios · PIN y códigos de un solo uso · documentos de identidad · datos de salud tuyos o de otras personas sin pensarlo · información confidencial del trabajo.</p>
+</Callout>
+
+La buena noticia: casi siempre puedes **conseguir la misma ayuda sin datos personales**. Basta con sustituirlos por marcadores como [NOMBRE] o [DIRECCIÓN].
+
+<Redact
+  title="Haz el texto anónimo"
+  hint="Quieres que la IA te ayude a responder a este correo. Haz clic en la información personal para ocultarla y luego pulsa “Comprobar”."
+  text={'Estimada [[Dra. Romero|NOMBRE]]:\nle escribo en nombre de mi madre, [[María Torres|NOMBRE]], nacida el [[12/03/1951|FECHA]], con DNI [[12345678Z|DNI]].\nTras la consulta del ((martes)) le recetaron un nuevo tratamiento para la [[tensión alta|SALUD]], pero ha tenido ((dolor de cabeza)) y nos gustaría saber si debe continuar.\n¿Pueden llamarnos al [[612 345 678|TELÉFONO]]? Vivimos en la [[calle de las Rosas 14, Valencia|DIRECCIÓN]].\nGracias, ((Lucas))'}
+/>
+
+<Callout type="tip" title="Revisa tu configuración">
+  <p>Casi todos los asistentes tienen una opción para <strong>no usar tus chats en el entrenamiento</strong> y un modo de chat temporal. Búscalo en “Configuración” → “Privacidad” o “Datos”. Si usas la IA en el trabajo, pregunta qué herramientas ha aprobado tu empresa.</p>
+</Callout>
+
+<SortGame
+  title="¿Lo escribirías en un chat?"
+  hint="Para cada elemento decide: sin problema, mejor anonimizado, o nunca."
+  buckets={[
+    { id: 'ok', label: '✅ Sin problema', desc: 'Ningún riesgo' },
+    { id: 'anon', label: '✏️ Anonimizar', desc: 'Útil, pero quita nombres y datos' },
+    { id: 'never', label: '⛔ Nunca', desc: 'No hace falta y puede hacer daño' },
+  ]}
+  items={[
+    { text: 'La contraseña de tu correo', bucket: 'never', why: 'Ningún asistente la necesita. Nunca.' },
+    { text: 'Una receta familiar para adaptarla', bucket: 'ok', why: 'Sin datos personales: adelante.' },
+    { text: 'Los análisis de sangre de tu padre, con su nombre completo', bucket: 'anon', why: 'Puedes preguntar qué significan los valores, pero quita nombres y datos identificativos. Luego habla con el médico.' },
+    { text: 'El código de un solo uso que te ha llegado por SMS', bucket: 'never', why: 'Los códigos de un solo uso son solo para ti: quien te los pide es casi siempre un estafador.' },
+    { text: 'Una discusión con un compañero, para pedir consejo', bucket: 'anon', why: 'Pedir consejo está bien, pero sin nombres ni detalles reconocibles.' },
+    { text: 'El número completo de tu tarjeta de crédito', bucket: 'never', why: 'Nunca, por ningún motivo.' },
+    { text: 'El texto de un anuncio para vender tu bici', bucket: 'ok', why: 'Está pensado para ser público: ningún problema.' },
+  ]}
+/>
+
+## 2. Cuando compartes (transparencia)
+
+Si has usado la IA de forma importante en un trabajo, **dilo** cuando importe: en el colegio, en la universidad, en un artículo, en un documento de trabajo. No es nada de lo que avergonzarse: es una herramienta, como la calculadora o el corrector ortográfico.
+
+- En clase y en el trabajo, **revisa las normas**: hay sitios que permiten la IA, otros que no, otros solo de ciertas formas.
+- Una fórmula sencilla: *“He usado un asistente de IA para el primer borrador y la corrección; el contenido y la comprobación de los datos son míos.”*
+- **No hagas pasar por tuyo** un texto creativo escrito entero por la IA, si quien lo recibe espera que lo hayas escrito tú.
+
+## 3. Cuando publicas o entregas (responsabilidad)
+
+Antes de enviar, firmar o publicar algo hecho con la IA:
+
+- **Léelo entero.** No solo el principio.
+- **Comprueba** datos, cifras y nombres (lección sobre el Discernimiento).
+- Pregúntate: *“¿Podría defender sin problema cada frase de este texto?”*
+
+<Callout type="key" title="La regla de oro">
+  <p>La IA es un colaborador, no un chivo expiatorio. <strong>Si lo firmas, es tuyo</strong>: errores incluidos.</p>
+</Callout>
+
+## Otros riesgos que conviene conocer
+
+- **Estafas con IA**: voces clonadas, fotos falsas, correos impecables. Si un “familiar” llama pidiendo dinero urgente, cuelga y vuelve a llamar al número que conoces.
+- **Imágenes y vídeos falsos** (deepfakes): antes de compartir algo impactante, busca confirmación en fuentes fiables.
+- **Tu relación con la IA**: es una herramienta estupenda para desahogarte o reflexionar, pero no sustituye a los amigos, la familia o un profesional de la salud mental.
+
+<Quiz
+  questions={[
+    {
+      q: 'Quieres ayuda para escribir una reclamación a tu banco. ¿Qué pegas en el chat?',
+      options: ['Todo, número de cuenta incluido', 'La situación, con [NOMBRE] y [CUENTA] en lugar de los datos reales', 'Tu PIN, para que la IA compruebe el problema'],
+      answer: 1,
+      why: 'La IA no necesita los datos reales para escribir una buena reclamación: los añades tú al final.',
+    },
+    {
+      q: 'Has usado la IA para un borrador de un informe de trabajo. ¿Qué haces antes de entregarlo?',
+      options: ['Lo entrego tal cual: la IA no se equivoca', 'Lo leo entero, compruebo los datos y, si hace falta, digo que he usado la IA', 'Cambio un par de palabras para que parezca mío'],
+      answer: 1,
+      why: 'Releer, comprobar y ser transparente: las tres caras de la Diligencia.',
+    },
+    {
+      q: 'Te llega un mensaje de voz de tu hijo pidiendo dinero urgente, desde un número desconocido. ¿Qué haces?',
+      options: ['Envío el dinero enseguida', 'Llamo a mi hijo a su número de siempre para comprobarlo', 'Respondo pidiendo los datos bancarios'],
+      answer: 1,
+      why: 'Las voces se pueden clonar con IA. Comprueba siempre por un canal que conozcas.',
+    },
+  ]}
+/>
