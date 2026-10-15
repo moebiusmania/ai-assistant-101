@@ -97,6 +97,7 @@ export const ui = {
     'footer.credit':
       'Alcuni concetti sono tratti dall’<a href="https://academy.claude.com/courses/ai-fluency-framework-foundations/introduction-to-ai-fluency">AI Fluency Framework</a> di Rick Dakan e Joseph Feller (licenza CC BY-NC-SA 4.0).',
     'footer.local': 'Il progresso è salvato solo nel tuo browser.',
+    'footer.privacy': 'Niente pubblicità, niente cookie, nessun tracciamento.',
     'footer.about': 'Il corso',
     'footer.made': 'Come è fatto',
     'footer.ai':
@@ -200,6 +201,7 @@ export const ui = {
     'footer.credit':
       'Some concepts come from the <a href="https://academy.claude.com/courses/ai-fluency-framework-foundations/introduction-to-ai-fluency">AI Fluency Framework</a> by Rick Dakan and Joseph Feller (CC BY-NC-SA 4.0 license).',
     'footer.local': 'Your progress is saved only in your browser.',
+    'footer.privacy': 'No ads, no cookies, no tracking.',
     'footer.about': 'The course',
     'footer.made': 'How it’s made',
     'footer.ai':
@@ -303,6 +305,7 @@ export const ui = {
     'footer.credit':
       'Algunos conceptos proceden del <a href="https://academy.claude.com/courses/ai-fluency-framework-foundations/introduction-to-ai-fluency">AI Fluency Framework</a> de Rick Dakan y Joseph Feller (licencia CC BY-NC-SA 4.0).',
     'footer.local': 'Tu progreso se guarda solo en tu navegador.',
+    'footer.privacy': 'Sin publicidad, sin cookies, sin rastreo.',
     'footer.about': 'El curso',
     'footer.made': 'Cómo está hecho',
     'footer.ai':

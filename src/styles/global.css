@@ -459,6 +459,13 @@
       gap: var(--space-6);
     }
     & section { display: grid; gap: var(--space-2); align-content: start; }
+    & .footer-privacy {
+      font-weight: 600;
+      color: var(--text);
+      /* Inline, so the icon flows with the text and wrapped lines run under it. */
+      /* Sized in em so its centre (0.55em − 0.15em above the baseline) lines up with the middle of the capitals. */
+      & svg { display: inline-block; width: 1.1em; height: 1.1em; vertical-align: -0.15em; margin-inline-end: 0.35em; color: var(--teal-ink); }
+    }
     & h2 {
       font-size: var(--step--1);
       font-weight: 700;
