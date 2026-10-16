@@ -105,20 +105,20 @@ Se vuoi un promemoria semplice, pensa a queste quattro domande:
   questions={[
     {
       q: 'Quale richiesta darà probabilmente il risultato migliore?',
-      options: ['“Ricetta.”', '“Una ricetta veloce per 2 persone con zucchine e uova, senza forno.”', '“Dammi la migliore ricetta del mondo!!!”'],
-      answer: 1,
+      options: ['“Dammi la migliore ricetta del mondo!!!”', '“Ricetta.”', '“Una ricetta veloce per 2 persone con zucchine e uova, senza forno.”'],
+      answer: 2,
       why: 'Contiene contesto (2 persone), ingredienti e vincoli (veloce, senza forno).',
     },
     {
       q: 'La prima risposta non ti piace. Cosa conviene fare?',
-      options: ['Chiudere la chat: l’AI non funziona', 'Dire cosa non va e chiedere di migliorare', 'Riscrivere esattamente la stessa domanda'],
+      options: ['Riscrivere esattamente la stessa domanda', 'Dire cosa non va e chiedere di migliorare', 'Chiudere la chat: l’AI non funziona'],
       answer: 1,
       why: 'La conversazione serve proprio a questo: dai un feedback preciso e l’AI aggiusta il tiro.',
     },
     {
       q: 'A cosa serve dire “prima di rispondere, fammi domande”?',
-      options: ['A far perdere tempo', 'A far emergere informazioni che non avevi dato', 'A nulla, l’AI non può fare domande'],
-      answer: 1,
+      options: ['A far emergere informazioni che non avevi dato', 'A nulla, l’AI non può fare domande', 'A far perdere tempo'],
+      answer: 0,
       why: 'L’AI ti aiuta a chiarire contesto e obiettivi, e la risposta finale sarà molto più su misura.',
     },
   ]}

@@ -120,26 +120,26 @@ Parece raro, pero un modelo de lenguaje puede fallar una suma sencilla o el núm
   questions={[
     {
       q: '¿Cómo produce sus respuestas un asistente de IA?',
-      options: ['Busca la respuesta correcta en un archivo enorme', 'Elige una palabra cada vez, según lo que es más probable', 'Pregunta a un operador humano', 'Copia el primer resultado de Google'],
+      options: ['Copia el primer resultado de Google', 'Elige una palabra cada vez, según lo que es más probable', 'Pregunta a un operador humano', 'Busca la respuesta correcta en un archivo enorme'],
       answer: 1,
       why: 'Construye el texto pieza a pieza, eligiendo las palabras más probables. Por eso puede sonar seguro incluso cuando se equivoca.',
     },
     {
       q: 'La IA te da una cita con nombre, fecha y fuente. ¿Qué haces?',
-      options: ['La uso enseguida: es muy precisa', 'La compruebo antes de usarla', 'Le pregunto a la IA si está segura, y si dice que sí la uso'],
-      answer: 1,
+      options: ['Le pregunto a la IA si está segura, y si dice que sí la uso', 'La uso enseguida: es muy precisa', 'La compruebo antes de usarla'],
+      answer: 2,
       why: 'Detalles precisos no significa detalles verdaderos. Y la IA también puede confirmar cosas falsas: comprueba en una fuente externa.',
     },
     {
       q: 'Tras un chat muy largo, la IA “olvida” algo que le dijiste al principio. ¿Por qué?',
-      options: ['Se ha ofendido', 'Las partes más antiguas se salieron de su memoria a corto plazo', 'Hay un virus'],
-      answer: 1,
+      options: ['Las partes más antiguas se salieron de su memoria a corto plazo', 'Hay un virus', 'Se ha ofendido'],
+      answer: 0,
       why: 'La ventana de contexto tiene un límite. Solución: repite la información clave o abre un chat nuevo con un resumen.',
     },
     {
       q: '¿Qué tarea encaja mejor con un asistente de IA?',
-      options: ['Saber el resultado del partido de anoche (sin búsqueda web)', 'Reescribir un correo con un tono más amable', 'Recordar tu número de DNI para siempre'],
-      answer: 1,
+      options: ['Recordar tu número de DNI para siempre', 'Saber el resultado del partido de anoche (sin búsqueda web)', 'Reescribir un correo con un tono más amable'],
+      answer: 2,
       why: 'Escribir y reescribir es su punto fuerte. Las noticias recientes necesitan búsqueda web, y los datos personales mejor guardarlos para ti.',
     },
   ]}

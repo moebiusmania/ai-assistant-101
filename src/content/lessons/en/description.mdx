@@ -105,20 +105,20 @@ If you want a simple reminder, think of these four questions:
   questions={[
     {
       q: 'Which request will probably give the best result?',
-      options: ['“Recipe.”', '“A quick recipe for 2 people with courgettes and eggs, no oven.”', '“Give me the best recipe in the world!!!”'],
-      answer: 1,
+      options: ['“Give me the best recipe in the world!!!”', '“Recipe.”', '“A quick recipe for 2 people with courgettes and eggs, no oven.”'],
+      answer: 2,
       why: 'It includes context (2 people), ingredients and constraints (quick, no oven).',
     },
     {
       q: 'You don’t like the first answer. What should you do?',
-      options: ['Close the chat: AI doesn’t work', 'Say what’s wrong and ask it to improve', 'Retype exactly the same question'],
+      options: ['Retype exactly the same question', 'Say what’s wrong and ask it to improve', 'Close the chat: AI doesn’t work'],
       answer: 1,
       why: 'That’s what the conversation is for: give precise feedback and the AI adjusts.',
     },
     {
       q: 'What’s the point of saying “before answering, ask me questions”?',
-      options: ['To waste time', 'To surface information you hadn’t given', 'Nothing, AI can’t ask questions'],
-      answer: 1,
+      options: ['To surface information you hadn’t given', 'Nothing, AI can’t ask questions', 'To waste time'],
+      answer: 0,
       why: 'The AI helps you clarify context and goals, and the final answer will fit you much better.',
     },
   ]}

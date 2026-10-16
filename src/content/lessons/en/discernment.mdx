@@ -95,20 +95,20 @@ AI learned from texts written by people, and inherited their <Term id="bias">bia
   questions={[
     {
       q: 'Which of these AI sentences would you check first?',
-      options: ['“Drinking water is important for your health.”', '“According to the national statistics office, 37.4% of people changed jobs in 2021.”', '“There are many ways to organise a party.”'],
+      options: ['“There are many ways to organise a party.”', '“According to the national statistics office, 37.4% of people changed jobs in 2021.”', '“Drinking water is important for your health.”'],
       answer: 1,
       why: 'Precise source + precise percentage + year: check it against the original source.',
     },
     {
       q: 'You want an honest opinion on your business plan. What do you ask?',
-      options: ['“It’s a great idea, right?”', '“What are the 3 main risks and weak points of this plan?”', '“Compliment me.”'],
-      answer: 1,
+      options: ['“Compliment me.”', '“It’s a great idea, right?”', '“What are the 3 main risks and weak points of this plan?”'],
+      answer: 2,
       why: 'Explicitly asking for criticism counters the AI’s tendency to agree with you.',
     },
     {
       q: 'What is the Description–Discernment loop?',
-      options: ['Asking once and accepting the answer', 'Asking, evaluating, adjusting the request and evaluating again', 'Using two assistants at the same time'],
-      answer: 1,
+      options: ['Using two assistants at the same time', 'Asking once and accepting the answer', 'Asking, evaluating, adjusting the request and evaluating again'],
+      answer: 2,
       why: 'You improve in stages: each evaluation helps you describe better what you want.',
     },
   ]}

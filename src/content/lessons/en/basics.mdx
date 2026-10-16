@@ -120,26 +120,26 @@ It sounds odd, but a language model can get a simple sum or the number of letter
   questions={[
     {
       q: 'How does an AI assistant produce its answers?',
-      options: ['It looks up the right answer in a huge archive', 'It picks one word at a time, based on what is most likely', 'It asks a human operator', 'It copies the first Google result'],
+      options: ['It copies the first Google result', 'It picks one word at a time, based on what is most likely', 'It asks a human operator', 'It looks up the right answer in a huge archive'],
       answer: 1,
       why: 'It builds text piece by piece, picking the most likely words. That’s why it can sound confident even when it’s wrong.',
     },
     {
       q: 'The AI gives you a quote with name, date and source. What do you do?',
-      options: ['Use it right away: it’s very precise', 'Check it before using it', 'Ask the AI if it’s sure, and use it if it says yes'],
-      answer: 1,
+      options: ['Ask the AI if it’s sure, and use it if it says yes', 'Use it right away: it’s very precise', 'Check it before using it'],
+      answer: 2,
       why: 'Precise details don’t mean true details. And the AI can confirm wrong things too: check an outside source.',
     },
     {
       q: 'After a very long chat, the AI “forgets” something you told it at the start. Why?',
-      options: ['It got offended', 'The oldest parts dropped out of its short-term memory', 'There’s a virus'],
-      answer: 1,
+      options: ['The oldest parts dropped out of its short-term memory', 'There’s a virus', 'It got offended'],
+      answer: 0,
       why: 'The context window has a limit. Fix: repeat key information or open a new chat with a summary.',
     },
     {
       q: 'Which task suits an AI assistant best?',
-      options: ['Knowing last night’s match result (without web search)', 'Rewriting an email in a kinder tone', 'Remembering your ID number forever'],
-      answer: 1,
+      options: ['Remembering your ID number forever', 'Knowing last night’s match result (without web search)', 'Rewriting an email in a kinder tone'],
+      answer: 2,
       why: 'Writing and rewriting is its strength. Recent news needs web search, and personal data is best kept to yourself.',
     },
   ]}

@@ -105,20 +105,20 @@ Si quieres un recordatorio sencillo, piensa en estas cuatro preguntas:
   questions={[
     {
       q: '¿Qué petición dará probablemente el mejor resultado?',
-      options: ['“Receta.”', '“Una receta rápida para 2 personas con calabacín y huevos, sin horno.”', '“¡¡¡Dame la mejor receta del mundo!!!”'],
-      answer: 1,
+      options: ['“¡¡¡Dame la mejor receta del mundo!!!”', '“Receta.”', '“Una receta rápida para 2 personas con calabacín y huevos, sin horno.”'],
+      answer: 2,
       why: 'Incluye contexto (2 personas), ingredientes y límites (rápida, sin horno).',
     },
     {
       q: 'No te gusta la primera respuesta. ¿Qué haces?',
-      options: ['Cierro el chat: la IA no funciona', 'Digo qué no me convence y le pido que mejore', 'Vuelvo a escribir exactamente la misma pregunta'],
+      options: ['Vuelvo a escribir exactamente la misma pregunta', 'Digo qué no me convence y le pido que mejore', 'Cierro el chat: la IA no funciona'],
       answer: 1,
       why: 'Para eso está la conversación: da comentarios precisos y la IA se ajusta.',
     },
     {
       q: '¿Para qué sirve decir “antes de responder, hazme preguntas”?',
-      options: ['Para perder el tiempo', 'Para que salga información que no habías dado', 'Para nada, la IA no puede hacer preguntas'],
-      answer: 1,
+      options: ['Para que salga información que no habías dado', 'Para nada, la IA no puede hacer preguntas', 'Para perder el tiempo'],
+      answer: 0,
       why: 'La IA te ayuda a aclarar el contexto y los objetivos, y la respuesta final te encajará mucho mejor.',
     },
   ]}

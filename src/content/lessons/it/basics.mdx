@@ -120,26 +120,26 @@ Sembra strano, ma un modello linguistico può sbagliare un conto semplice o il n
   questions={[
     {
       q: 'Come produce le risposte un assistente AI?',
-      options: ['Cerca la risposta giusta in un enorme archivio', 'Sceglie una parola alla volta, in base a cosa è più probabile', 'Lo chiede a un operatore umano', 'Copia la prima pagina di Google'],
+      options: ['Copia la prima pagina di Google', 'Sceglie una parola alla volta, in base a cosa è più probabile', 'Lo chiede a un operatore umano', 'Cerca la risposta giusta in un enorme archivio'],
       answer: 1,
       why: 'Costruisce il testo pezzo per pezzo, scegliendo le parole più probabili. Per questo può sembrare sicuro anche quando sbaglia.',
     },
     {
       q: 'L’AI ti dà una citazione con nome, data e fonte. Cosa fai?',
-      options: ['La uso subito: è molto precisa', 'La verifico prima di usarla', 'Chiedo all’AI se è sicura, e se dice sì la uso'],
-      answer: 1,
+      options: ['Chiedo all’AI se è sicura, e se dice sì la uso', 'La uso subito: è molto precisa', 'La verifico prima di usarla'],
+      answer: 2,
       why: 'Dettagli precisi non vogliono dire dettagli veri. E l’AI può confermare anche cose sbagliate: verifica su una fonte esterna.',
     },
     {
       q: 'Dopo una chat lunghissima, l’AI “si dimentica” una cosa che le avevi detto all’inizio. Perché?',
-      options: ['Si è offesa', 'Le parti più vecchie sono uscite dalla sua memoria a breve termine', 'C’è un virus'],
-      answer: 1,
+      options: ['Le parti più vecchie sono uscite dalla sua memoria a breve termine', 'C’è un virus', 'Si è offesa'],
+      answer: 0,
       why: 'La finestra di contesto ha un limite. Soluzione: ripeti le informazioni chiave o apri una nuova chat con un riepilogo.',
     },
     {
       q: 'Quale di questi compiti è più adatto a un assistente AI?',
-      options: ['Sapere il risultato della partita di ieri sera (senza ricerca web)', 'Riscrivere un’email in tono più gentile', 'Ricordare il tuo codice fiscale per sempre'],
-      answer: 1,
+      options: ['Ricordare il tuo codice fiscale per sempre', 'Sapere il risultato della partita di ieri sera (senza ricerca web)', 'Riscrivere un’email in tono più gentile'],
+      answer: 2,
       why: 'Scrivere e riscrivere testi è il suo punto di forza. Le notizie recenti richiedono la ricerca web, e i dati personali è meglio non darglieli.',
     },
   ]}
