@@ -20,12 +20,15 @@ const prev = all[idx - 1];
 const next = all[idx + 1];
 const core = all.filter((e) => !e.data.optional).length;
 const toc = headings.filter((h) => h.depth === 2);
+const reviewed = entry.data.reviewed;
+const reviewedText = reviewed.toLocaleDateString(pick(lang, { it: 'it-IT', en: 'en-GB', es: 'es-ES' }), { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
 ---
 <Base
   title={entry.data.title}
   description={entry.data.description}
   alternates={alternates((l) => routes.lesson(l, slug))}
   readingProgress
+  modified={reviewed}
 >
   <article class="lesson">
     <header class="lesson-hero">
@@ -35,6 +38,7 @@ const toc = headings.filter((h) => h.depth === 2);
           <span class="chip"><Icon name={entry.data.icon} size={16} />{entry.data.optional ? tr('lesson.bonus') : `${tr('lesson.label')} ${idx + 1}/${core}`}</span>
           {entry.data.tag && <span class="chip tag">{entry.data.tag}</span>}
           <span class="muted"><Icon name="clock" size={14} /> {entry.data.minutes} {tr('lesson.minutes')}</span>
+          <span class="muted"><Icon name="refresh" size={14} /> {tr('lesson.reviewed')} <time datetime={reviewed.toISOString().slice(0, 10)}>{reviewedText}</time></span>
         </p>
         <h1>{entry.data.title}</h1>
         <p class="lead">{entry.data.description}</p>

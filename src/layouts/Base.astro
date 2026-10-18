@@ -13,13 +13,15 @@ interface Props {
   /** URL of this same page in each language, for the language switch. */
   alternates?: Partial<Record<Lang, string>>;
   readingProgress?: boolean;
+  /** When the page content was last reviewed, for `article:modified_time`. */
+  modified?: Date;
   /** Keep the header hidden until the page sets `data-shown` on it (used by the home hero). */
   autoHeader?: boolean;
 }
 
 const lang = getLang(Astro.currentLocale);
 const tr = t(lang);
-const { title, description = tr('site.tagline'), readingProgress = false, autoHeader = false } = Astro.props;
+const { title, description = tr('site.tagline'), readingProgress = false, autoHeader = false, modified } = Astro.props;
 const alternates: Record<Lang, string> = { ...allRoutes(routes.home), ...Astro.props.alternates };
 const fullTitle = title ? `${title} · ${tr('site.name')}` : `${tr('site.name')} — ${tr('site.tagline')}`;
 const path = Astro.url.pathname;
@@ -46,6 +48,7 @@ const ogLocale: Record<Lang, string> = { it: 'it_IT', en: 'en_US', es: 'es_ES' }
     <meta property="og:description" content={description} />
     <meta property="og:url" content={pageUrl} />
     <meta property="og:locale" content={ogLocale[lang]} />
+    {modified && <meta property="article:modified_time" content={modified.toISOString().slice(0, 10)} />}
     {(Object.keys(ogLocale) as Lang[]).filter((l) => l !== lang).map((l) => <meta property="og:locale:alternate" content={ogLocale[l]} />)}
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:type" content="image/png" />

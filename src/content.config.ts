@@ -11,6 +11,8 @@ const lessons = defineCollection({
     minutes: z.number(),
     icon: z.string(),
     tag: z.string().optional(),
+    // When the content was last checked against today's assistants (they change fast).
+    reviewed: z.coerce.date(),
     // Bonus lessons are listed but don't count towards course progress.
     optional: z.boolean().optional(),
   }),
