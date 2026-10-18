@@ -90,6 +90,8 @@ export const ui = {
     'cert.name': 'Il tuo nome',
     'cert.make': 'Crea il tuo attestato',
     'cert.download': 'Scarica l’immagine',
+    'cert.share': 'Condividi',
+    'cert.shareText': 'Ho completato «Parlare con l’AI», un corso gratuito per usare bene gli assistenti AI.',
     'cert.title': 'Attestato di completamento',
     'cert.body': 'ha completato il corso',
     'cert.course': 'Parlare con l’AI — usare bene gli assistenti AI',
@@ -201,6 +203,8 @@ export const ui = {
     'cert.name': 'Your name',
     'cert.make': 'Create your certificate',
     'cert.download': 'Download the image',
+    'cert.share': 'Share',
+    'cert.shareText': 'I completed “Talking to AI”, a free course on using AI assistants well.',
     'cert.title': 'Certificate of completion',
     'cert.body': 'has completed the course',
     'cert.course': 'Talking to AI — using AI assistants well',
@@ -312,6 +316,8 @@ export const ui = {
     'cert.name': 'Tu nombre',
     'cert.make': 'Crea tu certificado',
     'cert.download': 'Descargar la imagen',
+    'cert.share': 'Compartir',
+    'cert.shareText': 'He completado «Hablar con la IA», un curso gratuito para usar bien los asistentes de IA.',
     'cert.title': 'Certificado de finalización',
     'cert.body': 'ha completado el curso',
     'cert.course': 'Hablar con la IA — usar bien los asistentes de IA',
@@ -368,6 +374,8 @@ export const routes = {
   lesson: (lang: Lang, slug: string) => url(`${paths[lang].prefix}/${paths[lang].lessons}/${slug}/`),
   glossary: (lang: Lang) => url(`${paths[lang].prefix}/${paths[lang].glossary}/`),
   manifest: (lang: Lang) => url(`${paths[lang].prefix}/manifest.webmanifest`),
+  /** Share card generated at build time by src/pages/og/[lang]/[slug].png.ts. */
+  ogImage: (lang: Lang, slug: string) => url(`/og/${lang}/${slug}.png`),
 };
 
 /** The same page in every language, e.g. `alternates((l) => routes.glossary(l))`. */

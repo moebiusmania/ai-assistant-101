@@ -4,8 +4,11 @@ import { readdir, readFile, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { join, relative, sep } from 'node:path';
 
-/** Font subsets are many and mostly unused: they're cached on first use instead of at install. */
-const SKIP = /\.(woff2?|map)$|^sw\.js$/;
+/**
+ * Font subsets are many and mostly unused: they're cached on first use instead of at install.
+ * Share cards (og/) are only fetched by social networks, never by the app.
+ */
+const SKIP = /\.(woff2?|map)$|^sw\.js$|^og\//;
 
 async function files(dir) {
   const out = [];

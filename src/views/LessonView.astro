@@ -30,6 +30,8 @@ const reviewedText = reviewed.toLocaleDateString(pick(lang, { it: 'it-IT', en: '
   alternates={alternates((l) => routes.lesson(l, slug))}
   readingProgress
   modified={reviewed}
+  ogImage={routes.ogImage(lang, slug)}
+  ogAlt={`${tr('site.name')}: ${entry.data.title}. ${entry.data.description}`}
 >
   <article class="lesson">
     <header class="lesson-hero">

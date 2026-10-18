@@ -2,7 +2,7 @@
 /** Draws a personal completion certificate on a canvas and lets the user download it. */
 import Widget from './Widget.astro';
 import Icon from '../Icon.astro';
-import { getLang, t, pick } from '../../i18n/ui';
+import { getLang, t, pick, routes } from '../../i18n/ui';
 
 const lang = getLang(Astro.currentLocale);
 const tr = t(lang);
@@ -11,6 +11,9 @@ const i18n = {
   body: tr('cert.body'),
   course: tr('cert.course'),
   locale: pick(lang, { it: 'it-IT', en: 'en-GB', es: 'es-ES' }),
+  file: pick(lang, { it: 'attestato-ai.png', en: 'certificate-ai.png', es: 'certificado-ia.png' }),
+  shareText: tr('cert.shareText'),
+  home: routes.home(lang),
   labels: pick(lang, {
     it: ['Delega', 'Descrizione', 'Discernimento', 'Diligenza'],
     en: ['Delegation', 'Description', 'Discernment', 'Diligence'],
@@ -27,7 +30,8 @@ const i18n = {
     </form>
     <canvas width="1600" height="1000" role="img" hidden></canvas>
     <div class="widget-actions">
-      <a class="btn download" hidden download={pick(lang, { it: 'attestato-ai.png', en: 'certificate-ai.png', es: 'certificado-ia.png' })}><Icon name="download" />{tr('cert.download')}</a>
+      <a class="btn download" hidden download={i18n.file}><Icon name="download" />{tr('cert.download')}</a>
+      <button class="btn share" type="button" hidden><Icon name="share" />{tr('cert.share')}</button>
     </div>
   </Widget>
 </cert-maker>
@@ -142,6 +146,26 @@ const i18n = {
       a.href = cv.toDataURL('image/png');
       a.hidden = false;
       a.focus({ preventScroll: true });
+      this.offerShare(cv);
+    }
+
+    /** Shares the image itself through the system share sheet, where the browser can share files. */
+    offerShare(cv: HTMLCanvasElement) {
+      const btn = this.querySelector<HTMLButtonElement>('.share')!;
+      cv.toBlob((blob) => {
+        if (!blob) return;
+        const file = new File([blob], this.i18n.file, { type: 'image/png' });
+        if (!navigator.canShare?.({ files: [file] })) return;
+        btn.hidden = false;
+        btn.onclick = async () => {
+          const url = new URL(this.i18n.home, location.href).href;
+          try {
+            await navigator.share({ files: [file], title: this.i18n.title, text: `${this.i18n.shareText} ${url}` });
+          } catch {
+            // Closing the share sheet rejects too: nothing to do.
+          }
+        };
+      }, 'image/png');
     }
   }
   customElements.define('cert-maker', CertMaker);
