@@ -2,6 +2,7 @@
 import { getCollection, render, type CollectionEntry } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
+import ReadAloud from '../components/ReadAloud.astro';
 import LessonComplete from '../components/widgets/LessonComplete.astro';
 import { lessonComponents } from '../components/widgets';
 import { alternates, getLang, pick, routes, splitId, t } from '../i18n/ui';
@@ -42,6 +43,7 @@ const reviewedText = reviewed.toLocaleDateString(pick(lang, { it: 'it-IT', en: '
         </p>
         <h1>{entry.data.title}</h1>
         <p class="lead">{entry.data.description}</p>
+        <ReadAloud target=".lesson .prose" />
       </div>
     </header>
 

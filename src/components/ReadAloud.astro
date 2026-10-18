@@ -1,0 +1,173 @@
+---
+/**
+ * Reads the lesson text aloud with the browser's own voices (Web Speech API): nothing leaves the device.
+ * Hidden until the browser offers a voice for the page language.
+ */
+import Icon from './Icon.astro';
+import { getLang, pick, t } from '../i18n/ui';
+
+interface Props { target: string }
+const lang = getLang(Astro.currentLocale);
+const tr = t(lang);
+---
+<read-aloud data-target={Astro.props.target} data-lang={pick(lang, { it: 'it-IT', en: 'en-GB', es: 'es-ES' })} hidden>
+  <button type="button" class="btn btn-sm play" aria-pressed="false">
+    <Icon name="play" /><Icon name="pause" />{tr('listen.play')}
+  </button>
+  <button type="button" class="btn btn-sm btn-ghost stop" hidden>
+    <Icon name="x" />{tr('listen.stop')}
+  </button>
+</read-aloud>
+
+<script>
+  import { reducedMotion } from '../scripts/ui';
+
+  /** Blocks of lesson text worth reading; widgets and the table of contents are skipped. */
+  const BLOCKS = 'h2, h3, h4, p, li, tr';
+  /** Long utterances get cut off in some browsers, so blocks are split into sentence groups of about this size. */
+  const MAX_CHARS = 220;
+
+  type Chunk = { el: HTMLElement; text: string };
+
+  class ReadAloud extends HTMLElement {
+    synth = window.speechSynthesis;
+    voice: SpeechSynthesisVoice | null = null;
+    queue: Chunk[] = [];
+    index = 0;
+    playing = false;
+    /** Bumped on every start/stop so events from cancelled utterances are ignored. */
+    run = 0;
+    playBtn = this.querySelector<HTMLButtonElement>('.play')!;
+    stopBtn = this.querySelector<HTMLButtonElement>('.stop')!;
+
+    connectedCallback() {
+      if (!this.synth || typeof SpeechSynthesisUtterance === 'undefined') return;
+      this.pickVoice();
+      this.synth.addEventListener('voiceschanged', () => this.pickVoice());
+      this.playBtn.addEventListener('click', () => (this.playing ? this.pause() : this.play()));
+      this.stopBtn.addEventListener('click', () => this.stop(true));
+      addEventListener('pagehide', () => this.synth.cancel());
+    }
+
+    /** Prefers a voice for the exact locale, then any voice for the language. */
+    pickVoice() {
+      const want = this.dataset.lang!.toLowerCase();
+      const voices = this.synth.getVoices().filter((v) => v.lang.replace('_', '-').toLowerCase().startsWith(want.slice(0, 2)));
+      this.voice = voices.find((v) => v.lang.replace('_', '-').toLowerCase() === want) ?? voices[0] ?? null;
+      this.hidden = !this.voice;
+    }
+
+    chunks(): Chunk[] {
+      const root = document.querySelector(this.dataset.target!);
+      if (!root) return [];
+      const blocks = [...root.querySelectorAll<HTMLElement>(BLOCKS)].filter(
+        (el) => !el.closest('.widget, .toc') && !el.querySelector(BLOCKS) && el.checkVisibility(),
+      );
+      const seg = new Intl.Segmenter(this.dataset.lang, { granularity: 'sentence' });
+      return blocks.flatMap((el) => {
+        const text = this.textOf(el);
+        if (!text) return [];
+        const parts: string[] = [];
+        for (const { segment } of seg.segment(text)) {
+          const last = parts.length - 1;
+          if (last >= 0 && parts[last].length + segment.length <= MAX_CHARS) parts[last] += segment;
+          else parts.push(segment);
+        }
+        return parts.map((p) => ({ el, text: p.trim() })).filter((c) => c.text);
+      });
+    }
+
+    /** Visible text only: glossary popovers and decorative bits are left out; table cells are separated. */
+    textOf(el: HTMLElement) {
+      const clone = el.cloneNode(true) as HTMLElement;
+      clone.querySelectorAll('[popover], [aria-hidden="true"], svg').forEach((n) => n.remove());
+      if (el.matches('tr')) return [...clone.children].map((c) => c.textContent?.trim()).filter(Boolean).join(', ') + '.';
+      return clone.textContent?.replace(/\s+/g, ' ').trim() ?? '';
+    }
+
+    play() {
+      if (!this.queue.length || this.index >= this.queue.length) {
+        this.queue = this.chunks();
+        this.index = 0;
+      }
+      if (!this.queue.length) return;
+      this.playing = true;
+      this.run++;
+      this.sync();
+      this.speak(this.run);
+    }
+
+    speak(run: number) {
+      const chunk = this.queue[this.index];
+      if (!chunk) return this.stop(false);
+      this.mark(chunk.el);
+      const u = new SpeechSynthesisUtterance(chunk.text);
+      u.lang = this.dataset.lang!;
+      if (this.voice) u.voice = this.voice;
+      u.onend = () => {
+        if (run !== this.run) return;
+        this.index++;
+        this.speak(run);
+      };
+      u.onerror = (e) => {
+        if (run !== this.run || e.error === 'interrupted' || e.error === 'canceled') return;
+        this.stop(false);
+      };
+      this.synth.speak(u);
+    }
+
+    /** Pausing cancels and later restarts the current sentence: speechSynthesis.pause() is unreliable on mobile. */
+    pause() {
+      this.playing = false;
+      this.run++;
+      this.synth.cancel();
+      this.sync();
+    }
+
+    stop(byUser: boolean) {
+      this.playing = false;
+      this.run++;
+      this.synth.cancel();
+      this.queue = [];
+      this.index = 0;
+      this.mark(null);
+      // The stop button is about to hide: don't strand keyboard focus on it.
+      if (byUser || document.activeElement === this.stopBtn) this.playBtn.focus();
+      this.sync();
+    }
+
+    mark(el: HTMLElement | null) {
+      document.querySelectorAll('[data-speaking]').forEach((n) => n.removeAttribute('data-speaking'));
+      if (!el) return;
+      el.setAttribute('data-speaking', '');
+      const r = el.getBoundingClientRect();
+      if (r.top < 80 || r.bottom > innerHeight) el.scrollIntoView({ block: 'center', behavior: reducedMotion() ? 'auto' : 'smooth' });
+    }
+
+    sync() {
+      this.playBtn.setAttribute('aria-pressed', String(this.playing));
+      this.stopBtn.hidden = !this.playing && !this.queue.length;
+    }
+  }
+  customElements.define('read-aloud', ReadAloud);
+</script>
+
+<style>
+  read-aloud { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  read-aloud[hidden] { display: none; }
+  .play {
+    & :global(svg:nth-of-type(2)) { display: none; }
+    &[aria-pressed='true'] {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      & :global(svg:nth-of-type(1)) { display: none; }
+      & :global(svg:nth-of-type(2)) { display: block; }
+    }
+  }
+  :global([data-speaking]) {
+    background: var(--accent-soft);
+    box-shadow: 0 0 0 0.35em var(--accent-soft);
+    border-radius: 0.2em;
+    transition: background-color var(--dur), box-shadow var(--dur);
+  }
+</style>
