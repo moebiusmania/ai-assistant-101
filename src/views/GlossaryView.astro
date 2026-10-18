@@ -1,12 +1,26 @@
 ---
+import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
 import { glossaryFor } from '../i18n/glossary';
-import { alternates, getLang, routes, t } from '../i18n/ui';
+import { alternates, getLang, routes, splitId, t } from '../i18n/ui';
 
 const lang = getLang(Astro.currentLocale);
 const tr = t(lang);
-const terms = glossaryFor(lang);
+
+// Back-links: the lessons whose MDX uses <Term id="…">, in course order.
+const lessons = (await getCollection('lessons', (e) => splitId(e.id).lang === lang))
+  .sort((a, b) => a.data.order - b.data.order)
+  .map((e) => ({
+    slug: splitId(e.id).slug,
+    title: e.data.title,
+    terms: new Set([...(e.body ?? '').matchAll(/<Term\s+id=["']([^"']+)["']/g)].map((m) => m[1])),
+  }));
+
+const terms = glossaryFor(lang).map((x) => ({ ...x, lessons: lessons.filter((l) => l.terms.has(x.id)) }));
+const letterOf = (s: string) => s.normalize('NFD').replace(/\p{Diacritic}/gu, '').charAt(0).toUpperCase();
+const groups = Map.groupBy(terms, (x) => letterOf(x.term));
+const alphabet = [...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'];
 ---
 <Base title={tr('glossary.title')} description={tr('glossary.lead')} alternates={alternates(routes.glossary)}>
   <div class="narrow page">
@@ -17,34 +31,78 @@ const terms = glossaryFor(lang);
       <span class="visually-hidden">{tr('glossary.search')}</span>
       <input type="search" placeholder={tr('glossary.search')} />
     </label>
-    <dl class="terms">
-      {terms.map((x, i) => (
-        <div class="term card" id={x.id} style={`--d:${i * 40}ms`}>
-          <dt>{x.term}</dt>
-          <dd>{x.def}</dd>
-        </div>
-      ))}
-    </dl>
+    <label class="filter">
+      <span>{tr('glossary.filter')}</span>
+      <select>
+        <option value="">{tr('glossary.all')}</option>
+        {lessons.filter((l) => l.terms.size).map((l) => <option value={l.slug}>{l.title}</option>)}
+      </select>
+    </label>
+    <nav class="az" aria-label={tr('glossary.az')}>
+      <ul>
+        {alphabet.map((l) => (
+          <li>{groups.has(l) ? <a href={`#letter-${l}`} data-letter={l}>{l}</a> : <span aria-hidden="true">{l}</span>}</li>
+        ))}
+      </ul>
+    </nav>
+    {[...groups].map(([letter, items]) => (
+      <section class="group" aria-labelledby={`letter-${letter}`} data-letter={letter}>
+        <h2 id={`letter-${letter}`}>{letter}</h2>
+        <dl class="terms">
+          {items.map((x) => (
+            <div class="term card" id={x.id} data-lessons={x.lessons.map((l) => l.slug).join(' ')} style={`--d:${terms.indexOf(x) * 40}ms`}>
+              <dt>{x.term}</dt>
+              <dd>{x.def}</dd>
+              {x.lessons.length > 0 && (
+                <dd class="used">
+                  <Icon name="book" size={16} />
+                  <span>{tr('glossary.usedIn')} {x.lessons.map((l, i) => <>{i > 0 && ', '}<a href={routes.lesson(lang, l.slug)}>{l.title}</a></>)}</span>
+                </dd>
+              )}
+            </div>
+          ))}
+        </dl>
+      </section>
+    ))}
     <p class="none muted" role="status" data-text={tr('glossary.none')}></p>
   </div>
 </Base>
 
 <script>
   const input = document.querySelector<HTMLInputElement>('.search input')!;
-  const items = [...document.querySelectorAll<HTMLElement>('.term')];
+  const select = document.querySelector<HTMLSelectElement>('.filter select')!;
+  const groups = [...document.querySelectorAll<HTMLElement>('.group')];
+  const letters = new Map([...document.querySelectorAll<HTMLAnchorElement>('.az a')].map((a) => [a.dataset.letter!, a]));
   // A live status region: it stays in the DOM and only its text changes, so the message is announced.
   const none = document.querySelector<HTMLElement>('.none')!;
   const norm = (s: string) => s.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '');
-  input.addEventListener('input', () => {
+
+  function apply() {
     const q = norm(input.value.trim());
+    const lesson = select.value;
     let shown = 0;
-    items.forEach((el) => {
-      const hit = !q || norm(el.textContent ?? '').includes(q);
-      el.hidden = !hit;
-      if (hit) shown++;
-    });
+    for (const group of groups) {
+      let inGroup = 0;
+      group.querySelectorAll<HTMLElement>('.term').forEach((el) => {
+        const text = norm(`${el.querySelector('dt')?.textContent} ${el.querySelector('dd')?.textContent}`);
+        const hit = (!q || text.includes(q)) && (!lesson || el.dataset.lessons!.split(' ').includes(lesson));
+        el.hidden = !hit;
+        if (hit) inGroup++;
+      });
+      group.hidden = inGroup === 0;
+      shown += inGroup;
+      // Letters with nothing to show stay in place but stop being links.
+      const a = letters.get(group.dataset.letter!)!;
+      if (inGroup) a.setAttribute('href', `#letter-${group.dataset.letter}`);
+      else a.removeAttribute('href');
+      a.toggleAttribute('aria-disabled', !inGroup);
+    }
     none.textContent = shown > 0 ? '' : none.dataset.text!;
-  });
+  }
+  input.addEventListener('input', apply);
+  select.addEventListener('change', apply);
+  // The browser may restore the fields' values on back/forward navigation.
+  addEventListener('pageshow', apply);
 </script>
 
 <style>
@@ -65,13 +123,74 @@ const terms = glossaryFor(lang);
     & :global(svg) { width: 1.2rem; color: var(--text-muted); flex: none; }
     & input { flex: 1; border: 0; background: none; min-height: 3rem; outline: none; }
   }
-  .terms { display: grid; gap: var(--space-3); margin-block-start: var(--space-3); }
+  .filter {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-3);
+    font-size: var(--step--1);
+    font-weight: 600;
+    & select {
+      flex: 1 1 14rem;
+      min-width: 0;
+      min-height: 2.75rem;
+      padding: 0.5em 1em;
+      border: 1px solid var(--border-control);
+      border-radius: var(--radius-pill);
+      background: var(--bg-elev);
+      color: var(--text);
+      font-weight: 400;
+      &:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-color: var(--accent); }
+    }
+  }
+  .az ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    & > li > * {
+      display: grid;
+      place-items: center;
+      min-width: 1.9rem;
+      min-height: 2.25rem;
+      border-radius: var(--radius-sm);
+      font-weight: 650;
+      font-size: var(--step--1);
+    }
+    & a { text-decoration: none; color: var(--accent); }
+    & a[href]:hover { background: var(--accent-soft); }
+    & a:not([href]), & span { color: var(--text-muted); opacity: 0.55; font-weight: 400; }
+  }
+  .group {
+    display: grid;
+    gap: var(--space-3);
+    margin-block-start: var(--space-3);
+    & h2 {
+      font-size: var(--step-2);
+      color: var(--text-muted);
+      scroll-margin-top: 9rem;
+      border-block-end: 1px solid var(--border);
+      padding-block-end: var(--space-1);
+    }
+  }
+  .terms { display: grid; gap: var(--space-3); }
   .term {
     padding: var(--space-4) var(--space-5);
+    scroll-margin-top: 9rem;
     animation: fade-up 400ms var(--ease-out) both;
     animation-delay: var(--d);
     &:target { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
     & dt { font-family: var(--font-display); font-weight: 700; font-size: var(--step-1); color: var(--accent); }
     & dd { margin-block-start: var(--space-1); color: var(--text); }
+    & .used {
+      display: flex;
+      gap: var(--space-2);
+      align-items: baseline;
+      margin-block-start: var(--space-3);
+      font-size: var(--step--1);
+      color: var(--text-muted);
+      & :global(svg) { flex: none; translate: 0 0.15em; }
+    }
   }
 </style>

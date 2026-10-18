@@ -42,7 +42,7 @@ The header language menu is a flag button that opens a popover list of languages
 
 **Missions.** The bonus lesson `mission` lets the learner pick one of several tasks with `<Mission>`. Content specific to one task goes inside `<Track id="…">`, and only the chosen track is shown (`DEFAULT_MISSION` in `src/scripts/mission.ts` is the one rendered visible). `<MissionDone>` marks the chosen mission accomplished and can restart it.
 
-**Glossary.** `src/i18n/glossary.ts` maps ids to `{ it, en, es }` entries. In MDX, `<Term id="...">text</Term>` renders a popover definition. An unknown id silently renders plain text.
+**Glossary.** `src/i18n/glossary.ts` maps ids to `{ it, en, es }` entries. In MDX, `<Term id="...">text</Term>` renders a popover definition. An unknown id silently renders plain text. The glossary page groups terms by letter (A–Z jump links), filters by search text and by lesson, and links each term back to the lessons that use it. It finds those by scanning each lesson's MDX for `<Term id="…">`.
 
 **Client state.** All persistence is in `localStorage`, accessed only through the safe `read`/`write` wrappers in `src/scripts/storage.ts`. Keys use the `aic:` prefix (`aic:progress`, `aic:theme`, `aic:sound`, `aic:name`, `aic:motion-paused`, `aic:check:<id>`, `aic:mission`, `aic:missions`). Lesson completion lives in `src/scripts/progress.ts`. `LessonComplete` dispatches an `aic:progress` document event when a lesson is completed.
 

@@ -97,6 +97,10 @@ export const ui = {
     'glossary.lead': 'Le parole difficili, spiegate in modo semplice.',
     'glossary.search': 'Cerca una parola…',
     'glossary.none': 'Nessuna parola trovata.',
+    'glossary.filter': 'Usate nella lezione',
+    'glossary.all': 'Tutte le lezioni',
+    'glossary.az': 'Indice alfabetico',
+    'glossary.usedIn': 'Compare in:',
     'footer.credit':
       'Alcuni concetti sono tratti dall’<a href="https://academy.claude.com/courses/ai-fluency-framework-foundations/introduction-to-ai-fluency">AI Fluency Framework</a> di Rick Dakan e Joseph Feller (licenza CC BY-NC-SA 4.0).',
     'footer.local': 'Il progresso è salvato solo nel tuo browser.',
@@ -204,6 +208,10 @@ export const ui = {
     'glossary.lead': 'The tricky words, explained simply.',
     'glossary.search': 'Search a word…',
     'glossary.none': 'No words found.',
+    'glossary.filter': 'Used in the lesson',
+    'glossary.all': 'All lessons',
+    'glossary.az': 'A–Z index',
+    'glossary.usedIn': 'Appears in:',
     'footer.credit':
       'Some concepts come from the <a href="https://academy.claude.com/courses/ai-fluency-framework-foundations/introduction-to-ai-fluency">AI Fluency Framework</a> by Rick Dakan and Joseph Feller (CC BY-NC-SA 4.0 license).',
     'footer.local': 'Your progress is saved only in your browser.',
@@ -311,6 +319,10 @@ export const ui = {
     'glossary.lead': 'Las palabras difíciles, explicadas de forma sencilla.',
     'glossary.search': 'Busca una palabra…',
     'glossary.none': 'No se ha encontrado ninguna palabra.',
+    'glossary.filter': 'Usadas en la lección',
+    'glossary.all': 'Todas las lecciones',
+    'glossary.az': 'Índice alfabético',
+    'glossary.usedIn': 'Aparece en:',
     'footer.credit':
       'Algunos conceptos proceden del <a href="https://academy.claude.com/courses/ai-fluency-framework-foundations/introduction-to-ai-fluency">AI Fluency Framework</a> de Rick Dakan y Joseph Feller (licencia CC BY-NC-SA 4.0).',
     'footer.local': 'Tu progreso se guarda solo en tu navegador.',
