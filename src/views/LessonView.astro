@@ -41,7 +41,7 @@ const reviewedText = reviewed.toLocaleDateString(pick(lang, { it: 'it-IT', en: '
           <span class="chip"><Icon name={entry.data.icon} size={16} />{entry.data.optional ? tr('lesson.bonus') : `${tr('lesson.label')} ${idx + 1}/${core}`}</span>
           {entry.data.tag && <span class="chip tag">{entry.data.tag}</span>}
           <span class="muted"><Icon name="clock" size={14} /> {entry.data.minutes} {tr('lesson.minutes')}</span>
-          <span class="muted"><Icon name="refresh" size={14} /> {tr('lesson.reviewed')} <time datetime={reviewed.toISOString().slice(0, 10)}>{reviewedText}</time></span>
+          <span class="muted reviewed"><Icon name="refresh" size={14} /> {tr('lesson.reviewed')} <time datetime={reviewed.toISOString().slice(0, 10)}>{reviewedText}</time></span>
         </p>
         <h1>{entry.data.title}</h1>
         <p class="lead">{entry.data.description}</p>
@@ -113,6 +113,7 @@ const reviewedText = reviewed.toLocaleDateString(pick(lang, { it: 'it-IT', en: '
   }
   .meta { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; font-size: var(--step--1); }
   .meta .muted { display: inline-flex; gap: 0.3em; align-items: center; }
+  .meta .reviewed { margin-inline-start: auto; }
   .tag { background: var(--bg-elev); border: 1px solid var(--border); color: var(--text); }
   .lead { font-size: var(--step-1); color: var(--text-muted); }
 
