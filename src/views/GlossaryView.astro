@@ -11,11 +11,9 @@ const tr = t(lang);
 // Back-links: the lessons whose MDX uses <Term id="…">, in course order.
 const lessons = (await getCollection('lessons', (e) => splitId(e.id).lang === lang))
   .sort((a, b) => a.data.order - b.data.order)
-  .map((e, i, all) => ({
+  .map((e) => ({
     slug: splitId(e.id).slug,
     title: e.data.title,
-    // Short chip label: the lesson number and the title up to the colon ("4 · Description").
-    chip: `${e.data.optional ? tr('lesson.bonus') : all.filter((x) => !x.data.optional).indexOf(e) + 1} · ${e.data.title.split(':')[0]}`,
     terms: new Set([...(e.body ?? '').matchAll(/<Term\s+id=["']([^"']+)["']/g)].map((m) => m[1])),
   }));
 
@@ -33,18 +31,6 @@ const alphabet = [...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'];
       <span class="visually-hidden">{tr('glossary.search')}</span>
       <input type="search" placeholder={tr('glossary.search')} />
     </label>
-    <fieldset class="filter">
-      <legend>{tr('glossary.filter')}</legend>
-      <div class="chips">
-        {[{ slug: '', chip: tr('glossary.all'), title: tr('glossary.all') }, ...lessons.filter((l) => l.terms.size)].map((l, i) => (
-          <label title={l.title}>
-            <input type="radio" name="lesson" value={l.slug} checked={i === 0} />
-            <Icon name="check" size={14} />
-            <span>{l.chip}</span>
-          </label>
-        ))}
-      </div>
-    </fieldset>
     <nav class="az" aria-label={tr('glossary.az')}>
       <ul>
         {alphabet.map((l) => (
@@ -57,7 +43,7 @@ const alphabet = [...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'];
         <h2 id={`letter-${letter}`}>{letter}</h2>
         <dl class="terms">
           {items.map((x) => (
-            <div class="term card" id={x.id} data-lessons={x.lessons.map((l) => l.slug).join(' ')} style={`--d:${terms.indexOf(x) * 40}ms`}>
+            <div class="term card" id={x.id} style={`--d:${terms.indexOf(x) * 40}ms`}>
               <dt>{x.term}</dt>
               <dd>{x.def}</dd>
               {x.lessons.length > 0 && (
@@ -77,7 +63,6 @@ const alphabet = [...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'];
 
 <script>
   const input = document.querySelector<HTMLInputElement>('.search input')!;
-  const filter = document.querySelector<HTMLFieldSetElement>('.filter')!;
   const groups = [...document.querySelectorAll<HTMLElement>('.group')];
   const letters = new Map([...document.querySelectorAll<HTMLAnchorElement>('.az a')].map((a) => [a.dataset.letter!, a]));
   // A live status region: it stays in the DOM and only its text changes, so the message is announced.
@@ -86,13 +71,12 @@ const alphabet = [...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'];
 
   function apply() {
     const q = norm(input.value.trim());
-    const lesson = filter.querySelector<HTMLInputElement>('input:checked')?.value ?? '';
     let shown = 0;
     for (const group of groups) {
       let inGroup = 0;
       group.querySelectorAll<HTMLElement>('.term').forEach((el) => {
         const text = norm(`${el.querySelector('dt')?.textContent} ${el.querySelector('dd')?.textContent}`);
-        const hit = (!q || text.includes(q)) && (!lesson || el.dataset.lessons!.split(' ').includes(lesson));
+        const hit = !q || text.includes(q);
         el.hidden = !hit;
         if (hit) inGroup++;
       });
@@ -107,7 +91,6 @@ const alphabet = [...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'];
     none.textContent = shown > 0 ? '' : none.dataset.text!;
   }
   input.addEventListener('input', apply);
-  filter.addEventListener('change', apply);
   // The browser may restore the fields' values on back/forward navigation.
   addEventListener('pageshow', apply);
 </script>
@@ -130,53 +113,6 @@ const alphabet = [...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'];
     & :global(svg) { width: 1.2rem; color: var(--text-muted); flex: none; }
     & input { flex: 1; border: 0; background: none; min-height: 3rem; outline: none; }
   }
-  .filter {
-    border: 0;
-    padding: 0;
-    margin: 0;
-    min-width: 0;
-    & legend {
-      padding: 0;
-      margin-block-end: var(--space-2);
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--text-muted);
-    }
-  }
-  .chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2);
-    & label {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35em;
-      min-height: 2.25rem;
-      padding: 0.35em 0.9em;
-      border: 1px solid var(--border-control);
-      border-radius: var(--radius-pill);
-      background: transparent;
-      color: var(--text);
-      font-size: var(--step--1);
-      font-weight: 600;
-      cursor: pointer;
-      transition: background-color var(--dur), border-color var(--dur), color var(--dur);
-      &:hover { border-color: var(--accent); background: var(--accent-soft); }
-      /* The tick marks the chosen lesson without relying on colour alone. */
-      & :global(svg) { display: none; flex: none; }
-      &:has(:checked) {
-        background: var(--accent);
-        border-color: var(--accent);
-        color: var(--on-accent);
-        & :global(svg) { display: block; }
-      }
-      &:has(:focus-visible) { outline: 3px solid var(--accent); outline-offset: 2px; }
-    }
-    /* Native radios stay in the accessibility tree and keep arrow-key navigation. */
-    & input { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; pointer-events: none; }
-  }
   .az ul {
     list-style: none;
     padding: 0;
@@ -195,6 +131,12 @@ const alphabet = [...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'];
     & a { text-decoration: none; color: var(--accent); }
     & a[href]:hover { background: var(--accent-soft); }
     & a:not([href]), & span { color: var(--text-muted); opacity: 0.55; font-weight: 400; }
+  }
+  /* Desktop: the whole alphabet fits on one line. */
+  @media (width > 48rem) {
+    .az ul { flex-wrap: nowrap; gap: 0; }
+    .az li { flex: 1; }
+    .az ul > li > * { min-width: 0; }
   }
   .group {
     display: grid;

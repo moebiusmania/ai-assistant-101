@@ -99,8 +99,6 @@ export const ui = {
     'glossary.lead': 'Le parole difficili, spiegate in modo semplice.',
     'glossary.search': 'Cerca una parola…',
     'glossary.none': 'Nessuna parola trovata.',
-    'glossary.filter': 'Usate nella lezione',
-    'glossary.all': 'Tutte le lezioni',
     'glossary.az': 'Indice alfabetico',
     'glossary.usedIn': 'Compare in:',
     'footer.credit':
@@ -212,8 +210,6 @@ export const ui = {
     'glossary.lead': 'The tricky words, explained simply.',
     'glossary.search': 'Search a word…',
     'glossary.none': 'No words found.',
-    'glossary.filter': 'Used in the lesson',
-    'glossary.all': 'All lessons',
     'glossary.az': 'A–Z index',
     'glossary.usedIn': 'Appears in:',
     'footer.credit':
@@ -325,8 +321,6 @@ export const ui = {
     'glossary.lead': 'Las palabras difíciles, explicadas de forma sencilla.',
     'glossary.search': 'Busca una palabra…',
     'glossary.none': 'No se ha encontrado ninguna palabra.',
-    'glossary.filter': 'Usadas en la lección',
-    'glossary.all': 'Todas las lecciones',
     'glossary.az': 'Índice alfabético',
     'glossary.usedIn': 'Aparece en:',
     'footer.credit':
